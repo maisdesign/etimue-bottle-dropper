@@ -1,0 +1,530 @@
+import { supabase, profileService } from '@/net/supabaseClient'
+import { mailchimpService } from '@/net/mailchimp'
+import { t, i18n } from '@/i18n'
+
+export class AuthModal {
+  private element: HTMLElement
+  private isVisible: boolean = false
+  private onAuthSuccess?: (user: any) => void
+
+  constructor() {
+    this.element = this.createElement()
+    this.setupEventListeners()
+    document.body.appendChild(this.element)
+  }
+
+  private createElement(): HTMLElement {
+    const modal = document.createElement('div')
+    modal.id = 'auth-modal'
+    modal.className = 'auth-modal hidden'
+    modal.innerHTML = this.getModalHTML()
+    return modal
+  }
+
+  private getModalHTML(): string {
+    return `
+      <div class="auth-modal-backdrop">
+        <div class="auth-modal-content">
+          <div class="auth-step" id="auth-step-welcome">
+            <h2>${t('auth.welcome')}</h2>
+            <p>${t('game.title')}</p>
+            
+            <div class="auth-buttons">
+              <button id="auth-google" class="auth-button auth-button-google">
+                <span>G</span> ${t('auth.continueWithGoogle')}
+              </button>
+              
+              <button id="auth-apple" class="auth-button auth-button-apple">
+                <span>🍎</span> ${t('auth.continueWithApple')}
+              </button>
+              
+              <button id="auth-email" class="auth-button auth-button-email">
+                <span>📧</span> ${t('auth.continueWithEmail')}
+              </button>
+            </div>
+          </div>
+
+          <div class="auth-step hidden" id="auth-step-email">
+            <h2>${t('auth.signInWithOtp')}</h2>
+            
+            <div class="auth-form">
+              <input 
+                type="email" 
+                id="auth-email-input" 
+                placeholder="${t('auth.email')}"
+                class="auth-input"
+              >
+              <button id="auth-send-otp" class="auth-button auth-button-primary">
+                ${t('auth.signInWithOtp')}
+              </button>
+              <button id="auth-back" class="auth-button auth-button-secondary">
+                ← ${t('auth.welcome')}
+              </button>
+            </div>
+          </div>
+
+          <div class="auth-step hidden" id="auth-step-verify">
+            <h2>${t('auth.verify')}</h2>
+            <p>${t('auth.enterOtpCode')}</p>
+            
+            <div class="auth-form">
+              <input 
+                type="text" 
+                id="auth-otp-input" 
+                placeholder="000000"
+                class="auth-input auth-input-otp"
+                maxlength="6"
+              >
+              <button id="auth-verify-otp" class="auth-button auth-button-primary">
+                ${t('auth.verify')}
+              </button>
+              <button id="auth-back-email" class="auth-button auth-button-secondary">
+                ← ${t('auth.email')}
+              </button>
+            </div>
+          </div>
+
+          <div class="auth-step hidden" id="auth-step-consent">
+            <h2>${t('mailchimp.consent')}</h2>
+            
+            <div class="auth-form">
+              <div class="consent-checkbox">
+                <input type="checkbox" id="marketing-consent" class="auth-checkbox">
+                <label for="marketing-consent">
+                  ${t('mailchimp.consent')}
+                </label>
+              </div>
+              
+              <p class="consent-info">
+                ${t('mailchimp.consentRequired')}
+              </p>
+              
+              <button id="auth-complete" class="auth-button auth-button-primary" disabled>
+                ${t('game.play')}
+              </button>
+            </div>
+          </div>
+
+          <div class="auth-loading hidden" id="auth-loading">
+            <div class="spinner"></div>
+            <p>Loading...</p>
+          </div>
+
+          <div class="auth-error hidden" id="auth-error">
+            <p class="error-message"></p>
+            <button id="auth-retry" class="auth-button auth-button-secondary">
+              Try Again
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <style>
+        .auth-modal {
+          position: fixed;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          z-index: 10000;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+        
+        .auth-modal.hidden {
+          display: none;
+        }
+        
+        .auth-modal-backdrop {
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          background: rgba(0, 0, 0, 0.8);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+        
+        .auth-modal-content {
+          background: white;
+          border-radius: 12px;
+          padding: 2rem;
+          max-width: 400px;
+          width: 90%;
+          max-height: 80vh;
+          overflow-y: auto;
+        }
+        
+        .auth-step.hidden {
+          display: none;
+        }
+        
+        .auth-buttons {
+          display: flex;
+          flex-direction: column;
+          gap: 1rem;
+          margin-top: 2rem;
+        }
+        
+        .auth-button {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 0.5rem;
+          padding: 0.75rem 1.5rem;
+          border: none;
+          border-radius: 8px;
+          font-size: 1rem;
+          font-weight: 500;
+          cursor: pointer;
+          transition: all 0.2s;
+        }
+        
+        .auth-button:disabled {
+          opacity: 0.5;
+          cursor: not-allowed;
+        }
+        
+        .auth-button-google {
+          background: #4285f4;
+          color: white;
+        }
+        
+        .auth-button-apple {
+          background: #000;
+          color: white;
+        }
+        
+        .auth-button-email {
+          background: #6b7280;
+          color: white;
+        }
+        
+        .auth-button-primary {
+          background: #28a745;
+          color: white;
+        }
+        
+        .auth-button-secondary {
+          background: #6c757d;
+          color: white;
+        }
+        
+        .auth-form {
+          display: flex;
+          flex-direction: column;
+          gap: 1rem;
+          margin-top: 1.5rem;
+        }
+        
+        .auth-input {
+          padding: 0.75rem;
+          border: 2px solid #e5e7eb;
+          border-radius: 6px;
+          font-size: 1rem;
+        }
+        
+        .auth-input-otp {
+          text-align: center;
+          font-size: 1.5rem;
+          letter-spacing: 0.1em;
+        }
+        
+        .consent-checkbox {
+          display: flex;
+          align-items: flex-start;
+          gap: 0.5rem;
+        }
+        
+        .auth-checkbox {
+          margin-top: 0.25rem;
+          width: 1.25rem;
+          height: 1.25rem;
+        }
+        
+        .consent-info {
+          font-size: 0.875rem;
+          color: #6b7280;
+          margin: 0;
+        }
+        
+        .spinner {
+          width: 2rem;
+          height: 2rem;
+          border: 3px solid #e5e7eb;
+          border-top: 3px solid #28a745;
+          border-radius: 50%;
+          animation: spin 1s linear infinite;
+          margin: 0 auto;
+        }
+        
+        @keyframes spin {
+          0% { transform: rotate(0deg); }
+          100% { transform: rotate(360deg); }
+        }
+        
+        .error-message {
+          color: #dc3545;
+          margin: 0;
+          text-align: center;
+        }
+      </style>
+    `
+  }
+
+  private setupEventListeners(): void {
+    // Google OAuth
+    this.element.querySelector('#auth-google')?.addEventListener('click', () => {
+      this.signInWithProvider('google')
+    })
+
+    // Apple OAuth
+    this.element.querySelector('#auth-apple')?.addEventListener('click', () => {
+      this.signInWithProvider('apple')
+    })
+
+    // Email flow
+    this.element.querySelector('#auth-email')?.addEventListener('click', () => {
+      this.showStep('email')
+    })
+
+    // Send OTP
+    this.element.querySelector('#auth-send-otp')?.addEventListener('click', () => {
+      this.sendOTP()
+    })
+
+    // Verify OTP
+    this.element.querySelector('#auth-verify-otp')?.addEventListener('click', () => {
+      this.verifyOTP()
+    })
+
+    // Back buttons
+    this.element.querySelector('#auth-back')?.addEventListener('click', () => {
+      this.showStep('welcome')
+    })
+
+    this.element.querySelector('#auth-back-email')?.addEventListener('click', () => {
+      this.showStep('email')
+    })
+
+    // Consent checkbox
+    const consentCheckbox = this.element.querySelector('#marketing-consent') as HTMLInputElement
+    const completeButton = this.element.querySelector('#auth-complete') as HTMLButtonElement
+    
+    consentCheckbox?.addEventListener('change', () => {
+      completeButton.disabled = !consentCheckbox.checked
+    })
+
+    // Complete auth
+    completeButton?.addEventListener('click', () => {
+      this.completeAuth()
+    })
+
+    // Retry button
+    this.element.querySelector('#auth-retry')?.addEventListener('click', () => {
+      this.showStep('welcome')
+    })
+
+    // Language change listener
+    window.addEventListener('languageChanged', () => {
+      this.updateTexts()
+    })
+  }
+
+  private showStep(step: string): void {
+    // Hide all steps
+    this.element.querySelectorAll('.auth-step').forEach(el => {
+      el.classList.add('hidden')
+    })
+
+    // Show target step
+    this.element.querySelector(`#auth-step-${step}`)?.classList.remove('hidden')
+  }
+
+  private showLoading(show: boolean): void {
+    const loading = this.element.querySelector('#auth-loading')
+    const steps = this.element.querySelectorAll('.auth-step')
+    
+    if (show) {
+      steps.forEach(step => step.classList.add('hidden'))
+      loading?.classList.remove('hidden')
+    } else {
+      loading?.classList.add('hidden')
+    }
+  }
+
+  private showError(message: string): void {
+    const errorEl = this.element.querySelector('#auth-error')
+    const errorMessage = errorEl?.querySelector('.error-message')
+    
+    if (errorMessage) {
+      errorMessage.textContent = message
+    }
+    
+    this.element.querySelectorAll('.auth-step').forEach(el => {
+      el.classList.add('hidden')
+    })
+    
+    errorEl?.classList.remove('hidden')
+  }
+
+  private async signInWithProvider(provider: 'google' | 'apple'): Promise<void> {
+    try {
+      this.showLoading(true)
+      
+      const { data, error } = await supabase.auth.signInWithOAuth({
+        provider,
+        options: {
+          redirectTo: window.location.origin
+        }
+      })
+
+      if (error) throw error
+
+      // OAuth redirect will happen automatically
+      
+    } catch (error: any) {
+      console.error('OAuth error:', error)
+      this.showError(error.message || t('errors.authError'))
+      this.showLoading(false)
+    }
+  }
+
+  private async sendOTP(): Promise<void> {
+    const emailInput = this.element.querySelector('#auth-email-input') as HTMLInputElement
+    const email = emailInput.value.trim()
+
+    if (!email) {
+      this.showError('Please enter your email address')
+      return
+    }
+
+    try {
+      this.showLoading(true)
+
+      const { error } = await supabase.auth.signInWithOtp({
+        email,
+        options: {
+          shouldCreateUser: true
+        }
+      })
+
+      if (error) throw error
+
+      this.showLoading(false)
+      this.showStep('verify')
+
+    } catch (error: any) {
+      console.error('OTP error:', error)
+      this.showError(error.message || t('errors.authError'))
+      this.showLoading(false)
+    }
+  }
+
+  private async verifyOTP(): Promise<void> {
+    const emailInput = this.element.querySelector('#auth-email-input') as HTMLInputElement
+    const otpInput = this.element.querySelector('#auth-otp-input') as HTMLInputElement
+    
+    const email = emailInput.value.trim()
+    const otp = otpInput.value.trim()
+
+    if (!otp) {
+      this.showError('Please enter the verification code')
+      return
+    }
+
+    try {
+      this.showLoading(true)
+
+      const { data, error } = await supabase.auth.verifyOtp({
+        email,
+        token: otp,
+        type: 'email'
+      })
+
+      if (error) throw error
+
+      this.showLoading(false)
+      this.showStep('consent')
+
+    } catch (error: any) {
+      console.error('OTP verification error:', error)
+      this.showError(error.message || t('errors.authError'))
+      this.showLoading(false)
+    }
+  }
+
+  private async completeAuth(): Promise<void> {
+    const consentCheckbox = this.element.querySelector('#marketing-consent') as HTMLInputElement
+    
+    if (!consentCheckbox.checked) {
+      this.showError(t('mailchimp.consentRequired'))
+      return
+    }
+
+    try {
+      this.showLoading(true)
+
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) throw new Error('No authenticated user')
+
+      // Update profile with consent
+      await profileService.updateProfile(user.id, {
+        consent_marketing: true,
+        consent_ts: new Date().toISOString()
+      })
+
+      // Subscribe to Mailchimp
+      const subscribeResult = await mailchimpService.subscribe({
+        email: user.email!,
+        consent: true
+      })
+
+      if (!subscribeResult.success) {
+        console.warn('Mailchimp subscription failed:', subscribeResult.error)
+        // Continue anyway - consent is recorded
+      }
+
+      this.showLoading(false)
+      this.hide()
+
+      // Notify success
+      if (this.onAuthSuccess) {
+        this.onAuthSuccess(user)
+      }
+
+    } catch (error: any) {
+      console.error('Complete auth error:', error)
+      this.showError(error.message || t('errors.generic'))
+      this.showLoading(false)
+    }
+  }
+
+  private updateTexts(): void {
+    // Re-render modal with new translations
+    this.element.innerHTML = this.getModalHTML()
+    this.setupEventListeners()
+  }
+
+  public show(): void {
+    this.isVisible = true
+    this.element.classList.remove('hidden')
+    this.showStep('welcome')
+  }
+
+  public hide(): void {
+    this.isVisible = false
+    this.element.classList.add('hidden')
+  }
+
+  public onAuth(callback: (user: any) => void): void {
+    this.onAuthSuccess = callback
+  }
+
+  public destroy(): void {
+    this.element.remove()
+  }
+}
