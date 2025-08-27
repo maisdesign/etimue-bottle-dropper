@@ -7,10 +7,14 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.56.0",
     "phaser": "^3.80.1"
   },
   "devDependencies": {
+    "@types/node": "^24.3.0",
+    "typescript": "^5.9.2",
     "vite": "^5.0.10",
-    "typescript": "^5.3.3"
+    "vite-plugin-pwa": "^1.0.3",
+    "workbox-window": "^7.3.0"
   }
 }

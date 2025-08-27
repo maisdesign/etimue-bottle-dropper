@@ -1,0 +1,74 @@
+{
+  "game": {
+    "title": "Etimüè Bottle Dropper",
+    "start": "START",
+    "play": "PLAY",
+    "pause": "PAUSE",
+    "resume": "RESUME",
+    "gameOver": "GAME OVER!",
+    "finalScore": "Final Score: {{score}}",
+    "playAgain": "PLAY AGAIN",
+    "score": "Score: {{score}}",
+    "lives": "Lives:",
+    "time": "Time: {{time}}",
+    "submitScore": "SUBMIT SCORE"
+  },
+  "auth": {
+    "welcome": "Welcome",
+    "continueWithGoogle": "Continue with Google",
+    "continueWithApple": "Continue with Apple",
+    "continueWithEmail": "Continue with Email", 
+    "login": "Sign In",
+    "signup": "Sign Up",
+    "logout": "Sign Out",
+    "email": "Email",
+    "password": "Password",
+    "signInWithOtp": "Sign in with code",
+    "enterOtpCode": "Enter the code sent to your email",
+    "verify": "Verify"
+  },
+  "mailchimp": {
+    "consent": "I consent to subscribe to Etimüè's mailing list to receive updates and exclusive offers",
+    "consentRequired": "Game access is reserved for newsletter subscribers only",
+    "subscriptionSuccess": "Subscription completed successfully!"
+  },
+  "leaderboard": {
+    "title": "Leaderboard",
+    "weekly": "Weekly",
+    "monthly": "Monthly", 
+    "position": "Pos",
+    "player": "Player",
+    "score": "Score",
+    "date": "Date",
+    "noData": "No data available",
+    "yourBest": "Your best: {{score}}"
+  },
+  "profile": {
+    "title": "Profile",
+    "username": "Username",
+    "whatsapp": "WhatsApp", 
+    "instagram": "Instagram",
+    "save": "Save",
+    "saved": "Saved!"
+  },
+  "menu": {
+    "audio": "Audio",
+    "language": "Language",
+    "howToPlay": "How to Play",
+    "privacy": "Privacy",
+    "terms": "Terms"
+  },
+  "gdpr": {
+    "cookieBanner": "This site uses cookies to improve user experience. By continuing to browse you accept the use of cookies.",
+    "accept": "Accept",
+    "decline": "Decline", 
+    "analytics": "Analytics cookies",
+    "necessary": "Necessary cookies"
+  },
+  "errors": {
+    "networkError": "Connection error",
+    "authError": "Authentication error",
+    "scoreSubmissionFailed": "Score submission failed", 
+    "generic": "An error occurred"
+  }
+}

@@ -1,0 +1,74 @@
+{
+  "game": {
+    "title": "Etimüè Bottle Dropper",
+    "start": "INIZIA",
+    "play": "GIOCA",
+    "pause": "PAUSA",
+    "resume": "RIPRENDI",
+    "gameOver": "GAME OVER!",
+    "finalScore": "Punteggio finale: {{score}}",
+    "playAgain": "GIOCA ANCORA",
+    "score": "Punteggio: {{score}}",
+    "lives": "Vite:",
+    "time": "Tempo: {{time}}",
+    "submitScore": "INVIA PUNTEGGIO"
+  },
+  "auth": {
+    "welcome": "Benvenuto",
+    "continueWithGoogle": "Continua con Google",
+    "continueWithApple": "Continua con Apple", 
+    "continueWithEmail": "Continua con Email",
+    "login": "Accedi",
+    "signup": "Registrati",
+    "logout": "Esci",
+    "email": "Email",
+    "password": "Password",
+    "signInWithOtp": "Accedi con codice",
+    "enterOtpCode": "Inserisci il codice ricevuto via email",
+    "verify": "Verifica"
+  },
+  "mailchimp": {
+    "consent": "Acconsento a iscrivermi alla mailing list di Etimüè per ricevere aggiornamenti e offerte esclusive",
+    "consentRequired": "L'accesso al gioco è riservato agli iscritti alla newsletter promozionale",
+    "subscriptionSuccess": "Iscrizione completata con successo!"
+  },
+  "leaderboard": {
+    "title": "Classifica",
+    "weekly": "Settimanale", 
+    "monthly": "Mensile",
+    "position": "Pos",
+    "player": "Giocatore",
+    "score": "Punteggio",
+    "date": "Data",
+    "noData": "Nessun dato disponibile",
+    "yourBest": "Il tuo migliore: {{score}}"
+  },
+  "profile": {
+    "title": "Profilo",
+    "username": "Nome utente",
+    "whatsapp": "WhatsApp",
+    "instagram": "Instagram",
+    "save": "Salva",
+    "saved": "Salvato!"
+  },
+  "menu": {
+    "audio": "Audio",
+    "language": "Lingua",
+    "howToPlay": "Come si gioca",
+    "privacy": "Privacy",
+    "terms": "Termini"
+  },
+  "gdpr": {
+    "cookieBanner": "Questo sito utilizza cookie per migliorare l'esperienza utente. Continuando la navigazione accetti l'uso dei cookie.",
+    "accept": "Accetta",
+    "decline": "Rifiuta",
+    "analytics": "Cookie analitici",
+    "necessary": "Cookie necessari"
+  },
+  "errors": {
+    "networkError": "Errore di connessione",
+    "authError": "Errore di autenticazione", 
+    "scoreSubmissionFailed": "Invio punteggio fallito",
+    "generic": "Si è verificato un errore"
+  }
+}
