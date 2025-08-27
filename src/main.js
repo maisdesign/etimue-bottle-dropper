@@ -35,7 +35,10 @@ let livesText
 let timeText
 let gameTimer
 let spawnTimer
+let powerupSpawnTimer
 let gameStarted = false
+let startButton
+let startText
 
 // Mobile controls state
 let mobileControls = {
@@ -100,6 +103,9 @@ function create() {
             .on('pointerout', () => {
                 mobileControls.leftPressed = false
             })
+            .on('pointercancel', () => {
+                mobileControls.leftPressed = false
+            })
         
         const rightBtn = this.add.rectangle(340, 520, 80, 60, 0x000000, 0.5)
             .setInteractive()
@@ -110,6 +116,9 @@ function create() {
                 mobileControls.rightPressed = false
             })
             .on('pointerout', () => {
+                mobileControls.rightPressed = false
+            })
+            .on('pointercancel', () => {
                 mobileControls.rightPressed = false
             })
         
@@ -123,21 +132,38 @@ function create() {
     timeText = this.add.text(300, 16, 'Time: 60', { fontSize: '18px', color: '#000' })
     
     // Start button
-    const startBtn = this.add.rectangle(200, 300, 120, 50, 0x28a745)
+    startButton = this.add.rectangle(200, 300, 120, 50, 0x28a745)
         .setInteractive()
         .on('pointerdown', startGame.bind(this))
     
-    this.add.text(200, 300, 'START', { fontSize: '20px', color: '#fff' }).setOrigin(0.5)
+    startText = this.add.text(200, 300, 'START', { fontSize: '20px', color: '#fff' }).setOrigin(0.5)
     
-    // Collisions
-    this.physics.add.overlap(player, bottles, collectBottle, null, this)
-    this.physics.add.overlap(player, powerups, collectPowerup, null, this)
+    // Collisions with proper error handling for mobile
+    this.physics.add.overlap(player, bottles, (p, b) => {
+        try {
+            collectBottle.call(this, p, b)
+        } catch (error) {
+            console.warn('Collision error:', error)
+        }
+    }, null, this)
+    
+    this.physics.add.overlap(player, powerups, (p, pu) => {
+        try {
+            collectPowerup.call(this, p, pu)
+        } catch (error) {
+            console.warn('Powerup collision error:', error)
+        }
+    }, null, this)
 }
 
 function startGame() {
     if (gameStarted) return
     
     gameStarted = true
+    
+    // Hide start button and text
+    startButton.setVisible(false)
+    startText.setVisible(false)
     
     // Start timers
     gameTimer = this.time.addEvent({
@@ -156,8 +182,8 @@ function startGame() {
         loop: true
     })
     
-    // Spawn power-ups less frequently
-    this.time.addEvent({
+    // Spawn power-ups less frequently - store reference to fix spawning issue
+    powerupSpawnTimer = this.time.addEvent({
         delay: 8000,
         callback: spawnPowerup,
         callbackScope: this,
@@ -222,6 +248,10 @@ function collectPowerup(player, powerup) {
     score += 5
     scoreText.setText('Score: ' + score)
     
+    // Add 5 seconds to timer
+    gameTime += 5
+    timeText.setText('Time: ' + gameTime)
+    
     // Visual effect
     this.cameras.main.flash(200, 255, 255, 0)
 }
@@ -244,6 +274,7 @@ function endGame() {
     gameStarted = false
     gameTimer?.destroy()
     spawnTimer?.destroy()
+    powerupSpawnTimer?.destroy()
     
     // Clear all objects
     bottles.clear(true, true)
@@ -266,16 +297,33 @@ function endGame() {
 function update() {
     if (!gameStarted) return
     
-    // Player movement - Combined keyboard and mobile controls
-    const leftActive = cursors.left.isDown || mobileControls.leftPressed
-    const rightActive = cursors.right.isDown || mobileControls.rightPressed
-    
-    if (leftActive && !rightActive) {
-        player.setVelocityX(-250)  // Slightly faster for better mobile feel
-    } else if (rightActive && !leftActive) {
-        player.setVelocityX(250)
-    } else {
-        player.setVelocityX(0)
+    try {
+        // Player movement - Combined keyboard and mobile controls
+        const leftActive = cursors.left.isDown || mobileControls.leftPressed
+        const rightActive = cursors.right.isDown || mobileControls.rightPressed
+        
+        if (leftActive && !rightActive) {
+            player.setVelocityX(-250)  // Slightly faster for better mobile feel
+        } else if (rightActive && !leftActive) {
+            player.setVelocityX(250)
+        } else {
+            player.setVelocityX(0)
+        }
+        
+        // Clean up off-screen objects to prevent memory issues on mobile
+        bottles.children.entries.forEach(bottle => {
+            if (bottle.y > 650) {
+                bottle.destroy()
+            }
+        })
+        
+        powerups.children.entries.forEach(powerup => {
+            if (powerup.y > 650) {
+                powerup.destroy()
+            }
+        })
+    } catch (error) {
+        console.warn('Update error:', error)
     }
 }
 
