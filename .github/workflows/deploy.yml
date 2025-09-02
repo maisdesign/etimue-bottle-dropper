@@ -41,7 +41,7 @@ jobs:
         commit_message: 'Deploy: ${{ github.event.head_commit.message }}'
         
     - name: Upload build artifacts (for debugging)
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: dist-files
         path: dist/
