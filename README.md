@@ -265,3 +265,5 @@ For technical issues or questions, create an issue in the project repository.
 ---
 
 Built with ❤️ for Etimuè using Phaser 3, TypeScript, and Supabase.
+
+<!-- Deployment test commit -->
