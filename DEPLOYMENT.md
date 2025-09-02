@@ -5,17 +5,17 @@ This document explains how to set up automated deployment from the main reposito
 ## 🏗️ Architecture
 
 - **Main Repository**: `maisdesign/etimue-bottle-dropper` - Contains all source code
-- **Deployment Repository**: `maisdesign/etimue-bottle-dropper-deploy` - Contains only built files from `dist/`
+- **Deployment Repository**: `maisdesign/bottledropper` - Contains only built files from `dist/`
 - **Netlify**: Connected to deployment repository for automatic publishing
 
 ## ⚙️ Setup Instructions
 
 ### 1. Create Deployment Repository
 
-Create a new repository for deployment:
+The deployment repository already exists:
 ```bash
-# Create new repository on GitHub named: etimue-bottle-dropper-deploy
-# Make it public (for free Netlify hosting) or private (requires paid plan)
+# Repository: https://github.com/maisdesign/bottledropper
+# This will receive the built files from dist/
 ```
 
 ### 2. Generate GitHub Token
@@ -35,18 +35,17 @@ In your main repository (`etimue-bottle-dropper`):
    - **Name**: `DEPLOY_TOKEN`
    - **Value**: The token from step 2
 
-### 4. Update Workflow Configuration
+### 4. Workflow Configuration
 
-Edit `.github/workflows/deploy.yml` and change:
+The workflow is already configured to deploy to:
 ```yaml
-external_repository: maisdesign/etimue-bottle-dropper-deploy
+external_repository: maisdesign/bottledropper
 ```
-Replace with your actual deployment repository name.
 
 ### 5. Connect Netlify to Deployment Repository
 
 1. In Netlify dashboard, create new site from Git
-2. Connect to your deployment repository (`etimue-bottle-dropper-deploy`)
+2. Connect to your deployment repository (`maisdesign/bottledropper`)
 3. Configure build settings:
    - **Build command**: (leave empty - files are pre-built)
    - **Publish directory**: `/` (root of repository)

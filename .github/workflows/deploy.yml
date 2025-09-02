@@ -32,8 +32,8 @@ jobs:
       with:
         # You need to create a GitHub token with repo access
         personal_token: ${{ secrets.DEPLOY_TOKEN }}
-        # Replace with your deployment repository
-        external_repository: maisdesign/etimue-bottle-dropper-deploy
+        # Deploy to bottledropper repository
+        external_repository: maisdesign/bottledropper
         publish_dir: ./dist
         publish_branch: main
         user_name: 'github-actions[bot]'

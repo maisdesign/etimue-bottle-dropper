@@ -9,7 +9,7 @@ const { execSync } = require('child_process');
 const fs = require('fs');
 const path = require('path');
 
-const DEPLOYMENT_REPO = 'git@github.com:maisdesign/etimue-bottle-dropper-deploy.git';
+const DEPLOYMENT_REPO = 'git@github.com:maisdesign/bottledropper.git';
 const DIST_DIR = path.join(__dirname, '..', 'dist');
 const TEMP_DIR = path.join(__dirname, '..', 'temp-deploy');
 
