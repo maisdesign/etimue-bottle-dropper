@@ -5,7 +5,8 @@
       "Bash(npm run dev:*)",
       "Bash(git log:*)",
       "Bash(npm install:*)",
-      "WebFetch(domain:astounding-rolypoly-fc5137.netlify.app)"
+      "WebFetch(domain:astounding-rolypoly-fc5137.netlify.app)",
+      "Bash(git reset:*)"
     ],
     "deny": [],
     "ask": []
