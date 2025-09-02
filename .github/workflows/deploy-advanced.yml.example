@@ -1,0 +1,102 @@
+# Alternative deployment workflow - rename to .yml to use
+name: Advanced Deploy with Multiple Targets
+
+on:
+  push:
+    branches: [ main ]
+    
+env:
+  NODE_VERSION: '18'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    outputs:
+      should-deploy: ${{ steps.check-changes.outputs.deploy }}
+      
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 2
+        
+    - name: Check if deployment needed
+      id: check-changes
+      run: |
+        if git diff HEAD^ HEAD --quiet -- dist/; then
+          echo "deploy=false" >> $GITHUB_OUTPUT
+        else
+          echo "deploy=true" >> $GITHUB_OUTPUT
+        fi
+        
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+        cache: 'npm'
+        
+    - name: Install dependencies
+      run: npm ci --prefer-offline --no-audit
+      
+    - name: Run tests (if available)
+      run: npm run test --if-present
+      
+    - name: Build production
+      run: npm run build
+      
+    - name: Upload build artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: build-files
+        path: |
+          dist/
+          netlify.toml
+        retention-days: 7
+
+  deploy-to-netlify-repo:
+    needs: build
+    if: needs.build.outputs.should-deploy == 'true'
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Download build artifacts
+      uses: actions/download-artifact@v3
+      with:
+        name: build-files
+        
+    - name: Deploy to Netlify repository
+      uses: peaceiris/actions-gh-pages@v3
+      with:
+        personal_token: ${{ secrets.DEPLOY_TOKEN }}
+        external_repository: maisdesign/etimue-bottle-dropper-netlify
+        publish_dir: ./dist
+        publish_branch: main
+        force_orphan: true
+        user_name: 'Etimuè Deployer'
+        user_email: 'deploy@etimue.it'
+        commit_message: |
+          🚀 Deploy build from ${{ github.sha }}
+          
+          Source commit: ${{ github.event.head_commit.message }}
+          Deployed at: $(date -u +'%Y-%m-%d %H:%M:%S UTC')
+
+  deploy-to-staging:
+    needs: build
+    if: github.ref != 'refs/heads/main'
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Download build artifacts
+      uses: actions/download-artifact@v3
+      with:
+        name: build-files
+        
+    - name: Deploy to staging repository
+      uses: peaceiris/actions-gh-pages@v3
+      with:
+        personal_token: ${{ secrets.DEPLOY_TOKEN }}
+        external_repository: maisdesign/etimue-bottle-dropper-staging
+        publish_dir: ./dist
+        publish_branch: main
+        force_orphan: true
+        commit_message: '🧪 Staging deploy: ${{ github.event.head_commit.message }}'

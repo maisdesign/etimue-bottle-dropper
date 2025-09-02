@@ -1,0 +1,48 @@
+name: Deploy to Netlify Repository
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout source code
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+        
+    - name: Install dependencies
+      run: npm ci
+      
+    - name: Build project
+      run: npm run build
+      
+    - name: Deploy to separate repository
+      uses: peaceiris/actions-gh-pages@v3
+      if: github.ref == 'refs/heads/main'
+      with:
+        # You need to create a GitHub token with repo access
+        personal_token: ${{ secrets.DEPLOY_TOKEN }}
+        # Replace with your deployment repository
+        external_repository: maisdesign/etimue-bottle-dropper-deploy
+        publish_dir: ./dist
+        publish_branch: main
+        user_name: 'github-actions[bot]'
+        user_email: 'github-actions[bot]@users.noreply.github.com'
+        commit_message: 'Deploy: ${{ github.event.head_commit.message }}'
+        
+    - name: Upload build artifacts (for debugging)
+      uses: actions/upload-artifact@v3
+      with:
+        name: dist-files
+        path: dist/
+        retention-days: 30
