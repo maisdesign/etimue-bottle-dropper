@@ -13,6 +13,7 @@ export class GameScene extends Phaser.Scene {
   private bottles!: Phaser.Physics.Arcade.Group
   private powerups!: Phaser.Physics.Arcade.Group
   private cursors!: Phaser.Types.Input.Keyboard.CursorKeys
+  private wasdKeys!: { [key: string]: Phaser.Input.Keyboard.Key }
   
   // Game state
   private score: number = 0
@@ -154,7 +155,7 @@ export class GameScene extends Phaser.Scene {
     this.cursors = this.input.keyboard!.createCursorKeys()
     
     // WASD controls
-    const wasdKeys = this.input.keyboard!.addKeys('W,S,A,D')
+    this.wasdKeys = this.input.keyboard!.addKeys('W,S,A,D')
     
     // Pause key
     this.input.keyboard!.on('keydown-P', () => {
@@ -530,9 +531,16 @@ export class GameScene extends Phaser.Scene {
   }
 
   private startBackgroundMusic() {
-    if (this.sound.exists('music_bg')) {
-      this.bgMusic = this.sound.add('music_bg', { volume: 0.3, loop: true })
-      this.bgMusic.play()
+    // Check if audio is cached before trying to play
+    if (this.cache.audio.exists('music_bg')) {
+      try {
+        this.bgMusic = this.sound.add('music_bg', { volume: 0.3, loop: true })
+        this.bgMusic.play()
+      } catch (error) {
+        console.log('🔇 Background music not available, continuing without audio')
+      }
+    } else {
+      console.log('🔇 Background music cache not found, continuing silently')
     }
   }
 
@@ -596,5 +604,24 @@ export class GameScene extends Phaser.Scene {
     } catch (error) {
       console.warn('GameScene update error:', error)
     }
+  }
+
+  shutdown() {
+    // Clean up keyboard listeners to prevent conflicts with HTML inputs
+    if (this.input?.keyboard) {
+      // Remove WASD key listeners
+      if (this.wasdKeys) {
+        Object.values(this.wasdKeys).forEach(key => {
+          if (key) {
+            this.input.keyboard!.removeKey(key)
+          }
+        })
+      }
+      
+      // Remove all keyboard listeners for this scene
+      this.input.keyboard.removeAllListeners()
+    }
+    
+    console.log('🧹 GameScene keyboard listeners cleaned up')
   }
 }

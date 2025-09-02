@@ -12,6 +12,8 @@ export class MenuScene extends Phaser.Scene {
   
   private audioEnabled: boolean = true
   private currentLanguage: string = 'it'
+  private profileModalCleanup: (() => void) | null = null
+  private closeModal!: () => void
 
   constructor() {
     super({ key: 'MenuScene' })
@@ -53,12 +55,16 @@ export class MenuScene extends Phaser.Scene {
     // GDPR notice (if not accepted)
     this.showGDPRBannerIfNeeded(width, height)
 
+    // Handle OAuth callback
+    this.handleOAuthCallback()
+
     // Update auth status
     this.updateAuthStatus()
 
     // Listen for auth changes
     authManager.subscribe((state) => {
       this.updateAuthStatus()
+      this.checkConsentAfterOAuth(state)
     })
 
     // Listen for language changes
@@ -187,28 +193,26 @@ export class MenuScene extends Phaser.Scene {
     const overlay = this.add.rectangle(width / 2, height / 2, width, height, 0x000000, 0.8)
     .setInteractive()
 
-    const modal = this.add.rectangle(width / 2, height / 2, width - 40, height - 100, 0xffffff)
+    const modal = this.add.rectangle(width / 2, height / 2 - 20, width - 40, height - 60, 0xffffff)
 
-    const titleText = this.add.text(width / 2, height / 2 - 150, t('menu.howToPlay'), {
+    const titleText = this.add.text(width / 2, height / 2 - 210, t('menu.howToPlay'), {
       fontSize: '20px',
       fontWeight: 'bold',
       color: '#333333'
     }).setOrigin(0.5)
 
     const instructionsText = this.add.text(width / 2, height / 2 - 50, 
-      'Move left and right to catch good bottles (brown)\nand avoid bad bottles (green).\n\n' +
-      'Collect yellow stars for bonus points\nand extra time!\n\n' +
-      'Desktop: Use ← → or A D keys\nMobile: Tap the left/right buttons\n\n' +
-      'You have 3 lives and 60 seconds.\nGood luck!',
+      t('rules.instructions'),
       {
         fontSize: '14px',
         color: '#333333',
         align: 'center',
-        lineSpacing: 5
+        lineSpacing: 5,
+        wordWrap: { width: width - 80, useAdvancedWrap: true }
       }
     ).setOrigin(0.5)
 
-    const closeButton = this.add.text(width / 2, height / 2 + 120, 'Close', {
+    const closeButton = this.add.text(width / 2, height / 2 + 120, t('rules.close'), {
       fontSize: '16px',
       color: '#ffffff',
       backgroundColor: '#28a745',
@@ -230,9 +234,256 @@ export class MenuScene extends Phaser.Scene {
       return
     }
 
-    // Launch profile modal (simplified version)
-    console.log('Profile modal would open here')
-    // TODO: Implement profile editing modal
+    this.showProfileModal()
+  }
+
+  private showProfileModal() {
+    const width = this.cameras.main.width
+    const height = this.cameras.main.height
+    const authState = authManager.getState()
+
+    // Create modal overlay
+    const overlay = this.add.rectangle(width / 2, height / 2, width, height, 0x000000, 0.8)
+    .setInteractive()
+
+    const modal = this.add.rectangle(width / 2, height / 2, width - 40, 300, 0xffffff)
+    modal.setStrokeStyle(2, 0x007bff)
+
+    // Title
+    const titleText = this.add.text(width / 2, height / 2 - 120, t('profile.title'), {
+      fontSize: '20px',
+      fontWeight: 'bold',
+      color: '#333333'
+    }).setOrigin(0.5)
+
+    // Current nickname display
+    const currentNickname = authState.profile?.username || t('leaderboard.anonymous')
+    const currentNicknameText = this.add.text(width / 2, height / 2 - 80, `Current: ${currentNickname}`, {
+      fontSize: '14px',
+      color: '#666666'
+    }).setOrigin(0.5)
+
+    // Nickname input
+    const inputBg = this.add.rectangle(width / 2, height / 2 - 30, 250, 40, 0xf8f9fa)
+    inputBg.setStrokeStyle(1, 0xdee2e6)
+
+    // Create HTML input for nickname
+    const inputElement = document.createElement('input')
+    inputElement.type = 'text'
+    inputElement.placeholder = t('profile.nickname')
+    inputElement.value = authState.profile?.username || ''
+    inputElement.maxLength = 20
+    
+    // Get canvas position for correct placement
+    const canvasElement = this.game.canvas
+    const canvasRect = canvasElement.getBoundingClientRect()
+    
+    inputElement.style.cssText = `
+      position: absolute;
+      left: ${canvasRect.left + width / 2 - 125}px;
+      top: ${canvasRect.top + height / 2 - 50}px;
+      width: 250px;
+      height: 40px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      padding: 0 10px;
+      font-size: 16px;
+      z-index: 10001;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    `
+    document.body.appendChild(inputElement)
+    
+    // Disable Phaser keyboard input when focusing on HTML input
+    const originalKeyboardEnabled = this.input.keyboard?.enabled
+    
+    inputElement.addEventListener('focus', () => {
+      ;(window as any).managePhaserKeyboard?.disable()
+    })
+    
+    inputElement.addEventListener('blur', () => {
+      ;(window as any).managePhaserKeyboard?.enable()
+    })
+    
+    // Prevent event propagation for common game keys
+    inputElement.addEventListener('keydown', (e) => {
+      // Stop Phaser from receiving WASD and arrow key events
+      if (['KeyW', 'KeyA', 'KeyS', 'KeyD', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.code)) {
+        e.stopPropagation()
+      }
+    })
+    
+    inputElement.focus()
+
+    // Nickname availability indicator
+    const availabilityIndicator = this.add.text(width / 2, height / 2 - 5, '', {
+      fontSize: '12px',
+      color: '#666666'
+    }).setOrigin(0.5)
+
+    // Real-time nickname availability check
+    let checkTimeout: NodeJS.Timeout
+    inputElement.addEventListener('input', () => {
+      clearTimeout(checkTimeout)
+      const currentNickname = inputElement.value.trim()
+      
+      if (!currentNickname) {
+        availabilityIndicator.setText('')
+        return
+      }
+
+      const validatedNickname = this.validateNickname(currentNickname)
+      if (!validatedNickname) {
+        availabilityIndicator.setText('❌ Invalid nickname')
+        availabilityIndicator.setColor('#dc3545')
+        return
+      }
+
+      if (validatedNickname === authState.profile?.username) {
+        availabilityIndicator.setText('✅ Current nickname')
+        availabilityIndicator.setColor('#28a745')
+        return
+      }
+
+      availabilityIndicator.setText('⏳ Checking availability...')
+      availabilityIndicator.setColor('#ffc107')
+
+      // Debounce the API call
+      checkTimeout = setTimeout(async () => {
+        try {
+          const { profileService } = await import('@/net/supabaseClient')
+          const isAvailable = await profileService.checkNicknameAvailability(validatedNickname, authState.user?.id)
+          
+          if (isAvailable) {
+            availabilityIndicator.setText('✅ Available')
+            availabilityIndicator.setColor('#28a745')
+          } else {
+            availabilityIndicator.setText('❌ Already taken')
+            availabilityIndicator.setColor('#dc3545')
+          }
+        } catch (error) {
+          availabilityIndicator.setText('⚠️ Check failed')
+          availabilityIndicator.setColor('#ffc107')
+        }
+      }, 500) // Wait 500ms after user stops typing
+    })
+
+    // Save button
+    const saveButton = this.add.text(width / 2 - 60, height / 2 + 30, t('profile.save'), {
+      fontSize: '16px',
+      color: '#ffffff',
+      backgroundColor: '#28a745',
+      padding: { x: 20, y: 10 }
+    })
+    .setOrigin(0.5)
+    .setInteractive({ useHandCursor: true })
+    .on('pointerdown', async () => {
+      const newNickname = inputElement.value.trim()
+      
+      if (newNickname && newNickname !== authState.profile?.username) {
+        try {
+          // Apply same validation as registration
+          const validatedNickname = this.validateNickname(newNickname)
+          
+          if (!validatedNickname) {
+            alert('Nickname contains inappropriate content or is too short')
+            return
+          }
+
+          // Check nickname availability
+          console.log('🔍 Checking nickname availability:', validatedNickname)
+          const { profileService } = await import('@/net/supabaseClient')
+          const isAvailable = await profileService.checkNicknameAvailability(validatedNickname, authState.user?.id)
+          
+          if (!isAvailable) {
+            alert(`The nickname "${validatedNickname}" is already taken. Please choose another one.`)
+            return
+          }
+
+          console.log('✅ Nickname is available, updating profile...')
+          await authManager.updateProfile({ username: validatedNickname })
+          alert(t('profile.saved'))
+          
+          // Close modal
+          this.closeModal()
+          
+        } catch (error) {
+          console.error('Error updating nickname:', error)
+          alert('Error updating nickname')
+        }
+      } else {
+        this.closeModal()
+      }
+    })
+
+    // Cancel/Close button
+    const closeButton = this.add.text(width / 2 + 60, height / 2 + 30, t('rules.close'), {
+      fontSize: '16px',
+      color: '#ffffff', 
+      backgroundColor: '#6c757d',
+      padding: { x: 20, y: 10 }
+    })
+    .setOrigin(0.5)
+    .setInteractive({ useHandCursor: true })
+    .on('pointerdown', () => this.closeModal())
+
+    // Store cleanup function
+    this.profileModalCleanup = () => {
+      // Re-enable keyboard input when modal closes
+      ;(window as any).managePhaserKeyboard?.enable()
+      
+      // Clear any pending timeout
+      if (checkTimeout) {
+        clearTimeout(checkTimeout)
+      }
+      
+      inputElement.remove()
+      overlay.destroy()
+      modal.destroy()
+      titleText.destroy()
+      currentNicknameText.destroy()
+      inputBg.destroy()
+      availabilityIndicator.destroy()
+      saveButton.destroy()
+      closeButton.destroy()
+    }
+
+    const closeModal = () => {
+      if (this.profileModalCleanup) {
+        this.profileModalCleanup()
+        this.profileModalCleanup = null
+      }
+    }
+
+    this.closeModal = closeModal
+  }
+
+  private validateNickname(nickname: string): string | null {
+    // Same validation as AuthModal
+    if (nickname.length > 20) {
+      nickname = nickname.substring(0, 20)
+    }
+    
+    const badWords = [
+      'merda', 'cazzo', 'puttana', 'stronzo', 'vaffanculo',
+      'shit', 'fuck', 'bitch', 'asshole', 'damn',
+      'nazi', 'hitler', 'fascist', 'terrorist'
+    ]
+    
+    const lowerNickname = nickname.toLowerCase()
+    for (const badWord of badWords) {
+      if (lowerNickname.includes(badWord)) {
+        return null
+      }
+    }
+    
+    nickname = nickname.replace(/[^a-zA-Z0-9\s_-]/g, '')
+    nickname = nickname.trim()
+    
+    if (nickname.length < 2) {
+      return null
+    }
+    
+    return nickname
   }
 
   private toggleAudio() {
@@ -357,6 +608,49 @@ export class MenuScene extends Phaser.Scene {
         // Clear the stored prompt
         ;(window as any).deferredPrompt = null
       })
+    }
+  }
+
+  private handleOAuthCallback() {
+    // Check if we're returning from OAuth
+    const hash = window.location.hash
+    const url = window.location.href
+    
+    console.log('🔍 Current URL:', url)
+    console.log('🔍 Hash:', hash)
+    
+    if (hash.includes('access_token')) {
+      console.log('🔑 OAuth tokens detected in URL!')
+      console.log('⏳ Waiting for Supabase to process tokens...')
+      
+      // Wait for Supabase to process the tokens, then clean URL
+      setTimeout(() => {
+        console.log('🧹 Cleaning URL after token processing...')
+        window.history.replaceState(null, '', window.location.pathname)
+      }, 1500) // Reduced timeout to prevent loops
+      
+    } else if (hash.includes('auth-callback') || hash.includes('#')) {
+      console.log('🔄 OAuth callback detected, cleaning URL immediately')
+      // Clean URL immediately for any auth-related hash
+      window.history.replaceState(null, '', window.location.pathname)
+      console.log('✅ URL cleaned')
+    }
+  }
+
+  private checkConsentAfterOAuth(authState: any) {
+    console.log('🔍 Auth state check:', {
+      isAuthenticated: authState.isAuthenticated,
+      isLoading: authState.isLoading,
+      hasMarketingConsent: authState.hasMarketingConsent,
+      userEmail: authState.user?.email,
+      profile: authState.profile
+    })
+    
+    // Don't automatically show consent modal - user will trigger it by clicking Play
+    if (authState.isAuthenticated && authState.hasMarketingConsent) {
+      console.log('✅ User is fully authenticated and has consent!')
+    } else if (authState.isAuthenticated && !authState.hasMarketingConsent) {
+      console.log('⚠️ User authenticated but needs consent - will be handled on Play button click')
     }
   }
 }

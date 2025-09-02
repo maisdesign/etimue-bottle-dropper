@@ -7,6 +7,7 @@ export class BootScene extends Phaser.Scene {
   }
 
   preload() {
+    console.log('🥾 BootScene preload started')
     // Create loading bar
     const width = this.cameras.main.width
     const height = this.cameras.main.height
@@ -90,6 +91,7 @@ export class BootScene extends Phaser.Scene {
   }
 
   create() {
+    console.log('🥾 BootScene create started')
     // Set up initial game state
     this.registry.set('gameSettings', {
       audioEnabled: localStorage.getItem('audio-enabled') === 'true',
@@ -112,6 +114,7 @@ export class BootScene extends Phaser.Scene {
 
     // Transition to PreloadScene after a brief delay
     this.time.delayedCall(1500, () => {
+      console.log('🥾 BootScene transitioning to PreloadScene')
       this.scene.start('PreloadScene')
     })
   }

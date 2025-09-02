@@ -46,25 +46,71 @@ const config: Phaser.Types.Core.GameConfig = {
 
 // Initialize game after auth is ready
 async function initGame() {
-  // Wait for auth to be ready
+  console.log('🎮 Starting game initialization...')
+  console.log('📋 Auth ready status:', authManager.isReady())
+  console.log('📊 Current auth state:', authManager.getState())
+  
+  // Wait for auth to be ready with timeout
   if (!authManager.isReady()) {
-    await new Promise<void>(resolve => {
+    console.log('⏳ Waiting for auth to be ready...')
+    
+    const authReadyPromise = new Promise<void>(resolve => {
       const unsubscribe = authManager.subscribe(state => {
+        console.log('🔄 Auth state update in initGame:', {
+          isLoading: state.isLoading,
+          isAuthenticated: state.isAuthenticated,
+          email: state.user?.email
+        })
         if (!state.isLoading) {
+          console.log('✅ Auth is ready, starting Phaser game!')
           unsubscribe()
           resolve()
         }
       })
     })
+    
+    const timeoutPromise = new Promise<void>(resolve => {
+      setTimeout(() => {
+        console.log('⚠️ Auth timeout reached, starting game anyway...')
+        resolve()
+      }, 10000) // 10 second timeout
+    })
+    
+    await Promise.race([authReadyPromise, timeoutPromise])
+  } else {
+    console.log('✅ Auth already ready, starting Phaser game!')
   }
 
   // Create Phaser game
+  console.log('🚀 Creating Phaser game...')
   const game = new Phaser.Game(config)
   
   // Make game globally accessible for debugging
   ;(window as any).game = game
   ;(window as any).authManager = authManager
   ;(window as any).i18n = i18n
+  
+  // Global function to manage Phaser keyboard conflicts with HTML inputs
+  ;(window as any).managePhaserKeyboard = {
+    disable: () => {
+      console.log('🎹 Globally disabling Phaser keyboard')
+      const scenes = game.scene.getScenes()
+      scenes.forEach(scene => {
+        if (scene.input && scene.input.keyboard) {
+          scene.input.keyboard.enabled = false
+        }
+      })
+    },
+    enable: () => {
+      console.log('🎹 Globally enabling Phaser keyboard') 
+      const scenes = game.scene.getScenes()
+      scenes.forEach(scene => {
+        if (scene.input && scene.input.keyboard) {
+          scene.input.keyboard.enabled = true
+        }
+      })
+    }
+  }
   
   return game
 }

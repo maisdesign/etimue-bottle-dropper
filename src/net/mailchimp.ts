@@ -28,11 +28,9 @@ class MailchimpService {
   }
 
   /**
-   * Subscribe user to Mailchimp list
-   * In production, this should call a serverless function that handles the API call
+   * Subscribe user to Mailchimp list via Supabase Edge Function
    */
   async subscribe(request: MailchimpSubscribeRequest): Promise<MailchimpResponse> {
-    // Mock implementation for development
     if (!request.consent) {
       return {
         success: false,
@@ -41,25 +39,39 @@ class MailchimpService {
     }
 
     try {
-      // In production, replace this with a call to your serverless function
-      // Example: await fetch('/api/mailchimp-subscribe', { method: 'POST', body: JSON.stringify(request) })
+      console.log('📧 Mailchimp subscription request:', request.email)
       
-      console.log('Mailchimp subscription request:', request)
+      // Call Supabase Edge Function for Mailchimp subscription
+      const { supabase } = await import('./supabaseClient')
       
-      // Simulate API call delay
-      await new Promise(resolve => setTimeout(resolve, 1000))
-      
-      // Mock successful response
+      const { data, error } = await supabase.functions.invoke('mailchimp-subscribe', {
+        body: {
+          email: request.email,
+          firstName: request.firstName,
+          lastName: request.lastName,
+          consent: request.consent
+        }
+      })
+
+      if (error) {
+        console.error('❌ Mailchimp edge function error:', error)
+        return {
+          success: false,
+          error: error.message || 'Failed to subscribe to newsletter'
+        }
+      }
+
+      console.log('✅ Mailchimp subscription result:', data)
       return {
         success: true,
-        message: 'Successfully subscribed to newsletter'
+        message: data?.message || 'Successfully subscribed to newsletter'
       }
       
     } catch (error) {
-      console.error('Mailchimp subscription error:', error)
+      console.error('❌ Mailchimp subscription error:', error)
       return {
         success: false,
-        error: 'Failed to subscribe to newsletter'
+        error: 'Network error - failed to subscribe to newsletter'
       }
     }
   }

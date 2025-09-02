@@ -182,24 +182,38 @@ export class PreloadScene extends Phaser.Scene {
   private loadRealAssets() {
     // Try to load real assets if they exist, fallback to generated ones
     
+    // Suppress error logging for missing optional assets
+    const originalConsoleError = console.error
+    let suppressErrors = false
+    console.error = function(...args: any[]) {
+      if (suppressErrors && (args[0]?.includes?.('Failed to process file') || args[0]?.includes?.('Unable to decode audio'))) {
+        return // Suppress asset loading errors
+      }
+      originalConsoleError.apply(console, args)
+    }
+    
+    suppressErrors = true
+    
     // Player mascotte
     this.load.image('player_real', '/assets/player.png')
     this.load.on('filecomplete-image-player_real', () => {
-      // Replace generated sprite with real one
+      console.log('✅ Loaded real player sprite')
       this.textures.remove('player')
       this.textures.addImage('player', this.textures.get('player_real').source[0].image)
     })
 
-    // Bottles
+    // Bottles  
     this.load.image('bottle_craft_real', '/assets/bottle_craft.png')
     this.load.image('bottle_industrial_real', '/assets/bottle_industrial_green.png')
     
     this.load.on('filecomplete-image-bottle_craft_real', () => {
+      console.log('✅ Loaded real craft bottle sprite')
       this.textures.remove('bottle_craft')
       this.textures.addImage('bottle_craft', this.textures.get('bottle_craft_real').source[0].image)
     })
     
     this.load.on('filecomplete-image-bottle_industrial_real', () => {
+      console.log('✅ Loaded real industrial bottle sprite')
       this.textures.remove('bottle_industrial_green')
       this.textures.addImage('bottle_industrial_green', this.textures.get('bottle_industrial_real').source[0].image)
     })
@@ -207,6 +221,7 @@ export class PreloadScene extends Phaser.Scene {
     // Power-up
     this.load.image('powerup_real', '/assets/powerup_star.png')
     this.load.on('filecomplete-image-powerup_real', () => {
+      console.log('✅ Loaded real powerup sprite')
       this.textures.remove('powerup_star')
       this.textures.addImage('powerup_star', this.textures.get('powerup_real').source[0].image)
     })
@@ -216,6 +231,22 @@ export class PreloadScene extends Phaser.Scene {
     this.load.audio('pickup_good_real', '/assets/pickup.wav')
     this.load.audio('pickup_bad_real', '/assets/hit.wav')
     this.load.audio('powerup_real', '/assets/powerup.wav')
+    
+    // Audio success handlers
+    this.load.on('filecomplete-audio-music_real', () => {
+      console.log('✅ Loaded real background music')
+    })
+    
+    this.load.on('filecomplete-audio-pickup_good_real', () => {
+      console.log('✅ Loaded real pickup sound')
+    })
+    
+    // Restore console.error after loading
+    this.load.on('complete', () => {
+      suppressErrors = false
+      console.error = originalConsoleError
+      console.log('📦 Asset loading complete - using generated sprites and silent audio as fallbacks')
+    })
   }
 
   create() {

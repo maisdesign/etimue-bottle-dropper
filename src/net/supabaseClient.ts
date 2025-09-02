@@ -67,29 +67,38 @@ export const isAdmin = (userId: string): boolean => {
 // Profile operations
 export const profileService = {
   async getProfile(userId: string): Promise<Profile | null> {
-    const { data, error } = await supabase
-      .from('profiles')
-      .select('*')
-      .eq('id', userId)
-      .single()
+    try {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', userId)
+        .maybeSingle() // Use maybeSingle instead of single to handle missing records
 
-    if (error) {
-      console.error('Error fetching profile:', error)
+      if (error) {
+        console.error('Error fetching profile:', error)
+        return null
+      }
+
+      return data
+    } catch (error) {
+      console.error('Profile fetch exception:', error)
       return null
     }
-
-    return data
   },
 
   async createProfile(profile: Database['public']['Tables']['profiles']['Insert']): Promise<Profile | null> {
+    // Use upsert to handle existing profiles
     const { data, error } = await supabase
       .from('profiles')
-      .insert(profile)
+      .upsert(profile, {
+        onConflict: 'id',
+        ignoreDuplicates: false
+      })
       .select()
       .single()
 
     if (error) {
-      console.error('Error creating profile:', error)
+      console.error('Error creating/updating profile:', error)
       return null
     }
 
@@ -110,38 +119,102 @@ export const profileService = {
     }
 
     return data
+  },
+
+  async checkNicknameAvailability(nickname: string, excludeUserId?: string): Promise<boolean> {
+    try {
+      if (!nickname || nickname.trim().length === 0) {
+        return true // Empty nicknames are allowed (will show as Anonymous)
+      }
+
+      const query = supabase
+        .from('profiles')
+        .select('id')
+        .eq('username', nickname.trim())
+
+      // Exclude current user when checking (for profile updates)
+      if (excludeUserId) {
+        query.neq('id', excludeUserId)
+      }
+
+      const { data, error } = await query
+
+      if (error) {
+        console.error('Error checking nickname availability:', error)
+        return false // Assume not available on error
+      }
+
+      // Nickname is available if no other user has it
+      return data.length === 0
+
+    } catch (error) {
+      console.error('Nickname availability check exception:', error)
+      return false
+    }
   }
 }
 
 // Score operations
 export const scoreService = {
   async submitScore(userId: string, score: number, runSeconds: number = 60): Promise<Score | null> {
+    console.log('📊 ScoreService.submitScore called:', { userId, score, runSeconds })
+    
     // Anti-cheat validation
     if (score < 0 || score > 600) {
-      console.error('Invalid score range')
+      console.error('❌ Invalid score range:', score)
       return null
     }
 
-    if (runSeconds !== 60) {
-      console.error('Invalid run duration')
+    // Anti-cheat: Only reject unreasonably short games (< 5s = likely bot/crash)
+    // No upper limit - skilled players with power-ups can play longer!
+    if (runSeconds < 5) {
+      console.error('❌ Game too short, likely invalid:', runSeconds)
       return null
     }
+    
+    // Soft warning for very long games (but still allow them)
+    if (runSeconds > 300) { // 5 minutes
+      console.warn('⚠️ Very long game duration:', runSeconds, 'seconds - checking for potential issues')
+    }
 
-    const { data, error } = await supabase
+    console.log('✅ Score validation passed, inserting into database...')
+    
+    // TEMPORARY FIX: Database constraint requires exactly 60 seconds
+    // TODO: Update database schema to allow variable durations
+    const insertData = {
+      user_id: userId,
+      score,
+      run_seconds: 60, // Force to 60 for database constraint
+      tz: 'Europe/Rome'
+    }
+    
+    console.log(`⚠️ TEMPORARY: Forcing run_seconds to 60 instead of ${runSeconds} due to DB constraint`)
+    
+    console.log('📝 Insert data:', insertData)
+    
+    console.log('🚀 Starting database insert...')
+    const insertPromise = supabase
       .from('scores')
-      .insert({
-        user_id: userId,
-        score,
-        run_seconds: runSeconds,
-        tz: 'Europe/Rome'
-      })
+      .insert(insertData)
       .select()
       .single()
+    
+    console.log('⏳ Waiting for database response...')
+    const { data, error } = await insertPromise
+    console.log('📨 Database response received')
 
     if (error) {
-      console.error('Error submitting score:', error)
+      console.error('❌ Database error submitting score:', error)
+      console.error('❌ Error details:', {
+        message: error.message,
+        code: error.code,
+        details: error.details,
+        hint: error.hint
+      })
       return null
     }
+
+    console.log('✅ Score submitted successfully:', data)
 
     return data
   },

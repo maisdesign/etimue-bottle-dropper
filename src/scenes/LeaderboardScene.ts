@@ -30,6 +30,7 @@ export class LeaderboardScene extends Phaser.Scene {
   private maxScroll: number = 0
   private isDragging: boolean = false
   private lastPointerY: number = 0
+  private listY: number = 160
 
   constructor() {
     super({ key: 'LeaderboardScene' })
@@ -118,12 +119,12 @@ export class LeaderboardScene extends Phaser.Scene {
 
   private createScrollableList(width: number, height: number) {
     // Container for scrollable content
-    const listY = 160
-    const listHeight = height - 220
+    this.listY = 180  // Moved down to avoid tab overlap
+    const listHeight = height - 240
 
     // Mask for scrollable area
     const maskShape = this.make.graphics({})
-    maskShape.fillRect(20, listY, width - 40, listHeight)
+    maskShape.fillRect(20, this.listY, width - 40, listHeight)
     const mask = maskShape.createGeometryMask()
 
     // Scroll container
@@ -131,24 +132,24 @@ export class LeaderboardScene extends Phaser.Scene {
     this.scrollContainer.setMask(mask)
 
     // Leaderboard container
-    this.leaderboardContainer = this.add.container(0, listY)
+    this.leaderboardContainer = this.add.container(0, this.listY)
     this.scrollContainer.add(this.leaderboardContainer)
 
     // Loading text
-    this.loadingText = this.add.text(width / 2, listY + 50, 'Loading...', {
+    this.loadingText = this.add.text(width / 2, this.listY + 50, 'Loading...', {
       fontSize: '16px',
       color: '#666666'
     }).setOrigin(0.5)
 
     // Error text
-    this.errorText = this.add.text(width / 2, listY + 50, '', {
+    this.errorText = this.add.text(width / 2, this.listY + 50, '', {
       fontSize: '14px',
       color: '#dc3545',
       align: 'center'
     }).setOrigin(0.5).setVisible(false)
 
     // Header row
-    this.createHeaderRow(width, listY)
+    this.createHeaderRow(width, this.listY)
   }
 
   private createHeaderRow(width: number, listY: number) {
@@ -156,7 +157,8 @@ export class LeaderboardScene extends Phaser.Scene {
     const headerBg = this.add.rectangle(width / 2, headerY, width - 40, 30, 0xf8f9fa)
     headerBg.setStrokeStyle(1, 0xdee2e6)
 
-    this.add.text(40, headerY, t('leaderboard.position'), {
+    // Better column alignment
+    this.add.text(60, headerY, t('leaderboard.position'), {
       fontSize: '12px',
       fontWeight: 'bold',
       color: '#495057'
@@ -168,7 +170,7 @@ export class LeaderboardScene extends Phaser.Scene {
       color: '#495057'
     }).setOrigin(0.5, 0.5)
 
-    this.add.text(width - 60, headerY, t('leaderboard.score'), {
+    this.add.text(width - 40, headerY, t('leaderboard.score'), {
       fontSize: '12px',
       fontWeight: 'bold',
       color: '#495057'
@@ -224,12 +226,30 @@ export class LeaderboardScene extends Phaser.Scene {
   private async loadLeaderboard() {
     if (this.isLoading) return
 
+    // Check if user is authenticated
+    const authState = authManager.getState()
+    if (!authState.isAuthenticated) {
+      console.log('⚠️ User not authenticated, showing login message')
+      this.leaderboardContainer.removeAll(true)
+      this.leaderboardContainer.add(
+        this.add.text(this.cameras.main.width / 2, 50, 'Please login to view leaderboard', {
+          fontSize: '16px',
+          color: '#666666'
+        }).setOrigin(0.5)
+      )
+      this.loadingText.setVisible(false)
+      this.errorText.setVisible(false)
+      return
+    }
+
     this.isLoading = true
     this.loadingText.setVisible(true)
     this.errorText.setVisible(false)
     this.refreshButton.setAlpha(0.5)
 
     try {
+      console.log('🔄 Loading leaderboard for period:', this.currentPeriod)
+      
       // Clear existing data
       this.leaderboardContainer.removeAll(true)
       this.scrollY = 0
@@ -237,16 +257,24 @@ export class LeaderboardScene extends Phaser.Scene {
       let data: LeaderboardEntry[]
       
       if (this.currentPeriod === 'weekly') {
+        console.log('📅 Fetching weekly leaderboard...')
         data = await scoreService.getWeeklyLeaderboard(50)
       } else {
+        console.log('📅 Fetching monthly leaderboard...')
         data = await scoreService.getMonthlyLeaderboard(50)
       }
 
+      console.log('✅ Leaderboard data received:', data.length, 'entries')
       this.leaderboardData = data
       this.renderLeaderboard()
 
-    } catch (error) {
-      console.error('Failed to load leaderboard:', error)
+    } catch (error: any) {
+      console.error('❌ Failed to load leaderboard:', error)
+      console.error('❌ Error details:', {
+        message: error.message,
+        stack: error.stack,
+        name: error.name
+      })
       this.errorText.setText(t('errors.networkError') + '\nTap refresh to try again')
       this.errorText.setVisible(true)
     } finally {
@@ -273,7 +301,7 @@ export class LeaderboardScene extends Phaser.Scene {
     const currentUserId = authState.user?.id
 
     this.leaderboardData.forEach((entry, index) => {
-      const y = index * 40
+      const y = 18 + (index * 40) // Start with small offset from container origin
       const isCurrentUser = entry.user_id === currentUserId
       
       // Background for alternating rows
@@ -284,35 +312,35 @@ export class LeaderboardScene extends Phaser.Scene {
         rowBg.setStrokeStyle(2, 0xffc107)
       }
 
-      // Position
-      const positionText = this.add.text(40, y, `#${index + 1}`, {
-        fontSize: '14px',
-        fontWeight: isCurrentUser ? 'bold' : 'normal',
-        color: index < 3 ? '#ffc107' : '#495057'
-      }).setOrigin(0, 0.5)
+      // Position (trophy for top 3, number for others)
+      let positionText
+      if (index < 3) {
+        const trophyEmojis = ['🥇', '🥈', '🥉']
+        positionText = this.add.text(60, y, trophyEmojis[index], {
+          fontSize: '16px'
+        }).setOrigin(0, 0.5)
+      } else {
+        positionText = this.add.text(60, y, `#${index + 1}`, {
+          fontSize: '14px',
+          fontWeight: isCurrentUser ? 'bold' : 'normal',
+          color: '#495057'
+        }).setOrigin(0, 0.5)
+      }
 
-      // Username
-      const displayName = entry.username || 'Anonymous'
+      // Username (centered)
+      const displayName = entry.username || t('leaderboard.anonymous')
       const usernameText = this.add.text(width / 2, y, displayName, {
         fontSize: '14px',
         fontWeight: isCurrentUser ? 'bold' : 'normal',
         color: isCurrentUser ? '#856404' : '#495057'
       }).setOrigin(0.5, 0.5)
 
-      // Score
-      const scoreText = this.add.text(width - 60, y, entry.score.toString(), {
+      // Score (aligned with header)
+      const scoreText = this.add.text(width - 40, y, entry.score.toString(), {
         fontSize: '14px',
         fontWeight: 'bold',
         color: isCurrentUser ? '#856404' : '#28a745'
       }).setOrigin(1, 0.5)
-
-      // Trophy icons for top 3
-      if (index < 3) {
-        const trophyEmojis = ['🥇', '🥈', '🥉']
-        this.add.text(20, y, trophyEmojis[index], {
-          fontSize: '14px'
-        }).setOrigin(0, 0.5)
-      }
 
       this.leaderboardContainer.add([rowBg, positionText, usernameText, scoreText])
     })
@@ -342,7 +370,7 @@ export class LeaderboardScene extends Phaser.Scene {
 
       const deltaY = pointer.y - this.lastPointerY
       this.scrollY = Phaser.Math.Clamp(this.scrollY + deltaY, -this.maxScroll, 0)
-      this.leaderboardContainer.y = 160 + this.scrollY
+      this.leaderboardContainer.y = this.listY + this.scrollY
       this.lastPointerY = pointer.y
     })
 
@@ -353,18 +381,18 @@ export class LeaderboardScene extends Phaser.Scene {
     // Mouse wheel
     this.input.on('wheel', (pointer: any, gameObjects: any, deltaX: number, deltaY: number) => {
       this.scrollY = Phaser.Math.Clamp(this.scrollY - deltaY * 0.5, -this.maxScroll, 0)
-      this.leaderboardContainer.y = 160 + this.scrollY
+      this.leaderboardContainer.y = this.listY + this.scrollY
     })
 
     // Keyboard scrolling
     this.input.keyboard?.on('keydown-UP', () => {
       this.scrollY = Phaser.Math.Clamp(this.scrollY + 20, -this.maxScroll, 0)
-      this.leaderboardContainer.y = 160 + this.scrollY
+      this.leaderboardContainer.y = this.listY + this.scrollY
     })
 
     this.input.keyboard?.on('keydown-DOWN', () => {
       this.scrollY = Phaser.Math.Clamp(this.scrollY - 20, -this.maxScroll, 0)
-      this.leaderboardContainer.y = 160 + this.scrollY
+      this.leaderboardContainer.y = this.listY + this.scrollY
     })
   }
 

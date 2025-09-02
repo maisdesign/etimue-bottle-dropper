@@ -41,11 +41,14 @@
     "score": "Punteggio",
     "date": "Data",
     "noData": "Nessun dato disponibile",
-    "yourBest": "Il tuo migliore: {{score}}"
+    "yourBest": "Il tuo migliore: {{score}}",
+    "anonymous": "Anonimo"
   },
   "profile": {
     "title": "Profilo",
     "username": "Nome utente",
+    "nickname": "Nickname (max 20 caratteri)",
+    "setupProfile": "Imposta il tuo profilo",
     "whatsapp": "WhatsApp",
     "instagram": "Instagram",
     "save": "Salva",
@@ -57,6 +60,11 @@
     "howToPlay": "Come si gioca",
     "privacy": "Privacy",
     "terms": "Termini"
+  },
+  "rules": {
+    "title": "Come si gioca",
+    "instructions": "Muoviti a sinistra e destra per acchiappare le bottiglie giuste (marrone)\ne evita quelle sbagliate (verde).\n\nRaccogli le stelle gialle per punti bonus\ne tempo extra!\n\nDesktop: Usa i tasti ← → o A D\nMobile: Tocca i pulsanti sinistra/destra\n\nHai 3 vite e 60 secondi.\nBuona fortuna!",
+    "close": "Chiudi"
   },
   "gdpr": {
     "cookieBanner": "Questo sito utilizza cookie per migliorare l'esperienza utente. Continuando la navigazione accetti l'uso dei cookie.",

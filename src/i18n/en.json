@@ -1,6 +1,6 @@
 {
   "game": {
-    "title": "Etimüè Bottle Dropper",
+    "title": "Etimuè Bottle Dropper",
     "start": "START",
     "play": "PLAY",
     "pause": "PAUSE",
@@ -41,11 +41,14 @@
     "score": "Score",
     "date": "Date",
     "noData": "No data available",
-    "yourBest": "Your best: {{score}}"
+    "yourBest": "Your best: {{score}}",
+    "anonymous": "Anonymous"
   },
   "profile": {
     "title": "Profile",
     "username": "Username",
+    "nickname": "Nickname (max 20 chars)",
+    "setupProfile": "Setup your profile",
     "whatsapp": "WhatsApp", 
     "instagram": "Instagram",
     "save": "Save",
@@ -57,6 +60,11 @@
     "howToPlay": "How to Play",
     "privacy": "Privacy",
     "terms": "Terms"
+  },
+  "rules": {
+    "title": "How to Play",
+    "instructions": "Move left and right to catch good bottles (brown)\nand avoid bad bottles (green).\n\nCollect yellow stars for bonus points\nand extra time!\n\nDesktop: Use ← → or A D keys\nMobile: Tap the left/right buttons\n\nYou have 3 lives and 60 seconds.\nGood luck!",
+    "close": "Close"
   },
   "gdpr": {
     "cookieBanner": "This site uses cookies to improve user experience. By continuing to browse you accept the use of cookies.",

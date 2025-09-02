@@ -170,30 +170,45 @@ export class GameOverScene extends Phaser.Scene {
   }
 
   private async submitScore() {
+    console.log('🎯 INVIA PUNTEGGIO clicked!')
+    
     if (this.scoreSubmitted) {
+      console.log('📊 Score already submitted, showing leaderboard')
       this.showLeaderboard()
       return
     }
 
     const authState = authManager.getState()
+    console.log('🔍 Auth state:', {
+      isAuthenticated: authState.isAuthenticated,
+      hasUser: !!authState.user,
+      hasMarketingConsent: authState.hasMarketingConsent,
+      userEmail: authState.user?.email
+    })
     
     // Check authentication
     if (!authState.isAuthenticated || !authState.user) {
+      console.log('❌ User not authenticated, showing auth modal')
       // Show auth modal
       try {
         await authManager.showAuthModal()
         // After auth, retry submission
+        console.log('🔄 Retrying submission after auth')
         this.submitScore()
       } catch (error) {
+        console.error('❌ Authentication failed:', error)
         this.submitStatus.setText('Authentication failed')
       }
       return
     }
 
     if (!authState.hasMarketingConsent) {
+      console.log('❌ No marketing consent')
       this.submitStatus.setText('Newsletter subscription required to submit scores')
       return
     }
+
+    console.log('✅ All checks passed, submitting score:', this.gameData.score)
 
     try {
       this.submitStatus.setText('Submitting score...')
@@ -204,11 +219,18 @@ export class GameOverScene extends Phaser.Scene {
         throw new Error('Invalid score data')
       }
 
-      const result = await scoreService.submitScore(
+      // Add timeout to prevent infinite loading
+      const submitPromise = scoreService.submitScore(
         authState.user.id,
         this.gameData.score,
-        60 // Always 60 seconds for now
+        this.gameData.actualDuration
       )
+      
+      const timeoutPromise = new Promise<null>((_, reject) => {
+        setTimeout(() => reject(new Error('Submit timeout after 15 seconds')), 15000)
+      })
+      
+      const result = await Promise.race([submitPromise, timeoutPromise])
 
       if (result) {
         this.scoreSubmitted = true
@@ -236,9 +258,16 @@ export class GameOverScene extends Phaser.Scene {
       return false
     }
 
-    if (this.gameData.actualDuration < 50 || this.gameData.actualDuration > 70) {
-      console.warn('Invalid game duration:', this.gameData.actualDuration)
+    // Anti-cheat: Only reject very short games (likely crashes or bots)
+    // No upper limit - skilled players deserve their high scores!
+    if (this.gameData.actualDuration < 5) {
+      console.warn('Game too short, likely invalid:', this.gameData.actualDuration)
       return false
+    }
+    
+    // Log very long games for monitoring (but don't reject them)
+    if (this.gameData.actualDuration > 180) { // 3 minutes
+      console.info('🏆 Impressive game duration:', this.gameData.actualDuration, 'seconds!')
     }
 
     // Check for impossible scores (more than 10 points per second sustained)

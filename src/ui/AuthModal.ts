@@ -6,6 +6,7 @@ export class AuthModal {
   private element: HTMLElement
   private isVisible: boolean = false
   private onAuthSuccess?: (user: any) => void
+  private hasCompletedConsent: boolean = false
 
   constructor() {
     this.element = this.createElement()
@@ -53,6 +54,8 @@ export class AuthModal {
                 id="auth-email-input" 
                 placeholder="${t('auth.email')}"
                 class="auth-input"
+                onfocus="window.managePhaserKeyboard?.disable()"
+                onblur="window.managePhaserKeyboard?.enable()"
               >
               <button id="auth-send-otp" class="auth-button auth-button-primary">
                 ${t('auth.signInWithOtp')}
@@ -74,6 +77,8 @@ export class AuthModal {
                 placeholder="000000"
                 class="auth-input auth-input-otp"
                 maxlength="6"
+                onfocus="window.managePhaserKeyboard?.disable()"
+                onblur="window.managePhaserKeyboard?.enable()"
               >
               <button id="auth-verify-otp" class="auth-button auth-button-primary">
                 ${t('auth.verify')}
@@ -85,9 +90,19 @@ export class AuthModal {
           </div>
 
           <div class="auth-step hidden" id="auth-step-consent">
-            <h2>${t('mailchimp.consent')}</h2>
+            <h2>${t('profile.setupProfile')}</h2>
             
             <div class="auth-form">
+              <input 
+                type="text" 
+                id="nickname-input" 
+                placeholder="${t('profile.nickname')}"
+                class="auth-input"
+                maxlength="20"
+                onfocus="window.managePhaserKeyboard?.disable()"
+                onblur="window.managePhaserKeyboard?.enable()"
+              >
+              
               <div class="consent-checkbox">
                 <input type="checkbox" id="marketing-consent" class="auth-checkbox">
                 <label for="marketing-consent">
@@ -374,20 +389,24 @@ export class AuthModal {
   private async signInWithProvider(provider: 'google' | 'apple'): Promise<void> {
     try {
       this.showLoading(true)
+      const redirectUrl = window.location.origin
+      
+      console.log(`🔐 Starting ${provider} OAuth...`)
+      console.log('📍 Redirect URL:', redirectUrl)
       
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider,
         options: {
-          redirectTo: window.location.origin
+          redirectTo: redirectUrl
         }
       })
 
       if (error) throw error
 
-      // OAuth redirect will happen automatically
+      console.log('✅ OAuth request sent, redirect will happen automatically')
       
     } catch (error: any) {
-      console.error('OAuth error:', error)
+      console.error('❌ OAuth error:', error)
       this.showError(error.message || t('errors.authError'))
       this.showLoading(false)
     }
@@ -459,10 +478,31 @@ export class AuthModal {
 
   private async completeAuth(): Promise<void> {
     const consentCheckbox = this.element.querySelector('#marketing-consent') as HTMLInputElement
+    const nicknameInput = this.element.querySelector('#nickname-input') as HTMLInputElement
     
     if (!consentCheckbox.checked) {
       this.showError(t('mailchimp.consentRequired'))
       return
+    }
+
+    // Validate and clean nickname
+    let nickname = nicknameInput.value.trim()
+    if (nickname) {
+      nickname = this.validateNickname(nickname)
+      if (!nickname) {
+        this.showError('Nickname contains inappropriate content')
+        return
+      }
+
+      // Check nickname availability
+      console.log('🔍 Checking nickname availability during registration:', nickname)
+      const { profileService } = await import('@/net/supabaseClient')
+      const isAvailable = await profileService.checkNicknameAvailability(nickname)
+      
+      if (!isAvailable) {
+        this.showError(`The nickname "${nickname}" is already taken. Please choose another one.`)
+        return
+      }
     }
 
     try {
@@ -471,24 +511,42 @@ export class AuthModal {
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) throw new Error('No authenticated user')
 
-      // Update profile with consent
-      await profileService.updateProfile(user.id, {
+      console.log('🔄 Processing consent for user:', user.email)
+
+      // Update profile with consent and nickname with timeout
+      const updatePromise = profileService.updateProfile(user.id, {
+        username: nickname || null,
         consent_marketing: true,
         consent_ts: new Date().toISOString()
       })
 
-      // Subscribe to Mailchimp
-      const subscribeResult = await mailchimpService.subscribe({
+      const timeoutPromise = new Promise((_, reject) =>
+        setTimeout(() => reject(new Error('Profile update timeout')), 10000)
+      )
+
+      await Promise.race([updatePromise, timeoutPromise])
+      console.log('✅ Profile updated successfully')
+
+      // Subscribe to Mailchimp (non-blocking with detailed logging)
+      console.log('🔄 Starting Mailchimp subscription for:', user.email)
+      mailchimpService.subscribe({
         email: user.email!,
+        firstName: user.user_metadata?.name?.split(' ')[0] || '',
+        lastName: user.user_metadata?.name?.split(' ').slice(1).join(' ') || '',
         consent: true
+      }).then(subscribeResult => {
+        console.log('📧 Mailchimp subscription result:', subscribeResult)
+        if (!subscribeResult.success) {
+          console.error('❌ Mailchimp subscription failed:', subscribeResult.error)
+        } else {
+          console.log('✅ Mailchimp subscription successful:', subscribeResult.message)
+        }
+      }).catch(error => {
+        console.error('💥 Mailchimp subscription error (catch block):', error)
       })
 
-      if (!subscribeResult.success) {
-        console.warn('Mailchimp subscription failed:', subscribeResult.error)
-        // Continue anyway - consent is recorded
-      }
-
       this.showLoading(false)
+      this.hasCompletedConsent = true
       this.hide()
 
       // Notify success
@@ -503,6 +561,38 @@ export class AuthModal {
     }
   }
 
+  private validateNickname(nickname: string): string | null {
+    // Basic validation
+    if (nickname.length > 20) {
+      nickname = nickname.substring(0, 20)
+    }
+    
+    // Simple profanity filter (expandable)
+    const badWords = [
+      'merda', 'cazzo', 'puttana', 'stronzo', 'vaffanculo',
+      'shit', 'fuck', 'bitch', 'asshole', 'damn',
+      'nazi', 'hitler', 'fascist', 'terrorist'
+    ]
+    
+    const lowerNickname = nickname.toLowerCase()
+    for (const badWord of badWords) {
+      if (lowerNickname.includes(badWord)) {
+        return null // Reject nickname
+      }
+    }
+    
+    // Remove special characters except letters, numbers, spaces, underscore, dash
+    nickname = nickname.replace(/[^a-zA-Z0-9\s_-]/g, '')
+    
+    // Trim and check if still valid
+    nickname = nickname.trim()
+    if (nickname.length < 2) {
+      return null
+    }
+    
+    return nickname
+  }
+
   private updateTexts(): void {
     // Re-render modal with new translations
     this.element.innerHTML = this.getModalHTML()
@@ -512,7 +602,39 @@ export class AuthModal {
   public show(): void {
     this.isVisible = true
     this.element.classList.remove('hidden')
-    this.showStep('welcome')
+    
+    // Check if user is already authenticated but needs consent
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      if (user) {
+        // Check if user already has marketing consent
+        return profileService.getProfile(user.id).then(profile => {
+          // Fix login loop: Check database state directly, not session state
+          if (profile?.consent_marketing) {
+            console.log('✅ User already has consent - closing auth modal')
+            this.hide()
+            // Notify success to complete the auth flow
+            if (this.onAuthSuccess) {
+              this.onAuthSuccess(user)
+            }
+            return
+          }
+          
+          console.log('📝 User already authenticated, showing consent step')
+          this.showStep('consent')
+          // Pre-fill nickname with user metadata if available
+          const nicknameInput = this.element.querySelector('#nickname-input') as HTMLInputElement
+          if (nicknameInput && user.user_metadata?.name) {
+            nicknameInput.value = user.user_metadata.name
+          }
+        })
+      } else {
+        console.log('🔐 User not authenticated, showing welcome step')
+        this.showStep('welcome')
+      }
+    }).catch(() => {
+      console.log('❌ Error checking user, showing welcome step')
+      this.showStep('welcome')
+    })
   }
 
   public hide(): void {
@@ -525,6 +647,7 @@ export class AuthModal {
   }
 
   public destroy(): void {
+    this.hasCompletedConsent = false
     this.element.remove()
   }
 }
