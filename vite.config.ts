@@ -42,7 +42,7 @@ export default defineConfig({
       },
       includeAssets: ['favicon.ico', 'apple-touch-icon.png'],
       manifest: {
-        name: 'Etimüè Bottle Dropper',
+        name: 'Etimuè Bottle Dropper',
         short_name: 'Bottle Dropper',
         description: 'Catch the right bottles, avoid the wrong ones!',
         theme_color: '#87CEEB',

@@ -28,7 +28,7 @@
     "verify": "Verify"
   },
   "mailchimp": {
-    "consent": "I consent to subscribe to Etimüè's mailing list to receive updates and exclusive offers",
+    "consent": "I consent to subscribe to Etimuè's mailing list to receive updates and exclusive offers",
     "consentRequired": "Game access is reserved for newsletter subscribers only",
     "subscriptionSuccess": "Subscription completed successfully!"
   },

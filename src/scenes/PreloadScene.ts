@@ -27,7 +27,7 @@ export class PreloadScene extends Phaser.Scene {
     this.add.rectangle(width / 2, height / 2, width, height, 0x87CEEB)
 
     // Title
-    this.add.text(width / 2, height / 4, 'Etimüè Bottle Dropper', {
+    this.add.text(width / 2, height / 4, 'Etimuè Bottle Dropper', {
       fontSize: '24px',
       fontWeight: 'bold',
       color: '#333333'

@@ -59,7 +59,7 @@ export class BootScene extends Phaser.Scene {
       <svg width="200" height="100" xmlns="http://www.w3.org/2000/svg">
         <rect width="200" height="100" fill="#87CEEB"/>
         <text x="100" y="35" font-family="Arial, sans-serif" font-size="16" font-weight="bold" text-anchor="middle" fill="#333">
-          Etimüè
+          Etimuè
         </text>
         <text x="100" y="65" font-family="Arial, sans-serif" font-size="14" text-anchor="middle" fill="#333">
           Bottle Dropper

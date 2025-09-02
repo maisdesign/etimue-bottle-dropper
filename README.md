@@ -1,4 +1,4 @@
-# Etimüè Bottle Dropper
+# Etimuè Bottle Dropper
 
 A Progressive Web App (PWA) bottle catching game built with Phaser 3, TypeScript, and Supabase.
 
@@ -252,7 +252,7 @@ Example Netlify `_redirects`:
 
 ## 📝 License
 
-This project is proprietary software for Etimüè.
+This project is proprietary software for Etimuè.
 
 ## 🤝 Contributing
 
@@ -264,4 +264,4 @@ For technical issues or questions, create an issue in the project repository.
 
 ---
 
-Built with ❤️ for Etimüè using Phaser 3, TypeScript, and Supabase.
+Built with ❤️ for Etimuè using Phaser 3, TypeScript, and Supabase.

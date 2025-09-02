@@ -1,6 +1,6 @@
 # Supabase Edge Functions
 
-This document outlines the Edge Functions needed for the Etimüè Bottle Dropper game.
+This document outlines the Edge Functions needed for the Etimuè Bottle Dropper game.
 
 ## Required Edge Functions
 
