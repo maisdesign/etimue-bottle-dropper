@@ -7,6 +7,7 @@ export class AuthModal {
   private isVisible: boolean = false
   private onAuthSuccess?: (user: any) => void
   private hasCompletedConsent: boolean = false
+  private countdownInterval?: NodeJS.Timeout
 
   constructor() {
     this.element = this.createElement()
@@ -425,7 +426,22 @@ export class AuthModal {
 
     } catch (error: any) {
       console.error('OTP error:', error)
-      this.showError(error.message || t('errors.authError'))
+      
+      // Check if it's a rate limit error
+      const isRateLimit = error.message && (
+        error.message.includes('60') || 
+        error.message.includes('55') || 
+        error.message.includes('rate') ||
+        error.message.includes('security purposes') ||
+        error.message.includes('wait')
+      )
+      
+      if (isRateLimit) {
+        this.startOTPCountdown()
+      } else {
+        this.showError(error.message || t('errors.authError'))
+      }
+      
       this.showLoading(false)
     }
   }
@@ -461,6 +477,60 @@ export class AuthModal {
       this.showError(error.message || t('errors.authError'))
       this.showLoading(false)
     }
+  }
+
+  private startOTPCountdown(): void {
+    const sendButton = this.element.querySelector('#auth-send-otp') as HTMLButtonElement
+    const errorEl = this.element.querySelector('.auth-error')
+    
+    if (!sendButton) return
+    
+    let countdown = 60 // Supabase rate limit is usually 60 seconds
+    
+    // Clear any existing countdown
+    if (this.countdownInterval) {
+      clearInterval(this.countdownInterval)
+    }
+    
+    // Disable button and show countdown
+    sendButton.disabled = true
+    
+    const updateCountdown = () => {
+      if (countdown > 0) {
+        sendButton.textContent = `Wait ${countdown}s before retry`
+        sendButton.style.opacity = '0.6'
+        
+        // Show informative error message
+        if (errorEl) {
+          errorEl.textContent = `For security, you can request a new code in ${countdown} seconds`
+          errorEl.classList.remove('hidden')
+        }
+        
+        countdown--
+      } else {
+        // Reset button when countdown completes
+        sendButton.textContent = t('auth.signInWithOtp')
+        sendButton.disabled = false
+        sendButton.style.opacity = '1'
+        
+        // Hide error message
+        if (errorEl) {
+          errorEl.classList.add('hidden')
+        }
+        
+        // Clear interval
+        if (this.countdownInterval) {
+          clearInterval(this.countdownInterval)
+          this.countdownInterval = undefined
+        }
+      }
+    }
+    
+    // Start countdown immediately
+    updateCountdown()
+    
+    // Continue countdown every second
+    this.countdownInterval = setInterval(updateCountdown, 1000)
   }
 
   private async completeAuth(): Promise<void> {
@@ -648,6 +718,12 @@ export class AuthModal {
   public hide(): void {
     this.isVisible = false
     this.element.classList.add('hidden')
+    
+    // Clear countdown timer when hiding
+    if (this.countdownInterval) {
+      clearInterval(this.countdownInterval)
+      this.countdownInterval = undefined
+    }
   }
 
   public onAuth(callback: (user: any) => void): void {
@@ -656,6 +732,13 @@ export class AuthModal {
 
   public destroy(): void {
     this.hasCompletedConsent = false
+    
+    // Clear countdown timer when destroying
+    if (this.countdownInterval) {
+      clearInterval(this.countdownInterval)
+      this.countdownInterval = undefined
+    }
+    
     this.element.remove()
   }
 }
