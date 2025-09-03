@@ -132,13 +132,22 @@ Score submission includes validation:
 - 🗑️ **Updated**: Translations cleaned (removed continueWithApple strings)
 - ✅ **Simplified**: Authentication UI now shows only Google and Email options
 
+**✨ NEW FEATURE - Prizes Modal Added**:
+- 🆕 **Added**: "Cosa si vince" (What You Win) button in main menu
+- 🏆 **Weekly Prize**: 5% discount on dinner at Etimuè pub for weekly leaderboard winner
+- 🥇 **Monthly Prize**: 10% discount on dinner at Etimuè pub for monthly leaderboard winner
+- 🎨 **UI**: Golden button styling to highlight the prizes feature  
+- 🌍 **Translations**: Full IT/EN support for all prize descriptions
+- 🎯 **Purpose**: Encourage player engagement with clear reward incentives
+
 **Production Deployment Status**:
-- ✅ **DEPLOYED**: All fixes and UI cleanup deployed to production
+- ⚠️ **Requires Update**: New build needs deployment with prizes feature
 - ✅ Google Cloud Console OAuth redirect URLs properly configured for production  
-- ✅ Netlify production site at https://astounding-rolypoly-fc5137.netlify.app/ (updated)
+- ✅ Netlify production site at https://astounding-rolypoly-fc5137.netlify.app/ (pending update)
 - ✅ OAuth authentication working in production
 - ✅ Profile nickname duplication resolved  
 - ✅ Apple OAuth removed and UI simplified
+- ✅ Prizes modal feature ready for deployment
 
 **Character Selection System Prepared**:
 - ✅ Character images analyzed and optimized: Charlie (punk cat), Scrocca (party cat), Irlandese (lucky Irish cat)
