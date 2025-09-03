@@ -34,6 +34,7 @@ export class MenuScene extends Phaser.Scene {
     // Title
     this.add.text(width / 2, 80, t('game.title'), {
       fontSize: '28px',
+      fontFamily: 'Arial, sans-serif',
       fontWeight: 'bold',
       color: '#333333',
       align: 'center'
@@ -42,6 +43,7 @@ export class MenuScene extends Phaser.Scene {
     // Auth status
     this.authStatusText = this.add.text(width / 2, 140, '', {
       fontSize: '14px',
+      fontFamily: 'Arial, sans-serif',
       color: '#666666',
       align: 'center'
     }).setOrigin(0.5)
@@ -82,6 +84,7 @@ export class MenuScene extends Phaser.Scene {
     // Play button
     this.playButton = this.add.text(width / 2, buttonY, t('game.play'), {
       fontSize: '24px',
+      fontFamily: 'Arial, sans-serif',
       fontWeight: 'bold',
       color: '#ffffff',
       backgroundColor: '#28a745',
@@ -96,6 +99,8 @@ export class MenuScene extends Phaser.Scene {
     // Leaderboard button
     this.leaderboardButton = this.add.text(width / 2, buttonY + 70, t('leaderboard.title'), {
       fontSize: '18px',
+      fontFamily: 'Arial, sans-serif',
+      fontWeight: '600',
       color: '#ffffff',
       backgroundColor: '#ffc107',
       padding: { x: 20, y: 10 }
@@ -109,6 +114,8 @@ export class MenuScene extends Phaser.Scene {
     // How to Play button
     const howToPlayButton = this.add.text(width / 2, buttonY + 120, t('menu.howToPlay'), {
       fontSize: '16px',
+      fontFamily: 'Arial, sans-serif',
+      fontWeight: '600',
       color: '#ffffff',
       backgroundColor: '#17a2b8',
       padding: { x: 15, y: 8 }
@@ -122,6 +129,8 @@ export class MenuScene extends Phaser.Scene {
     // Prizes button
     const prizesButton = this.add.text(width / 2, buttonY + 170, t('menu.prizes'), {
       fontSize: '16px',
+      fontFamily: 'Arial, sans-serif',
+      fontWeight: '600',
       color: '#ffffff',
       backgroundColor: '#ffc107',
       padding: { x: 15, y: 8 }
@@ -139,6 +148,8 @@ export class MenuScene extends Phaser.Scene {
     // Audio toggle
     this.audioButton = this.add.text(50, settingsY, `${t('menu.audio')}: ${this.audioEnabled ? 'ON' : 'OFF'}`, {
       fontSize: '14px',
+      fontFamily: 'Arial, sans-serif',
+      fontWeight: '600',
       color: '#333333',
       backgroundColor: '#ffffff',
       padding: { x: 10, y: 5 }
@@ -149,6 +160,8 @@ export class MenuScene extends Phaser.Scene {
     // Language toggle
     this.languageButton = this.add.text(50, settingsY + 30, `${t('menu.language')}: ${this.currentLanguage.toUpperCase()}`, {
       fontSize: '14px',
+      fontFamily: 'Arial, sans-serif',
+      fontWeight: '600',
       color: '#333333',
       backgroundColor: '#ffffff',
       padding: { x: 10, y: 5 }
@@ -159,6 +172,8 @@ export class MenuScene extends Phaser.Scene {
     // Profile button (show only when authenticated)
     this.profileButton = this.add.text(width - 50, settingsY, t('profile.title'), {
       fontSize: '14px',
+      fontFamily: 'Arial, sans-serif',
+      fontWeight: '600',
       color: '#333333',
       backgroundColor: '#ffffff',
       padding: { x: 10, y: 5 }
