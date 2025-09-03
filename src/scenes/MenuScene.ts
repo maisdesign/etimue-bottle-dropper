@@ -623,14 +623,39 @@ export class MenuScene extends Phaser.Scene {
       console.log('🔑 OAuth tokens detected in URL!')
       console.log('⏳ Waiting for Supabase to process tokens...')
       
-      // Wait for Supabase to process the tokens, then clean URL
-      setTimeout(() => {
-        console.log('🧹 Cleaning URL after token processing...')
+      // Wait for auth state to change or timeout
+      let timeoutReached = false
+      const timeout = setTimeout(() => {
+        timeoutReached = true
+        console.log('⚠️ OAuth processing timeout, cleaning URL...')
         window.history.replaceState(null, '', window.location.pathname)
-      }, 1500) // Reduced timeout to prevent loops
+      }, 8000) // Increased timeout to 8 seconds
       
-    } else if (hash.includes('auth-callback') || hash.includes('#')) {
-      console.log('🔄 OAuth callback detected, cleaning URL immediately')
+      // Subscribe to auth changes to clean URL when auth completes
+      const unsubscribe = authManager.subscribe((state) => {
+        console.log('🔄 Auth state change during OAuth callback:', {
+          isAuthenticated: state.isAuthenticated,
+          isLoading: state.isLoading,
+          email: state.user?.email
+        })
+        
+        if (!timeoutReached && (state.isAuthenticated || !state.isLoading)) {
+          console.log('✅ OAuth processing complete, cleaning URL...')
+          clearTimeout(timeout)
+          window.history.replaceState(null, '', window.location.pathname)
+          unsubscribe()
+        }
+      })
+      
+    } else if (hash.includes('provider_token') || hash.includes('refresh_token') || hash.includes('expires_at')) {
+      console.log('🔄 OAuth tokens detected without processing, forcing refresh...')
+      // These are OAuth tokens that haven't been processed yet
+      setTimeout(() => {
+        console.log('🔄 Refreshing page to complete OAuth...')
+        window.location.reload()
+      }, 1000)
+    } else if (hash.includes('auth-callback') || (hash.length > 1 && hash !== '#')) {
+      console.log('🔄 Auth callback or unknown hash detected, cleaning URL immediately')
       // Clean URL immediately for any auth-related hash
       window.history.replaceState(null, '', window.location.pathname)
       console.log('✅ URL cleaned')

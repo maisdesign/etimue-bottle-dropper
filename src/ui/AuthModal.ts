@@ -389,7 +389,7 @@ export class AuthModal {
   private async signInWithProvider(provider: 'google' | 'apple'): Promise<void> {
     try {
       this.showLoading(true)
-      const redirectUrl = `${window.location.origin}/#auth-callback`
+      const redirectUrl = `${window.location.origin}/`
       
       console.log(`🔐 Starting ${provider} OAuth...`)
       console.log('📍 Redirect URL:', redirectUrl)
