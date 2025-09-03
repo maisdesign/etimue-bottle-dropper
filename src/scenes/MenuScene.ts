@@ -290,7 +290,7 @@ export class MenuScene extends Phaser.Scene {
     const footerText = this.add.text(width / 2, height / 2 + 60, t('prizes.footer'), {
       fontSize: '12px',
       fontStyle: 'italic',
-      color: '#666666',
+      color: '#222222',
       align: 'center'
     }).setOrigin(0.5)
 
