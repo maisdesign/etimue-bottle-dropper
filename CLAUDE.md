@@ -45,11 +45,12 @@ This is a **Etimuè Bottle Dropper** - a Phaser 3 TypeScript game that integrate
 **Game Engine**: Phaser 3 with TypeScript, configured in `src/main.ts` with scenes loaded in sequence
 
 **Authentication Flow**: 
-- AuthManager (`src/net/authManager.ts`) handles OAuth with Google/Apple and email OTP
-- AuthModal (`src/ui/AuthModal.ts`) provides UI for authentication with nickname system
+- AuthManager (`src/net/authManager.ts`) handles OAuth with Google and email OTP
+- AuthModal (`src/ui/AuthModal.ts`) provides UI for authentication with nickname system  
 - Mandatory marketing consent required for gameplay
-- OAuth callback handling with hash-based redirects (`#auth-callback`)
+- OAuth callback handling with hash-based redirects
 - **FIXED**: Double hash issue resolved, OAuth loop eliminated
+- **UPDATED**: Apple OAuth removed (not configured in Supabase)
 
 **Database Integration**:
 - Supabase client (`src/net/supabaseClient.ts`) with typed interfaces
@@ -123,13 +124,21 @@ Score submission includes validation:
 - ✅ **Fix**: AuthModal now pre-fills nickname from existing profile data when showing consent step
 - ✅ **Fix**: Nickname availability check now excludes current user's existing nickname
 - ✅ **Fix**: Improved profile data synchronization between modals
-- ✅ **Testing**: Ready for production deployment
+- ✅ **Testing**: Deployed and working in production
+
+**🔧 UI CLEANUP - Apple OAuth Removed**:
+- 🗑️ **Removed**: Apple login button from authentication modal (not configured in Supabase)
+- 🗑️ **Cleaned**: Apple-specific CSS styles and event handlers removed
+- 🗑️ **Updated**: Translations cleaned (removed continueWithApple strings)
+- ✅ **Simplified**: Authentication UI now shows only Google and Email options
 
 **Production Deployment Status**:
-- ⚠️ **Requires Update**: New build needs deployment to fix profile nickname duplication
-- ✅ Google Cloud Console OAuth redirect URLs properly configured for production
-- ✅ Netlify production site at https://astounding-rolypoly-fc5137.netlify.app/ (pending update)
-- ✅ OAuth authentication working in production (deployed)
+- ✅ **DEPLOYED**: All fixes and UI cleanup deployed to production
+- ✅ Google Cloud Console OAuth redirect URLs properly configured for production  
+- ✅ Netlify production site at https://astounding-rolypoly-fc5137.netlify.app/ (updated)
+- ✅ OAuth authentication working in production
+- ✅ Profile nickname duplication resolved  
+- ✅ Apple OAuth removed and UI simplified
 
 **Character Selection System Prepared**:
 - ✅ Character images analyzed and optimized: Charlie (punk cat), Scrocca (party cat), Irlandese (lucky Irish cat)
