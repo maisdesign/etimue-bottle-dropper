@@ -494,14 +494,26 @@ export class AuthModal {
         return
       }
 
-      // Check nickname availability
+      // Check nickname availability (exclude current user)
       console.log('🔍 Checking nickname availability during registration:', nickname)
       const { profileService } = await import('@/net/supabaseClient')
-      const isAvailable = await profileService.checkNicknameAvailability(nickname)
       
-      if (!isAvailable) {
-        this.showError(`The nickname "${nickname}" is already taken. Please choose another one.`)
-        return
+      // Get current user to exclude from availability check
+      const { data: { user: currentUser } } = await supabase.auth.getUser()
+      if (currentUser) {
+        const currentProfile = await profileService.getProfile(currentUser.id)
+        
+        // If this is the user's current nickname, allow it
+        if (currentProfile?.username === nickname) {
+          console.log('✅ User is updating with their existing nickname:', nickname)
+        } else {
+          // Check if nickname is available for other users
+          const isAvailable = await profileService.checkNicknameAvailability(nickname)
+          if (!isAvailable) {
+            this.showError(`The nickname "${nickname}" is already taken. Please choose another one.`)
+            return
+          }
+        }
       }
     }
 
@@ -621,10 +633,19 @@ export class AuthModal {
           
           console.log('📝 User already authenticated, showing consent step')
           this.showStep('consent')
-          // Pre-fill nickname with user metadata if available
+          
+          // Pre-fill nickname with existing profile data or user metadata
           const nicknameInput = this.element.querySelector('#nickname-input') as HTMLInputElement
-          if (nicknameInput && user.user_metadata?.name) {
-            nicknameInput.value = user.user_metadata.name
+          if (nicknameInput) {
+            if (profile?.username) {
+              // User already has nickname in profile - pre-fill it
+              nicknameInput.value = profile.username
+              console.log('📋 Pre-filled nickname from profile:', profile.username)
+            } else if (user.user_metadata?.name) {
+              // Fall back to user metadata
+              nicknameInput.value = user.user_metadata.name
+              console.log('📋 Pre-filled nickname from user metadata:', user.user_metadata.name)
+            }
           }
         })
       } else {

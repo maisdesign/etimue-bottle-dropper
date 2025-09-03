@@ -115,12 +115,21 @@ Score submission includes validation:
 - ✅ **Fix**: Removed `#auth-callback` from redirect URL, using clean root URL redirect
 - ✅ **Fix**: Improved OAuth callback detection to handle all token types and force refresh when needed
 - ✅ **Fix**: Extended auth processing timeout from 1.5s to 8s for better reliability
-- ✅ **Testing**: Ready for production deployment of fixed authentication
+- ✅ **Testing**: Deployed and working in production
+
+**🐛 PROFILE NICKNAME DUPLICATION BUG FOUND & FIXED**:
+- 🔍 **Bug**: Profile modal and Auth modal not synchronized - user sets nickname in Profile, then asked again in Game
+- 🔍 **Impact**: User gets "nickname already taken" error when using their own nickname set via Profile modal
+- ✅ **Fix**: AuthModal now pre-fills nickname from existing profile data when showing consent step
+- ✅ **Fix**: Nickname availability check now excludes current user's existing nickname
+- ✅ **Fix**: Improved profile data synchronization between modals
+- ✅ **Testing**: Ready for production deployment
 
 **Production Deployment Status**:
-- ⚠️ **Requires Update**: New build needs deployment to fix OAuth authentication
+- ⚠️ **Requires Update**: New build needs deployment to fix profile nickname duplication
 - ✅ Google Cloud Console OAuth redirect URLs properly configured for production
 - ✅ Netlify production site at https://astounding-rolypoly-fc5137.netlify.app/ (pending update)
+- ✅ OAuth authentication working in production (deployed)
 
 **Character Selection System Prepared**:
 - ✅ Character images analyzed and optimized: Charlie (punk cat), Scrocca (party cat), Irlandese (lucky Irish cat)
