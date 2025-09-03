@@ -118,6 +118,19 @@ export class MenuScene extends Phaser.Scene {
     .on('pointerdown', () => this.showHowToPlay())
     .on('pointerover', () => howToPlayButton.setScale(1.05))
     .on('pointerout', () => howToPlayButton.setScale(1))
+
+    // Prizes button
+    const prizesButton = this.add.text(width / 2, buttonY + 170, t('menu.prizes'), {
+      fontSize: '16px',
+      color: '#ffffff',
+      backgroundColor: '#ffc107',
+      padding: { x: 15, y: 8 }
+    })
+    .setOrigin(0.5)
+    .setInteractive({ useHandCursor: true })
+    .on('pointerdown', () => this.showPrizes())
+    .on('pointerover', () => prizesButton.setScale(1.05))
+    .on('pointerout', () => prizesButton.setScale(1))
   }
 
   private createSettingsButtons(width: number, height: number) {
@@ -225,6 +238,79 @@ export class MenuScene extends Phaser.Scene {
       modal.destroy()
       titleText.destroy()
       instructionsText.destroy()
+      closeButton.destroy()
+    })
+  }
+
+  private showPrizes() {
+    const width = this.cameras.main.width
+    const height = this.cameras.main.height
+
+    // Create modal overlay
+    const overlay = this.add.rectangle(width / 2, height / 2, width, height, 0x000000, 0.8)
+    .setInteractive()
+
+    const modal = this.add.rectangle(width / 2, height / 2 - 20, width - 40, height - 60, 0xffffff)
+
+    const titleText = this.add.text(width / 2, height / 2 - 200, t('prizes.title'), {
+      fontSize: '20px',
+      fontWeight: 'bold',
+      color: '#333333'
+    }).setOrigin(0.5)
+
+    // Weekly prize section
+    const weeklyTitle = this.add.text(width / 2, height / 2 - 120, t('prizes.weeklyPrize'), {
+      fontSize: '16px',
+      fontWeight: 'bold',
+      color: '#ffc107'
+    }).setOrigin(0.5)
+
+    const weeklyDesc = this.add.text(width / 2, height / 2 - 90, t('prizes.weeklyDescription'), {
+      fontSize: '13px',
+      color: '#333333',
+      align: 'center',
+      wordWrap: { width: width - 80, useAdvancedWrap: true }
+    }).setOrigin(0.5)
+
+    // Monthly prize section
+    const monthlyTitle = this.add.text(width / 2, height / 2 - 30, t('prizes.monthlyPrize'), {
+      fontSize: '16px',
+      fontWeight: 'bold',
+      color: '#28a745'
+    }).setOrigin(0.5)
+
+    const monthlyDesc = this.add.text(width / 2, height / 2, t('prizes.monthlyDescription'), {
+      fontSize: '13px',
+      color: '#333333',
+      align: 'center',
+      wordWrap: { width: width - 80, useAdvancedWrap: true }
+    }).setOrigin(0.5)
+
+    // Footer
+    const footerText = this.add.text(width / 2, height / 2 + 60, t('prizes.footer'), {
+      fontSize: '12px',
+      fontStyle: 'italic',
+      color: '#666666',
+      align: 'center'
+    }).setOrigin(0.5)
+
+    const closeButton = this.add.text(width / 2, height / 2 + 120, t('prizes.close'), {
+      fontSize: '16px',
+      color: '#ffffff',
+      backgroundColor: '#28a745',
+      padding: { x: 20, y: 10 }
+    })
+    .setOrigin(0.5)
+    .setInteractive({ useHandCursor: true })
+    .on('pointerdown', () => {
+      overlay.destroy()
+      modal.destroy()
+      titleText.destroy()
+      weeklyTitle.destroy()
+      weeklyDesc.destroy()
+      monthlyTitle.destroy()
+      monthlyDesc.destroy()
+      footerText.destroy()
       closeButton.destroy()
     })
   }

@@ -57,12 +57,22 @@
     "audio": "Audio",
     "language": "Language",
     "howToPlay": "How to Play",
+    "prizes": "What You Win",
     "privacy": "Privacy",
     "terms": "Terms"
   },
   "rules": {
     "title": "How to Play",
     "instructions": "Move left and right to catch good bottles (brown)\nand avoid bad bottles (green).\n\nCollect yellow stars for bonus points\nand extra time!\n\nDesktop: Use ← → or A D keys\nMobile: Tap the left/right buttons\n\nYou have 3 lives and 60 seconds.\nGood luck!",
+    "close": "Close"
+  },
+  "prizes": {
+    "title": "What You Win",
+    "weeklyPrize": "🏆 WEEKLY LEADERBOARD",
+    "weeklyDescription": "Whoever is at the top of the leaderboard at the end of the week wins a 5% discount on a dinner at Etimuè pub!",
+    "monthlyPrize": "🥇 MONTHLY LEADERBOARD",
+    "monthlyDescription": "Whoever wins the monthly leaderboard will win a 10% discount on a dinner at Etimuè pub!",
+    "footer": "Play, have fun and win with Etimuè Bottle Dropper!",
     "close": "Close"
   },
   "gdpr": {
