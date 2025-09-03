@@ -623,24 +623,29 @@ export class MenuScene extends Phaser.Scene {
     const gdprConsent = localStorage.getItem('gdpr-consent')
     
     if (!gdprConsent) {
-      // Show GDPR banner
-      const banner = this.add.rectangle(width / 2, height - 80, width - 20, 60, 0x333333, 0.95)
+      // Show improved GDPR banner
+      const banner = this.add.rectangle(width / 2, height - 50, width - 30, 80, 0x000000, 0.85)
+      .setStrokeStyle(2, 0x333333)
       
-      const bannerText = this.add.text(width / 2, height - 100, t('gdpr.cookieBanner'), {
-        fontSize: '12px',
+      const bannerText = this.add.text(width / 2, height - 75, t('gdpr.cookieBanner'), {
+        fontSize: '14px',
+        fontFamily: 'Arial, sans-serif',
         color: '#ffffff',
         align: 'center',
-        wordWrap: { width: width - 40 }
+        wordWrap: { width: width - 50, useAdvancedWrap: true }
       }).setOrigin(0.5)
 
-      const acceptButton = this.add.text(width / 2 - 50, height - 60, t('gdpr.accept'), {
-        fontSize: '12px',
+      const acceptButton = this.add.text(width / 2 - 60, height - 35, t('gdpr.accept'), {
+        fontSize: '14px',
+        fontFamily: 'Arial, sans-serif',
         color: '#ffffff',
         backgroundColor: '#28a745',
-        padding: { x: 10, y: 5 }
+        padding: { x: 15, y: 8 }
       })
       .setOrigin(0.5)
       .setInteractive({ useHandCursor: true })
+      .on('pointerover', () => acceptButton.setScale(1.05))
+      .on('pointerout', () => acceptButton.setScale(1))
       .on('pointerdown', () => {
         localStorage.setItem('gdpr-consent', 'true')
         localStorage.setItem('analytics-consent', 'true')
@@ -650,14 +655,17 @@ export class MenuScene extends Phaser.Scene {
         declineButton.destroy()
       })
 
-      const declineButton = this.add.text(width / 2 + 50, height - 60, t('gdpr.decline'), {
-        fontSize: '12px',
+      const declineButton = this.add.text(width / 2 + 60, height - 35, t('gdpr.decline'), {
+        fontSize: '14px',
+        fontFamily: 'Arial, sans-serif',
         color: '#ffffff',
         backgroundColor: '#dc3545',
-        padding: { x: 10, y: 5 }
+        padding: { x: 15, y: 8 }
       })
       .setOrigin(0.5)
       .setInteractive({ useHandCursor: true })
+      .on('pointerover', () => declineButton.setScale(1.05))
+      .on('pointerout', () => declineButton.setScale(1))
       .on('pointerdown', () => {
         localStorage.setItem('gdpr-consent', 'true')
         localStorage.setItem('analytics-consent', 'false')
