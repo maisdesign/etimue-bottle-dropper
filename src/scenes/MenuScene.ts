@@ -33,11 +33,13 @@ export class MenuScene extends Phaser.Scene {
 
     // Title
     this.add.text(width / 2, 80, t('game.title'), {
-      fontSize: '28px',
-      fontFamily: 'Arial, sans-serif',
-      fontWeight: 'bold',
-      color: '#333333',
-      align: 'center'
+      fontSize: '32px',
+      fontFamily: '"Playfair Display", serif',
+      fontWeight: '900',
+      color: '#2c3e50',
+      align: 'center',
+      stroke: '#ffffff',
+      strokeThickness: 2
     }).setOrigin(0.5)
 
     // Auth status
