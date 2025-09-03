@@ -16,7 +16,6 @@
   "auth": {
     "welcome": "Benvenuto",
     "continueWithGoogle": "Continua con Google",
-    "continueWithApple": "Continua con Apple", 
     "continueWithEmail": "Continua con Email",
     "login": "Accedi",
     "signup": "Registrati",

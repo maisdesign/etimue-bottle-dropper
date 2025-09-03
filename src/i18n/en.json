@@ -15,8 +15,7 @@
   },
   "auth": {
     "welcome": "Welcome",
-    "continueWithGoogle": "Continue with Google",
-    "continueWithApple": "Continue with Apple",
+    "continueWithGoogle": "Continue with Google", 
     "continueWithEmail": "Continue with Email", 
     "login": "Sign In",
     "signup": "Sign Up",

@@ -35,10 +35,6 @@ export class AuthModal {
                 <span>G</span> ${t('auth.continueWithGoogle')}
               </button>
               
-              <button id="auth-apple" class="auth-button auth-button-apple">
-                <span>🍎</span> ${t('auth.continueWithApple')}
-              </button>
-              
               <button id="auth-email" class="auth-button auth-button-email">
                 <span>📧</span> ${t('auth.continueWithEmail')}
               </button>
@@ -208,11 +204,6 @@ export class AuthModal {
           color: white;
         }
         
-        .auth-button-apple {
-          background: #000;
-          color: white;
-        }
-        
         .auth-button-email {
           background: #6b7280;
           color: white;
@@ -296,10 +287,6 @@ export class AuthModal {
       this.signInWithProvider('google')
     })
 
-    // Apple OAuth
-    this.element.querySelector('#auth-apple')?.addEventListener('click', () => {
-      this.signInWithProvider('apple')
-    })
 
     // Email flow
     this.element.querySelector('#auth-email')?.addEventListener('click', () => {
@@ -386,7 +373,7 @@ export class AuthModal {
     errorEl?.classList.remove('hidden')
   }
 
-  private async signInWithProvider(provider: 'google' | 'apple'): Promise<void> {
+  private async signInWithProvider(provider: 'google'): Promise<void> {
     try {
       this.showLoading(true)
       const redirectUrl = `${window.location.origin}/`
