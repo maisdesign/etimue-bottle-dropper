@@ -7,6 +7,7 @@ import { GameOverScene } from '@/scenes/GameOverScene'
 import { LeaderboardScene } from '@/scenes/LeaderboardScene'
 import { authManager } from '@/net/authManager'
 import { i18n } from '@/i18n'
+import { AuthModal } from '@/ui/AuthModal'
 
 // Game configuration
 const config: Phaser.Types.Core.GameConfig = {
@@ -85,10 +86,30 @@ async function initGame() {
   console.log('🚀 Creating Phaser game...')
   const game = new Phaser.Game(config)
   
-  // Make game globally accessible for debugging
+  // Make game globally accessible for debugging and homepage integration
   ;(window as any).game = game
+  ;(window as any).gameInstance = game
   ;(window as any).authManager = authManager
   ;(window as any).i18n = i18n
+  ;(window as any).AuthModal = AuthModal
+  
+  // Handle direct navigation from homepage
+  game.events.on('ready', () => {
+    console.log('🎮 Game ready, checking for homepage navigation flags...')
+    if ((window as any).skipToGame) {
+      console.log('🎯 Skipping to GameScene as requested from homepage')
+      setTimeout(() => {
+        game.scene.start('GameScene')
+      }, 500)
+      ;(window as any).skipToGame = false
+    } else if ((window as any).skipToLeaderboard) {
+      console.log('📊 Skipping to LeaderboardScene as requested from homepage')
+      setTimeout(() => {
+        game.scene.start('LeaderboardScene')
+      }, 500)
+      ;(window as any).skipToLeaderboard = false
+    }
+  })
   
   // Global function to manage Phaser keyboard conflicts with HTML inputs
   ;(window as any).managePhaserKeyboard = {

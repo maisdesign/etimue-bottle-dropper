@@ -24,6 +24,9 @@ export class GameScene extends Phaser.Scene {
   private isPaused: boolean = false
   private allGoodPowerupActive: boolean = false
   private powerupEndTime: number = 0
+  private powerupRemainingTime: number = 0
+  private powerupTimer!: Phaser.Time.TimerEvent
+  private activeTimers: Phaser.Time.TimerEvent[] = []
   
   // UI elements
   private scoreText!: Phaser.GameObjects.Text
@@ -98,7 +101,9 @@ export class GameScene extends Phaser.Scene {
     this.isPaused = false
     this.allGoodPowerupActive = false
     this.powerupEndTime = 0
+    this.powerupRemainingTime = 0
     this.gameStartTimestamp = 0
+    this.activeTimers = []
   }
 
   private createWorld(width: number, height: number) {
@@ -139,10 +144,10 @@ export class GameScene extends Phaser.Scene {
     
     this.player = this.physics.add.sprite(width / 2, 550, 'player')
     this.player.setCollideWorldBounds(true)
-    this.player.setScale(0.8) // Slightly smaller for better gameplay
+    this.player.setScale(0.4) // 50% smaller for charlie sprite - better hitbox
     
     // Set player body size for more precise collisions
-    this.player.body?.setSize(this.player.width * 0.8, this.player.height * 0.8)
+    this.player.body?.setSize(this.player.width * 0.7, this.player.height * 0.7)
   }
 
   private createGroups() {
@@ -357,11 +362,18 @@ export class GameScene extends Phaser.Scene {
     bottle.setData('isGood', isGood)
     
     // Auto-destroy when off screen
-    bottle.setData('autoDestroy', this.time.delayedCall(8000, () => {
+    const destroyTimer = this.time.delayedCall(8000, () => {
       if (bottle.active) {
         bottle.destroy()
       }
-    }))
+      // Remove from active timers list
+      const index = this.activeTimers.indexOf(destroyTimer)
+      if (index > -1) {
+        this.activeTimers.splice(index, 1)
+      }
+    })
+    bottle.setData('autoDestroy', destroyTimer)
+    this.activeTimers.push(destroyTimer)
   }
 
   private spawnPowerup() {
@@ -374,11 +386,18 @@ export class GameScene extends Phaser.Scene {
     powerup.setVelocityY(120)
     
     // Auto-destroy when off screen
-    powerup.setData('autoDestroy', this.time.delayedCall(10000, () => {
+    const destroyTimer = this.time.delayedCall(10000, () => {
       if (powerup.active) {
         powerup.destroy()
       }
-    }))
+      // Remove from active timers list
+      const index = this.activeTimers.indexOf(destroyTimer)
+      if (index > -1) {
+        this.activeTimers.splice(index, 1)
+      }
+    })
+    powerup.setData('autoDestroy', destroyTimer)
+    this.activeTimers.push(destroyTimer)
   }
 
   private collectBottle(bottle: Phaser.Physics.Arcade.Sprite) {
@@ -432,7 +451,26 @@ export class GameScene extends Phaser.Scene {
     
     // Activate "All Good" power-up for 10 seconds
     this.allGoodPowerupActive = true
-    this.powerupEndTime = this.time.now + 10000
+    this.powerupRemainingTime = 10
+    
+    // Stop any existing powerup timer
+    if (this.powerupTimer) {
+      this.powerupTimer.destroy()
+    }
+    
+    // Create a new timer that can be paused
+    this.powerupTimer = this.time.addEvent({
+      delay: 1000,
+      repeat: 9,
+      callback: () => {
+        this.powerupRemainingTime -= 1
+        if (this.powerupRemainingTime <= 0) {
+          this.allGoodPowerupActive = false
+          this.powerupIndicator.setVisible(false)
+        }
+      },
+      callbackScope: this
+    })
     
     this.powerupIndicator.setText('ALL GOOD! 🌟')
     this.powerupIndicator.setVisible(true)
@@ -466,6 +504,9 @@ export class GameScene extends Phaser.Scene {
     }
     if (this.powerupSpawnTimer) {
       this.powerupSpawnTimer.destroy()
+    }
+    if (this.powerupTimer) {
+      this.powerupTimer.destroy()
     }
 
     // Clear all objects
@@ -506,6 +547,14 @@ export class GameScene extends Phaser.Scene {
       if (this.gameTimer) this.gameTimer.paused = true
       if (this.spawnTimer) this.spawnTimer.paused = true
       if (this.powerupSpawnTimer) this.powerupSpawnTimer.paused = true
+      if (this.powerupTimer) this.powerupTimer.paused = true
+      
+      // Pause all active destroy timers
+      this.activeTimers.forEach(timer => {
+        if (timer && timer.paused !== undefined) {
+          timer.paused = true
+        }
+      })
       
       if (this.bgMusic && this.bgMusic.isPlaying) {
         this.bgMusic.pause()
@@ -518,6 +567,14 @@ export class GameScene extends Phaser.Scene {
       if (this.gameTimer) this.gameTimer.paused = false
       if (this.spawnTimer) this.spawnTimer.paused = false
       if (this.powerupSpawnTimer) this.powerupSpawnTimer.paused = false
+      if (this.powerupTimer) this.powerupTimer.paused = false
+      
+      // Resume all active destroy timers
+      this.activeTimers.forEach(timer => {
+        if (timer && timer.paused !== undefined) {
+          timer.paused = false
+        }
+      })
       
       if (this.bgMusic && this.bgMusic.isPaused) {
         this.bgMusic.resume()
@@ -557,16 +614,9 @@ export class GameScene extends Phaser.Scene {
     if (!this.gameRunning || this.isPaused) return
 
     try {
-      // Update power-up status
-      if (this.allGoodPowerupActive && this.time.now > this.powerupEndTime) {
-        this.allGoodPowerupActive = false
-        this.powerupIndicator.setVisible(false)
-      }
-
       // Update power-up indicator countdown
       if (this.allGoodPowerupActive) {
-        const remaining = Math.ceil((this.powerupEndTime - this.time.now) / 1000)
-        this.powerupIndicator.setText(`ALL GOOD! 🌟 (${remaining}s)`)
+        this.powerupIndicator.setText(`ALL GOOD! 🌟 (${this.powerupRemainingTime}s)`)
       }
 
       // Player movement

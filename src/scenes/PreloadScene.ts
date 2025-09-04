@@ -194,10 +194,10 @@ export class PreloadScene extends Phaser.Scene {
     
     suppressErrors = true
     
-    // Player mascotte
-    this.load.image('player_real', '/assets/player.png')
+    // Player mascotte - use charlie character
+    this.load.image('player_real', '/characters/charlie.png')
     this.load.on('filecomplete-image-player_real', () => {
-      console.log('✅ Loaded real player sprite')
+      console.log('✅ Loaded real player sprite (charlie)')
       this.textures.remove('player')
       this.textures.addImage('player', this.textures.get('player_real').source[0].image)
     })

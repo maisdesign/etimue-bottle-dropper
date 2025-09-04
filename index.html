@@ -1,31 +1,693 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="it">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700;900&display=swap" rel="stylesheet">
-    <title>Etimuè Bottle Dropper</title>
-    <style>
-        body {
-            margin: 0;
-            padding: 0;
-            background: #87CEEB;
-            font-family: Arial, sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-        }
-        #game-container {
-            border: 2px solid #333;
-            border-radius: 10px;
-        }
-    </style>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Etimuè Bottle Dropper</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Alfa+Slab+One&family=Playfair+Display:wght@400;600;700;900&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --bg1:#b7e3f0;
+      --bg2:#7cc3d6;
+      --primary:#0ea5a3;
+      --primary-contrast:#f0fdfb;
+      --accent:#ffb703;
+      --accent-2:#1aa3b8;
+      --text:#0b2b33;
+      --muted:#0b2b33aa;
+      --card:#ffffffd6;
+      --stroke:#0b2b3315;
+      --radius:24px;
+      --shadow:0 10px 30px rgba(8,40,48,.18), 0 2px 6px rgba(8,40,48,.06);
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,Noto Sans,Helvetica,Arial;
+      color:var(--text);
+      background:
+        radial-gradient(1200px 800px at 10% -20%, var(--bg1), transparent 60%),
+        radial-gradient(900px 700px at 110% 10%, #c6f1ff, transparent 50%),
+        linear-gradient(160deg, var(--bg2), #9ad8e5 35%, #cfeff6 90%);
+      background-attachment: fixed;
+      display:grid;
+      place-items:center;
+      padding:24px;
+    }
+
+    /* Game container - hidden by default, shown when game starts */
+    #game-container {
+      display: none;
+      border: 2px solid #333;
+      border-radius: 10px;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1000;
+      background: #87CEEB;
+    }
+
+    /* Home button for game */
+    #home-button {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      z-index: 1001;
+      background: rgba(255, 255, 255, 0.9);
+      border: 2px solid #0ea5a3;
+      border-radius: 50%;
+      width: 60px;
+      height: 60px;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 24px;
+      transition: all 0.2s ease;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+
+    #home-button:hover {
+      background: rgba(255, 255, 255, 1);
+      transform: scale(1.1);
+    }
+
+    .frame{
+      width:min(900px, 92vw);
+      border-radius:calc(var(--radius) + 6px);
+      background:linear-gradient(180deg, #ffffffdd, #ffffffb8);
+      backdrop-filter:saturate(160%) blur(6px);
+      box-shadow: var(--shadow);
+      border:1px solid #ffffff80;
+      overflow:hidden;
+    }
+
+    .topbar{
+      display:flex;
+      align-items:center;
+      gap:12px;
+      padding:14px 18px;
+      border-bottom:1px solid var(--stroke);
+      background:linear-gradient(180deg,#ffffffbb,#ffffff70);
+    }
+    .brand{
+      display:flex;align-items:center;gap:12px;
+    }
+    .brand svg{
+      width:36px;height:36px;flex:0 0 auto;
+      filter: drop-shadow(0 3px 6px rgba(0,0,0,.12));
+    }
+    .brand-title{
+      font-family:"Playfair Display", "Alfa Slab One", Inter, system-ui;
+      font-size: clamp(22px, 3.2vw, 30px);
+      font-weight: 900;
+      letter-spacing:.5px;
+      color:#0b2b33;
+      text-shadow:0 1px 0 #fff;
+    }
+
+    .content{
+      display:grid;
+      grid-template-columns: 1.1fr .9fr;
+      gap:28px;
+      padding:32px clamp(20px,4vw,40px) 28px;
+    }
+    @media (max-width: 780px){
+      .content{ grid-template-columns: 1fr; padding:22px; gap:18px; }
+    }
+
+    .hero{
+      background: radial-gradient(600px 200px at 50% 0%, #0ea5a30e, transparent 60%),
+                  linear-gradient(180deg,#ffffffc4,#ffffffa0);
+      border:1px solid var(--stroke);
+      border-radius: var(--radius);
+      padding: clamp(18px, 3vw, 28px);
+      position:relative;
+      overflow:hidden;
+      box-shadow: var(--shadow);
+    }
+    .hero:after{
+      content:"";
+      position:absolute;
+      inset:auto -40% -60% -40%;
+      height:120%;
+      background:
+        radial-gradient(180px 80px at 20% 20%, rgba(14,165,163,.08), transparent 60%),
+        radial-gradient(220px 90px at 80% 40%, rgba(26,163,184,.10), transparent 60%);
+      transform:rotate(-8deg);
+      z-index: -1;
+      pointer-events: none;
+    }
+    .subtitle{
+      color:var(--muted);
+      font-weight:500;
+      margin:2px 0 18px;
+    }
+    .mascot{
+      display:flex;
+      align-items:center;
+      gap:16px;
+      margin: 10px 0 20px;
+      position: relative;
+      z-index: 1;
+    }
+    .mascot .bubble{
+      width:86px;height:86px;border-radius:20px;
+      background:
+        conic-gradient(from 120deg at 70% 30%, #0ea5a333, transparent 40%),
+        radial-gradient(120px 90px at 30% 20%, #8be7ff55, #22a3b51c);
+      border:1px solid var(--stroke);
+      display:grid;place-items:center;
+      box-shadow: var(--shadow);
+      position:relative; overflow:hidden;
+    }
+    .mascot .bubble span{
+      font-size:11px; text-transform:uppercase; letter-spacing:1px;
+      font-weight:800; color:#0b2b33aa; text-align:center;
+      padding:8px; line-height:1.2;
+    }
+    .hero h2{
+      margin:0 0 6px;
+      font-weight:800;
+      font-size:clamp(26px,3.4vw,36px);
+      letter-spacing:.2px;
+    }
+    .hero p.lead{
+      margin:0 0 18px;
+      font-size:clamp(14px,1.6vw,16px);
+      color:#09323c;
+    }
+
+    .cta-row{
+      display:flex; flex-wrap:wrap; gap:12px;
+    }
+    .btn{
+      appearance:none; border:0; cursor:pointer;
+      border-radius:16px; padding:14px 18px; font-weight:700;
+      letter-spacing:.2px; transition: transform .05s ease, box-shadow .2s ease, background .2s ease;
+      box-shadow:0 6px 14px rgba(8,40,48,.12);
+      font-size:16px;
+      text-decoration:none;
+      display:inline-block;
+    }
+    .btn:active{ transform: translateY(1px) scale(.995); }
+    .btn-primary{
+      background:linear-gradient(180deg, #12b3b2, #0ea5a3);
+      color:var(--primary-contrast);
+    }
+    .btn-primary:hover{ filter:brightness(1.03); }
+    .btn-secondary{
+      background:linear-gradient(180deg,#ffd064,#ffb703);
+      color:#5c3d00;
+    }
+    .btn-info{
+      background:linear-gradient(180deg,#22c1d1,#1aa3b8);
+      color:#032f38;
+    }
+    .btn-ghost{
+      background:#ffffffb6; color:#0b2b33; border:1px solid var(--stroke);
+    }
+
+    .panel{
+      border-radius: var(--radius);
+      border:1px solid var(--stroke);
+      background: var(--card);
+      box-shadow: var(--shadow);
+      padding: clamp(16px, 3vw, 22px);
+      display:grid; gap:16px;
+      align-content:start;
+      height:100%;
+    }
+    .panel h3{
+      margin:4px 0 6px;
+      font-size:clamp(16px,1.6vw,18px);
+      letter-spacing:.3px;
+    }
+
+    .toggles{ display:grid; gap:14px; }
+    .toggle{
+      display:flex; align-items:center; justify-content:space-between;
+      gap:12px; padding:10px 12px; border-radius:14px;
+      border:1px solid var(--stroke); background:#fff;
+    }
+    .switch{
+      --w: 50px; --h: 28px;
+      width:var(--w); height:var(--h); border-radius:999px; position:relative;
+      background:#e5eef1; border:1px solid #d7e3e7; box-shadow: inset 0 2px 6px rgba(0,0,0,.06);
+      transition:background .2s ease;
+    }
+    .switch .dot{
+      position:absolute; top:2px; left:2px; width:24px; height:24px; border-radius:50%;
+      background:white; box-shadow:0 2px 8px rgba(0,0,0,.15); transition:left .2s ease;
+    }
+    .switch[data-on="true"]{ background:#c6f6ef; }
+    .switch[data-on="true"] .dot{ left: calc(var(--w) - 26px); }
+
+    .lang{
+      display:flex; gap:8px; padding:6px; border-radius:14px; border:1px solid var(--stroke); background:#fff;
+    }
+    .chip{
+      padding:8px 12px; border-radius:10px; font-weight:700; font-size:14px; cursor:pointer;
+      color:#0b2b33b0;
+    }
+    .chip[aria-selected="true"]{ background:#e6fbf7; color:#0b2b33; border:1px solid #b7efe2; }
+
+    .links{
+      display:flex; justify-content:space-between; align-items:center; gap:12px;
+      border-top:1px dashed var(--stroke); padding-top:14px; margin-top:4px;
+      font-size:14px;
+    }
+    .links a{ color:#0e7a85; text-decoration:none; font-weight:700; }
+    .links a:hover{ text-decoration:underline; }
+
+    .signin {
+      display:inline-flex; align-items:center; gap:8px; color:var(--muted);
+      font-weight:600; font-size:13px; padding:6px 10px; border-radius:999px; background:#ffffffaa; border:1px solid var(--stroke);
+    }
+    .signin svg{width:16px;height:16px;opacity:.6}
+
+    /* subtle floating bubbles background */
+    .bubbles{
+      position:absolute; inset:0; pointer-events:none; overflow:hidden; border-radius:inherit;
+      z-index: -2;
+    }
+    .bubble{
+      position:absolute; width:16px; height:16px; border-radius:50%;
+      background:#ffffffaa; border:1px solid #ffffff;
+      filter: blur(.3px); opacity:.5;
+      animation: floatUp linear infinite;
+      pointer-events: none;
+    }
+    @keyframes floatUp {
+      from{ transform: translateY(20px); opacity:.0 }
+      to{ transform: translateY(-120vh); opacity:.6 }
+    }
+  </style>
 </head>
 <body>
-    <div id="game-container"></div>
-    <script type="module" src="/src/main.ts"></script>
+  <div class="frame" id="homepage">
+    <div class="topbar">
+      <div class="brand">
+        <!-- Simple bottle-cap logo -->
+        <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <defs>
+            <linearGradient id="g1" x1="0" x2="0" y1="0" y2="1">
+              <stop stop-color="#22c1d1" offset="0"/>
+              <stop stop-color="#0ea5a3" offset="1"/>
+            </linearGradient>
+          </defs>
+          <g>
+            <circle cx="32" cy="32" r="26" fill="url(#g1)" stroke="#0a3b44" stroke-opacity=".18" stroke-width="1.5"/>
+            <circle cx="32" cy="32" r="20" fill="#fff" fill-opacity=".92" stroke="#0a3b44" stroke-opacity=".12"/>
+            <text x="32" y="38" text-anchor="middle" font-family="Alfa Slab One" font-size="16" fill="#0a3b44">EB</text>
+          </g>
+        </svg>
+        <div class="brand-title" data-translate="title">Etimuè Bottle Dropper</div>
+      </div>
+      <div style="margin-left:auto">
+        <button class="lang-toggle" onclick="toggleLanguage()" style="display:none;">
+          <span id="current-lang">🇮🇹</span>
+        </button>
+        <span class="signin" id="auth-status" title="Login status">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="11" width="18" height="10" rx="2" ry="2"></rect>
+            <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+          </svg>
+          <span data-translate="loginStatus">Accedi per giocare</span>
+        </span>
+      </div>
+    </div>
+
+    <div class="content">
+      <section class="hero">
+        <div class="bubbles" aria-hidden="true">
+          <!-- decorative floating bubbles -->
+          <div class="bubble" style="left:8%; bottom:-10px; animation-duration:19s;"></div>
+          <div class="bubble" style="left:26%; bottom:-20px; width:10px;height:10px; animation-duration:16s;"></div>
+          <div class="bubble" style="left:42%; bottom:-14px; width:20px;height:20px; animation-duration:24s;"></div>
+          <div class="bubble" style="left:70%; bottom:-26px; width:12px;height:12px; animation-duration:18s;"></div>
+          <div class="bubble" style="left:86%; bottom:-10px; width:14px;height:14px; animation-duration:22s;"></div>
+        </div>
+        <div class="mascot">
+          <div class="bubble">
+            <img src="/characters/charlie.png" alt="Charlie mascot" style="width: 80px; height: 80px; border-radius: 16px; object-fit: cover;" />
+          </div>
+          <div>
+            <h2 data-translate="ready">Prontə, a far cadere le bottiglie?</h2>
+            <p class="lead" data-translate="description">Schiva le verdi, prendi le artigianali e punta alla vetta della classifica per vincere premi e drink!</p>
+            <div class="cta-row">
+              <button class="btn btn-primary" onclick="startGame()" data-translate="play">GIOCA</button>
+              <button class="btn btn-secondary" onclick="showLeaderboard()" data-translate="leaderboard">Classifica</button>
+              <button class="btn btn-info" onclick="showHowToPlay()" data-translate="howto">Come si gioca</button>
+              <button class="btn btn-ghost" onclick="showPrizes()" data-translate="prizes">Cosa si vince</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <aside class="panel">
+        <h3 data-translate="quickSettings">Impostazioni rapide</h3>
+        <div class="toggles">
+          <div class="toggle">
+            <span data-translate="audio">Audio</span>
+            <div class="switch" id="switch-audio" data-on="false" role="switch" aria-checked="false" tabindex="0">
+              <div class="dot"></div>
+            </div>
+          </div>
+
+          <div class="toggle">
+            <span data-translate="language">Lingua</span>
+            <div class="lang" role="tablist" aria-label="Lingua">
+              <div class="chip" role="tab" aria-selected="true" onclick="setLanguage('it')">IT</div>
+              <div class="chip" role="tab" aria-selected="false" onclick="setLanguage('en')">EN</div>
+              <div class="chip" role="tab" aria-selected="false" onclick="setLanguage('es')" style="display:none;">ES</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="links">
+          <div>
+            <a href="#" data-translate="privacy">Privacy</a> · <a href="#" data-translate="terms">Termini</a>
+          </div>
+          <div style="opacity:.7">v0.1 homepage</div>
+        </div>
+      </aside>
+    </div>
+  </div>
+
+  <div id="game-container"></div>
+  <div id="home-button" onclick="returnToHomepage()" title="Torna alla homepage">🏠</div>
+  <script type="module" src="/src/main.ts"></script>
+  <script>
+    // Translations for the homepage
+    const translations = {
+      it: {
+        title: 'Etimuè Bottle Dropper',
+        mascot: 'Inserisci qui la tua<br/>Mascotte',
+        ready: 'Prontə, a far cadere le bottiglie?',
+        description: 'Schiva le verdi, prendi le artigianali e punta alla vetta della classifica per vincere premi e drink!',
+        play: 'GIOCA',
+        leaderboard: 'Classifica',
+        howto: 'Come si gioca',
+        prizes: 'Cosa si vince',
+        quickSettings: 'Impostazioni rapide',
+        audio: 'Audio',
+        language: 'Lingua',
+        loginStatus: 'Accedi per giocare',
+        privacy: 'Privacy',
+        terms: 'Termini'
+      },
+      en: {
+        title: 'Etimuè Bottle Dropper',
+        mascot: 'Insert your<br/>Mascot here',
+        ready: 'Ready to drop bottles?',
+        description: 'Avoid the green ones, catch the craft ones and aim for the top of the leaderboard to win prizes and drinks!',
+        play: 'PLAY',
+        leaderboard: 'Leaderboard',
+        howto: 'How to play',
+        prizes: 'What you win',
+        quickSettings: 'Quick Settings',
+        audio: 'Audio',
+        language: 'Language',
+        loginStatus: 'Login to play',
+        privacy: 'Privacy',
+        terms: 'Terms'
+      }
+    };
+
+    let currentLang = 'it';
+    let pendingAction = null; // 'startGame' or 'showLeaderboard'
+
+    function translatePage() {
+      const elements = document.querySelectorAll('[data-translate]');
+      elements.forEach(el => {
+        const key = el.getAttribute('data-translate');
+        if (translations[currentLang][key]) {
+          if (key === 'mascot') {
+            el.innerHTML = translations[currentLang][key];
+          } else {
+            el.textContent = translations[currentLang][key];
+          }
+        }
+      });
+    }
+
+    function setLanguage(lang) {
+      currentLang = lang;
+      
+      // Update language chips
+      document.querySelectorAll('.lang .chip').forEach(chip => {
+        chip.setAttribute('aria-selected', 'false');
+      });
+      event.target.setAttribute('aria-selected', 'true');
+      
+      // Update flag
+      const flag = document.getElementById('current-lang');
+      if (flag) {
+        flag.textContent = lang === 'it' ? '🇮🇹' : '🇺🇸';
+      }
+      
+      // Translate page
+      translatePage();
+      
+      // Update game language if available
+      if (window.gameLanguage) {
+        window.gameLanguage.setLanguage(lang);
+      }
+    }
+
+    function toggleLanguage() {
+      setLanguage(currentLang === 'it' ? 'en' : 'it');
+    }
+
+    // Game integration functions
+    function startGame() {
+      console.log('🎮 startGame called');
+      
+      // Check if user is authenticated
+      if (window.authManager && !window.authManager.getState().isAuthenticated) {
+        console.log('⚠️ User not authenticated, showing auth modal');
+        
+        // Set pending action and show auth modal
+        pendingAction = 'startGame';
+        
+        if (window.AuthModal && !window.homepageAuthModal) {
+          window.homepageAuthModal = new window.AuthModal();
+          // Set callback to handle any pending action after successful auth
+          window.homepageAuthModal.onAuth((user) => {
+            console.log('✅ Auth successful from homepage, executing pending action:', pendingAction);
+            updateAuthStatus(); // Update the homepage status
+            
+            if (pendingAction === 'startGame') {
+              startGame(); // Retry starting the game
+            } else if (pendingAction === 'showLeaderboard') {
+              showLeaderboard(); // Retry showing leaderboard
+            }
+            
+            pendingAction = null; // Reset pending action
+          });
+        }
+        
+        if (window.homepageAuthModal) {
+          window.homepageAuthModal.show();
+        } else {
+          // Fallback to alert and redirect
+          alert(currentLang === 'it' ? 
+            'Devi effettuare il login per giocare!' : 
+            'You must log in to play!'
+          );
+        }
+        return;
+      }
+      
+      // User is authenticated, proceed to game
+      console.log('✅ User authenticated, starting game');
+      document.getElementById('homepage').style.display = 'none';
+      document.getElementById('game-container').style.display = 'block';
+      document.getElementById('home-button').style.display = 'flex';
+      
+      // If game is already initialized, go directly to game scene
+      if (window.gameInstance) {
+        console.log('🎯 Starting GameScene directly');
+        window.gameInstance.scene.start('GameScene');
+      } else {
+        console.log('⚠️ Game instance not ready yet');
+        // Set flag to skip menu when game loads
+        window.skipToGame = true;
+      }
+    }
+
+    function returnToHomepage() {
+      console.log('🏠 Returning to homepage');
+      document.getElementById('homepage').style.display = 'grid';
+      document.getElementById('game-container').style.display = 'none';
+      document.getElementById('home-button').style.display = 'none';
+      
+      // Pause or stop the game if running
+      if (window.gameInstance) {
+        // Stop all scenes and go back to menu (but don't show it)
+        window.gameInstance.scene.stop();
+      }
+    }
+
+    function showLeaderboard() {
+      console.log('📊 showLeaderboard called');
+      
+      // Check if user is authenticated 
+      if (window.authManager && !window.authManager.getState().isAuthenticated) {
+        console.log('⚠️ User not authenticated for leaderboard');
+        
+        // Set pending action and show auth modal
+        pendingAction = 'showLeaderboard';
+        
+        if (window.homepageAuthModal) {
+          window.homepageAuthModal.show();
+        } else if (window.AuthModal) {
+          // Create auth modal if it doesn't exist yet
+          window.homepageAuthModal = new window.AuthModal();
+          window.homepageAuthModal.onAuth((user) => {
+            console.log('✅ Auth successful from homepage, executing pending action:', pendingAction);
+            updateAuthStatus(); // Update the homepage status
+            
+            if (pendingAction === 'startGame') {
+              startGame(); // Retry starting the game
+            } else if (pendingAction === 'showLeaderboard') {
+              showLeaderboard(); // Retry showing leaderboard
+            }
+            
+            pendingAction = null; // Reset pending action
+          });
+          window.homepageAuthModal.show();
+        } else {
+          // Fallback to alert
+          alert(currentLang === 'it' ? 
+            'Devi effettuare il login per vedere la classifica!' : 
+            'You must log in to view the leaderboard!'
+          );
+        }
+        return;
+      }
+      
+      // User is authenticated, proceed to leaderboard
+      console.log('✅ User authenticated, showing leaderboard');
+      document.getElementById('homepage').style.display = 'none';
+      document.getElementById('game-container').style.display = 'block';
+      document.getElementById('home-button').style.display = 'flex';
+      
+      // Go directly to leaderboard
+      if (window.gameInstance) {
+        console.log('📊 Starting LeaderboardScene directly');
+        window.gameInstance.scene.start('LeaderboardScene');
+      } else {
+        console.log('⚠️ Game instance not ready yet');
+        // Set flag to go to leaderboard when game loads
+        window.skipToLeaderboard = true;
+      }
+    }
+
+    function showHowToPlay() {
+      console.log('❓ showHowToPlay called');
+      alert(currentLang === 'it' ? 
+        'Muoviti a sinistra e destra per acchiappare le bottiglie giuste (marrone) e evita quelle sbagliate (verde).\n\nRaccogli le stelle gialle per punti bonus e tempo extra!\n\nDesktop: Usa i tasti ← → o A D\nMobile: Tocca i pulsanti sinistra/destra\n\nHai 3 vite e 60 secondi.\nBuona fortuna!' :
+        'Move left and right to catch good bottles (brown) and avoid bad bottles (green).\n\nCollect yellow stars for bonus points and extra time!\n\nDesktop: Use ← → or A D keys\nMobile: Tap the left/right buttons\n\nYou have 3 lives and 60 seconds.\nGood luck!'
+      );
+    }
+
+    function showPrizes() {
+      console.log('🏆 showPrizes called');
+      alert(currentLang === 'it' ?
+        '🏆 CLASSIFICA SETTIMANALE\nChi è in cima alla classifica a fine settimana vince uno sconto del 5% su una cena al pub Etimuè!\n\n🥇 CLASSIFICA MENSILE\nChi vincerà la classifica mensile vincerà uno sconto del 10% su una cena al pub Etimuè!\n\nGioca, divertiti e vinci con Etimuè Bottle Dropper!' :
+        '🏆 WEEKLY LEADERBOARD\nWhoever is at the top of the leaderboard at the end of the week wins a 5% discount on a dinner at Etimuè pub!\n\n🥇 MONTHLY LEADERBOARD\nWhoever wins the monthly leaderboard will win a 10% discount on a dinner at Etimuè pub!\n\nPlay, have fun and win with Etimuè Bottle Dropper!'
+      );
+    }
+
+    // Audio toggle functionality
+    document.getElementById('switch-audio').addEventListener('click', function() {
+      const isOn = this.getAttribute('data-on') === 'true';
+      this.setAttribute('data-on', String(!isOn));
+      this.setAttribute('aria-checked', String(!isOn));
+      
+      // Update game audio if available
+      if (window.gameAudio) {
+        window.gameAudio.setEnabled(!isOn);
+      }
+    });
+
+    // Update auth status
+    function updateAuthStatus() {
+      if (window.authManager) {
+        const authState = window.authManager.getState();
+        const authStatus = document.getElementById('auth-status').querySelector('span');
+        
+        if (authState.isAuthenticated) {
+          authStatus.textContent = currentLang === 'it' ? 
+            `Bentornatə ${authState.user?.email || 'Utente'}!` : 
+            `Welcome back ${authState.user?.email || 'User'}!`;
+        } else {
+          authStatus.textContent = currentLang === 'it' ? 
+            'Accedi per giocare' : 
+            'Login to play';
+        }
+      }
+    }
+
+    // Initialize page
+    document.addEventListener('DOMContentLoaded', () => {
+      console.log('🏠 Homepage initializing...');
+      translatePage();
+      
+      // Show language toggle
+      document.querySelector('.lang-toggle').style.display = 'inline-flex';
+      document.querySelector('.lang-toggle').style.alignItems = 'center';
+      document.querySelector('.lang-toggle').style.gap = '8px';
+      document.querySelector('.lang-toggle').style.color = 'var(--muted)';
+      document.querySelector('.lang-toggle').style.fontWeight = '600';
+      document.querySelector('.lang-toggle').style.fontSize = '13px';
+      document.querySelector('.lang-toggle').style.padding = '6px 10px';
+      document.querySelector('.lang-toggle').style.borderRadius = '999px';
+      document.querySelector('.lang-toggle').style.background = '#ffffffaa';
+      document.querySelector('.lang-toggle').style.border = '1px solid var(--stroke)';
+      document.querySelector('.lang-toggle').style.cursor = 'pointer';
+      
+      // Test button clicks by logging
+      console.log('🔘 Testing button access...');
+      const playBtn = document.querySelector('.btn-primary');
+      if (playBtn) {
+        console.log('✅ Play button found:', playBtn);
+        playBtn.addEventListener('click', () => console.log('🎮 Play button clicked directly'));
+      } else {
+        console.log('❌ Play button not found');
+      }
+      
+      // Update auth status when available
+      setTimeout(() => {
+        updateAuthStatus();
+        // Subscribe to auth changes if authManager is available
+        if (window.authManager) {
+          window.authManager.subscribe(() => updateAuthStatus());
+        }
+      }, 1000);
+      
+      console.log('🏠 Homepage initialized');
+    });
+
+    // Make functions available globally for game integration
+    window.homepageAPI = {
+      showHomepage: () => {
+        returnToHomepage();
+      },
+      hideHomepage: () => {
+        document.getElementById('homepage').style.display = 'none';
+        document.getElementById('game-container').style.display = 'block';
+        document.getElementById('home-button').style.display = 'flex';
+      },
+      setLanguage,
+      currentLang: () => currentLang,
+      returnToHomepage
+    };
+  </script>
 </body>
 </html>

@@ -142,6 +142,7 @@ export class MenuScene extends Phaser.Scene {
     .on('pointerdown', () => this.showPrizes())
     .on('pointerover', () => prizesButton.setScale(1.05))
     .on('pointerout', () => prizesButton.setScale(1))
+
   }
 
   private createSettingsButtons(width: number, height: number) {
@@ -331,6 +332,7 @@ export class MenuScene extends Phaser.Scene {
       closeButton.destroy()
     })
   }
+
 
   private showProfile() {
     if (!authManager.getState().isAuthenticated) {

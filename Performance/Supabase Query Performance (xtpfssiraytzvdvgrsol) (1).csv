@@ -1,0 +1,21 @@
+rolname,query,calls,total_time,min_time,max_time,mean_time,avg_rows
+supabase_admin,SHOW transaction_read_only,1117,16.278853,0.010085,0.834963,0.01457372694718,0
+supabase_auth_admin,SELECT EXISTS (SELECT schema_migrations.* FROM schema_migrations AS schema_migrations WHERE version = $1),946,12.483798,0.007606,0.7851,0.0131964038054968,1
+authenticated,"select set_config('search_path', $1, true), set_config($2, $3, true), set_config('role', $4, true), set_config('request.jwt.claims', $5, true), set_config('request.method', $6, true), set_config('request.path', $7, true), set_config('request.headers', $8, true), set_config('request.cookies', $9, true)",614,110.008953,0.022261,9.078402,0.179167675895766,1
+supabase_admin,SET statement_timeout='58s',512,7.121028,0.009707,0.128904,0.0139082578125,0
+supabase_admin,SET idle_session_timeout='58s',512,14.654356,0.001395,6.902539,0.0286217890625,0
+postgres,SET idle_session_timeout='58s',507,0.954492999999999,0.001469,0.022581,0.0018826291913215,0
+postgres,SET statement_timeout='58s',507,6.599442,0.009149,0.043372,0.013016650887574,0
+supabase_auth_admin,deallocate $1,356,0.757502,0.001075,0.021613,0.00212781460674157,0
+authenticator,SET client_min_messages TO WARNING,301,0.806604999999999,0.001699,0.028594,0.00267975083056478,0
+authenticator,SET client_encoding = 'UTF8',301,2.62928,0.005973,0.085728,0.00873514950166112,0
+supabase_auth_admin,"SELECT mfa_amr_claims.authentication_method, mfa_amr_claims.created_at, mfa_amr_claims.id, mfa_amr_claims.session_id, mfa_amr_claims.updated_at FROM mfa_amr_claims AS mfa_amr_claims WHERE session_id = $1",279,16.519883,0.009715,2.315421,0.0592110501792115,1
+supabase_auth_admin,"SELECT sessions.aal, sessions.created_at, sessions.factor_id, sessions.id, sessions.ip, sessions.not_after, sessions.refreshed_at, sessions.tag, sessions.updated_at, sessions.user_agent, sessions.user_id FROM sessions AS sessions WHERE id = $1 LIMIT $2",279,78.162388,0.010231,7.194099,0.280151928315412,1
+authenticator,BEGIN ISOLATION LEVEL READ COMMITTED READ ONLY,272,3.529445,0.007369,0.045916,0.0129759007352941,0
+supabase_auth_admin,"SELECT identities.created_at, identities.email, identities.id, identities.identity_data, identities.last_sign_in_at, identities.provider, identities.provider_id, identities.updated_at, identities.user_id FROM identities AS identities WHERE user_id = $1",267,32.92502,0.012226,3.074772,0.12331468164794,1
+supabase_auth_admin,"SELECT mfa_factors.created_at, mfa_factors.factor_type, mfa_factors.friendly_name, mfa_factors.id, mfa_factors.last_challenged_at, mfa_factors.phone, mfa_factors.secret, mfa_factors.status, mfa_factors.updated_at, mfa_factors.user_id, mfa_factors.web_authn_aaguid, mfa_factors.web_authn_credential FROM mfa_factors AS mfa_factors WHERE user_id = $1",267,2.02569,0.004472,0.028103,0.00758685393258427,0
+supabase_auth_admin,"SELECT users.aud, users.banned_until, users.confirmation_sent_at, users.confirmation_token, users.confirmed_at, users.created_at, users.deleted_at, users.email, users.email_change, users.email_change_confirm_status, users.email_change_sent_at, users.email_change_token_current, users.email_change_token_new, users.email_confirmed_at, users.encrypted_password, users.id, users.instance_id, users.invited_at, users.is_anonymous, users.is_sso_user, users.last_sign_in_at, users.phone, users.phone_change, users.phone_change_sent_at, users.phone_change_token, users.phone_confirmed_at, users.raw_app_meta_data, users.raw_user_meta_data, users.reauthentication_sent_at, users.reauthentication_token, users.recovery_sent_at, users.recovery_token, users.role, users.updated_at FROM users AS users WHERE instance_id = $1 and id = $2 LIMIT $3",260,40.955755,0.019068,3.271229,0.157522134615385,1
+supabase_admin,set pg_stat_statements.track = none,259,0.602397000000001,0.001789,0.006917,0.00232585714285714,0
+supabase_admin,BEGIN,224,0.367759,0.000582,0.039992,0.00164178125,0
+authenticated,COMMIT,219,0.301593,0.000763,0.002281,0.00137713698630137,0
+supabase_admin,COMMIT,217,0.341361,0.000599,0.019036,0.00157309216589862,0
