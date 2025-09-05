@@ -677,9 +677,12 @@ export class AuthModal {
     this.element.classList.remove('hidden')
     
     // Disable Phaser keyboard to allow typing in HTML inputs
+    console.log('🚨 WASD FIX TEST - AuthModal show() called - BUILD 3f1126c')
     if (typeof window !== 'undefined' && (window as any).managePhaserKeyboard) {
-      console.log('🎹 AuthModal: Disabling Phaser keyboard for HTML inputs')
+      console.log('🎹 AuthModal: Disabling Phaser keyboard for HTML inputs - WASD SHOULD WORK NOW')
       ;(window as any).managePhaserKeyboard.disable()
+    } else {
+      console.log('❌ managePhaserKeyboard not available!')
     }
     
     // Check if user is already authenticated but needs consent
