@@ -104,9 +104,7 @@ export class PreloadScene extends Phaser.Scene {
     starGraphics.generateTexture('powerup_star', 40, 40)
     starGraphics.destroy()
 
-    // UI Elements
-    console.log('🎮 Generating UI sprites...')
-    this.generateUISprites()
+    // UI Elements will be generated in create() after all loading is complete
   }
 
   private generateUISprites() {
@@ -266,6 +264,10 @@ export class PreloadScene extends Phaser.Scene {
   }
 
   create() {
+    // Generate UI sprites after all loading is complete
+    console.log('🎮 Generating UI sprites in create()...')
+    this.generateUISprites()
+    
     // Ensure charlie texture exists as final failsafe
     if (!this.textures.exists('charlie') && this.textures.exists('player')) {
       this.textures.addImage('charlie', this.textures.get('player').source[0].image)
