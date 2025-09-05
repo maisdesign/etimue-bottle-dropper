@@ -333,7 +333,7 @@
         </div>
         <div class="mascot">
           <div class="bubble">
-            <img src="./characters/charlie.png" alt="Charlie mascot" style="width: 80px; height: 80px; border-radius: 16px; object-fit: cover;" />
+            <img src="./characters/charlie.png" alt="Charlie mascot" style="width: 80px; height: 80px; border-radius: 16px; object-fit: cover; background: #f0f0f0;" onerror="this.style.background='#ff0000'; this.alt='❌ ERRORE CARICAMENTO'; console.error('Failed to load:', this.src);" onload="console.log('✅ Charlie loaded successfully:', this.src);" />
           </div>
           <div>
             <h2 data-translate="ready">Prontə, a far cadere le bottiglie?</h2>
@@ -638,6 +638,16 @@
     document.addEventListener('DOMContentLoaded', () => {
       console.log('🏠 Homepage initializing...');
       translatePage();
+      
+      // Debug mascot loading
+      console.log('🐱 Testing mascot image access...');
+      fetch('./characters/charlie.png')
+        .then(response => {
+          console.log('🐱 Charlie fetch response:', response.status, response.ok);
+        })
+        .catch(error => {
+          console.error('🐱 Charlie fetch failed:', error);
+        });
       
       // Show language toggle
       document.querySelector('.lang-toggle').style.display = 'inline-flex';
