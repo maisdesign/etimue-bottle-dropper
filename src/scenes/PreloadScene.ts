@@ -105,10 +105,12 @@ export class PreloadScene extends Phaser.Scene {
     starGraphics.destroy()
 
     // UI Elements
+    console.log('🎮 Generating UI sprites...')
     this.generateUISprites()
   }
 
   private generateUISprites() {
+    console.log('🎮 generateUISprites called')
     // Mobile control buttons
     const leftBtnGraphics = this.add.graphics()
     leftBtnGraphics.fillStyle(0x000000, 0.6)
@@ -118,6 +120,7 @@ export class PreloadScene extends Phaser.Scene {
     leftBtnGraphics.fillTriangle(20, 40, 50, 25, 50, 55)
     leftBtnGraphics.generateTexture('btn_left', 80, 80)
     leftBtnGraphics.destroy()
+    console.log('✅ Generated btn_left sprite')
 
     const rightBtnGraphics = this.add.graphics()
     rightBtnGraphics.fillStyle(0x000000, 0.6)
@@ -127,6 +130,7 @@ export class PreloadScene extends Phaser.Scene {
     rightBtnGraphics.fillTriangle(60, 40, 30, 25, 30, 55)
     rightBtnGraphics.generateTexture('btn_right', 80, 80)
     rightBtnGraphics.destroy()
+    console.log('✅ Generated btn_right sprite')
 
     // Pause button
     const pauseBtnGraphics = this.add.graphics()
@@ -137,6 +141,7 @@ export class PreloadScene extends Phaser.Scene {
     pauseBtnGraphics.fillRect(34, 15, 6, 30)
     pauseBtnGraphics.generateTexture('btn_pause', 60, 60)
     pauseBtnGraphics.destroy()
+    console.log('✅ Generated btn_pause sprite')
 
     // Heart icon for lives
     const heartGraphics = this.add.graphics()
@@ -195,7 +200,7 @@ export class PreloadScene extends Phaser.Scene {
     suppressErrors = true
     
     // Player mascotte - use charlie character
-    this.load.image('charlie', '/characters/charlie.png')
+    this.load.image('charlie', './characters/charlie.png')
     this.load.on('filecomplete-image-charlie', () => {
       console.log('✅ Loaded real player sprite (charlie)')
     })
