@@ -1,7 +1,7 @@
 # Situazione Progetto Etimuè Bottle Dropper
 
-**Ultimo aggiornamento**: 5 Settembre 2025, ore 17:30  
-**Stato generale**: ✅ **COMPLETAMENTE OPERATIVO** - Tutti i bug critici risolti + UX migliorata
+**Ultimo aggiornamento**: 5 Settembre 2025, ore 20:30  
+**Stato generale**: 🔴 **PROBLEMI CRITICI** - Game crash in produzione che blocca il gioco
 
 ---
 
@@ -34,16 +34,31 @@
 - ✅ **Audio Errors (5 SET)**: Errori decodifica audio eliminati (files non esistenti)
 - ✅ **Marketing Consent Bug (5 SET)**: Sistema riconosce correttamente il consenso dato
 
-### 🆕 **NUOVI FIX E MIGLIORAMENTI (5 SETTEMBRE ORE 17:30)**
-- ✅ **Incognito Mode Bug**: Traduzioni bottone punteggio ora in italiano 
-- ✅ **Marketing Consent UX**: Modal si apre automaticamente invece di bloccare utente
-- ✅ **Image Loading Cache**: Path assoluto per charlie.png + fallback automatico
-- ✅ **UI Sprites Crash**: CRITICO - Risolto "Cannot read properties of undefined"
-- ✅ **Game Sequence**: Fix sequenza startup PreloadScene → GameScene per evitare race conditions
-- ✅ **Homepage UX**: Charlie più visibile (90px + shadow + padding-right: 50px)
-- ✅ **Menu Navigation**: Bottone Menu ora torna alla homepage elegante
-- ✅ **Content Pages**: "Come si gioca" e "Cosa si vince" sono pagine dedicate invece di alert
-- ✅ **Page Design**: Layout professionali con gradients, colori tematici e call-to-action
+### 🆕 **SISTEMA DEBUG IMPLEMENTATO (5 SETTEMBRE ORE 20:00)**
+- ✅ **Logger System**: Sistema di logging categorizzato per debug produzione
+- ✅ **GameStateTracker**: Monitoraggio real-time di auth, loading, navigation
+- ✅ **DebugPanel**: Panel visuale accessibile tramite "debug" o Ctrl+Alt+D
+- ✅ **Error Handling**: Try-catch per AudioContext e timeout auth ridotti
+- ✅ **Boot Screen**: Charlie image invece del placeholder SVG + traduzione italiana
+
+### 🔴 **BUG CRITICI IN PRODUZIONE (5 SETTEMBRE ORE 20:30)**  
+#### 🚨 **GAME CRASH - BLOCCA TUTTO**
+- ❌ **GameScene TypeError**: `this.isMobile is not a function` - crash immediato
+- ❌ **Blue Screen Hang**: Gioco rimane bloccato su schermo blu dopo login  
+- ❌ **Debug Panel Non Funziona**: Typing "debug" non risponde in produzione
+- ❌ **Profile Loading Timeout**: Loop infiniti di caricamento profilo
+- ❌ **Mailchimp 400 Error**: Sottoscrizione newsletter fallisce
+
+#### 📋 **CONSOLE ERROR DETAILS**:
+```
+Uncaught TypeError: this.isMobile is not a function
+    at Kr.create (GameScene)
+    at initialize.create (Phaser)
+    at startGame (index):515:35
+
+Profile loading timeout / Profile creation timeout
+Edge Function returned a non-2xx status code (Mailchimp)
+```
 
 ---
 

@@ -72,7 +72,7 @@ export class GameScene extends Phaser.Scene {
     // Check texture availability before starting
     const requiredTextures = ['charlie', 'btn_pause']
     const mobileTextures = ['btn_left', 'btn_right']
-    const isMobile = this.isMobile()
+    const isMobile = this.isMobile
     
     if (isMobile) {
       requiredTextures.push(...mobileTextures)
