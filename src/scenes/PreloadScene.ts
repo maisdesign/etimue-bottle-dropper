@@ -166,22 +166,34 @@ export class PreloadScene extends Phaser.Scene {
   }
 
   private generateAudio() {
-    // Create silent audio buffers as placeholders
-    const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)()
-    const sampleRate = audioContext.sampleRate
-    
-    // Create silent audio data
-    const createSilentAudio = (duration: number) => {
-      const frameCount = sampleRate * duration
-      const arrayBuffer = audioContext.createBuffer(1, frameCount, sampleRate)
-      return arrayBuffer
-    }
+    try {
+      // Create silent audio buffers as placeholders
+      if (!window.AudioContext && !(window as any).webkitAudioContext) {
+        logger.warn('AUDIO_GENERATION', 'AudioContext not supported, skipping audio generation')
+        return
+      }
+      
+      const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)()
+      const sampleRate = audioContext.sampleRate
+      
+      // Create silent audio data
+      const createSilentAudio = (duration: number) => {
+        const frameCount = sampleRate * duration
+        const arrayBuffer = audioContext.createBuffer(1, frameCount, sampleRate)
+        return arrayBuffer
+      }
 
-    // Store placeholder audio (in real implementation, load actual files)
-    this.cache.audio.add('music_bg', createSilentAudio(60))
-    this.cache.audio.add('pickup_good', createSilentAudio(0.2))
-    this.cache.audio.add('pickup_bad', createSilentAudio(0.3))
-    this.cache.audio.add('powerup', createSilentAudio(0.5))
+      // Store placeholder audio (in real implementation, load actual files)
+      this.cache.audio.add('music_bg', createSilentAudio(60))
+      this.cache.audio.add('pickup_good', createSilentAudio(0.2))
+      this.cache.audio.add('pickup_bad', createSilentAudio(0.3))
+      this.cache.audio.add('powerup', createSilentAudio(0.5))
+      
+      logger.info('AUDIO_GENERATION', 'Silent audio buffers generated successfully')
+    } catch (error) {
+      logger.error('AUDIO_GENERATION', 'Failed to generate audio buffers', error)
+      console.warn('⚠️ Audio generation failed, continuing without audio')
+    }
   }
 
   private loadRealAssets() {

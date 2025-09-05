@@ -127,9 +127,9 @@ class DebugPanel {
       }, 1000)
     })
     
-    // Also allow Ctrl+Shift+D
+    // Also allow Ctrl+Alt+D to avoid conflict with browser DevTools
     document.addEventListener('keydown', (e) => {
-      if (e.ctrlKey && e.shiftKey && e.key === 'D') {
+      if (e.ctrlKey && e.altKey && e.key === 'd') {
         e.preventDefault()
         this.toggle()
       }

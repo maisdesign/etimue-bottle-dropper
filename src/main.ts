@@ -51,38 +51,52 @@ const config: Phaser.Types.Core.GameConfig = {
 // Initialize game after auth is ready
 async function initGame() {
   console.log('🎮 Starting game initialization...')
-  console.log('📋 Auth ready status:', authManager.isReady())
-  console.log('📊 Current auth state:', authManager.getState())
+  logger.info('GAME_INIT', 'Starting game initialization')
   
-  // Wait for auth to be ready with timeout
-  if (!authManager.isReady()) {
-    console.log('⏳ Waiting for auth to be ready...')
+  try {
+    console.log('📋 Auth ready status:', authManager.isReady())
+    console.log('📊 Current auth state:', authManager.getState())
     
-    const authReadyPromise = new Promise<void>(resolve => {
-      const unsubscribe = authManager.subscribe(state => {
-        console.log('🔄 Auth state update in initGame:', {
-          isLoading: state.isLoading,
-          isAuthenticated: state.isAuthenticated,
-          email: state.user?.email
+    // Wait for auth to be ready with timeout
+    if (!authManager.isReady()) {
+      console.log('⏳ Waiting for auth to be ready...')
+      logger.info('AUTH_INIT', 'Auth not ready, waiting...')
+      
+      const authReadyPromise = new Promise<void>(resolve => {
+        const unsubscribe = authManager.subscribe(state => {
+          console.log('🔄 Auth state update in initGame:', {
+            isLoading: state.isLoading,
+            isAuthenticated: state.isAuthenticated,
+            email: state.user?.email
+          })
+          logger.debug('AUTH_INIT', 'Auth state update', state)
+          
+          if (!state.isLoading) {
+            console.log('✅ Auth is ready, starting Phaser game!')
+            logger.info('AUTH_INIT', 'Auth ready, proceeding with game')
+            unsubscribe()
+            resolve()
+          }
         })
-        if (!state.isLoading) {
-          console.log('✅ Auth is ready, starting Phaser game!')
-          unsubscribe()
-          resolve()
-        }
       })
-    })
-    
-    const timeoutPromise = new Promise<void>(resolve => {
-      setTimeout(() => {
-        console.log('⚠️ Auth timeout reached, starting game anyway...')
-        resolve()
-      }, 10000) // 10 second timeout
-    })
-    
-    await Promise.race([authReadyPromise, timeoutPromise])
-  } else {
-    console.log('✅ Auth already ready, starting Phaser game!')
+      
+      const timeoutPromise = new Promise<void>(resolve => {
+        setTimeout(() => {
+          console.log('⚠️ Auth timeout reached, starting game anyway...')
+          logger.warn('AUTH_INIT', 'Auth initialization timeout, proceeding anyway')
+          resolve()
+        }, 3000) // Reduced to 3 second timeout for faster debugging
+      })
+      
+      await Promise.race([authReadyPromise, timeoutPromise])
+    } else {
+      console.log('✅ Auth already ready, starting Phaser game!')
+      logger.info('AUTH_INIT', 'Auth already ready')
+    }
+  } catch (error) {
+    console.error('❌ Auth initialization error:', error)
+    logger.error('AUTH_INIT', 'Auth initialization failed', error)
+    // Continue anyway to not block the game completely
   }
 
   // Create Phaser game

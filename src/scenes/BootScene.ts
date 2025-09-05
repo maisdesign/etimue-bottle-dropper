@@ -55,17 +55,29 @@ export class BootScene extends Phaser.Scene {
     })
 
     // Load essential assets for preload scene
-    this.load.image('logo', 'data:image/svg+xml;base64,' + btoa(`
-      <svg width="200" height="100" xmlns="http://www.w3.org/2000/svg">
-        <rect width="200" height="100" fill="#87CEEB"/>
-        <text x="100" y="35" font-family="Arial, sans-serif" font-size="16" font-weight="bold" text-anchor="middle" fill="#333">
-          Etimuè
-        </text>
-        <text x="100" y="65" font-family="Arial, sans-serif" font-size="14" text-anchor="middle" fill="#333">
-          Bottle Dropper
-        </text>
-      </svg>
-    `))
+    // Try to load Charlie image for boot screen
+    this.load.image('boot_charlie', '/characters/charlie.png')
+    this.load.on('filecomplete-image-boot_charlie', () => {
+      console.log('✅ Loaded Charlie for boot screen')
+    })
+    
+    this.load.on('loaderror', (fileObj: any) => {
+      if (fileObj.key === 'boot_charlie') {
+        console.warn('❌ Failed to load charlie.png for boot, using SVG logo fallback')
+        // Create fallback logo as before
+        this.load.image('logo', 'data:image/svg+xml;base64,' + btoa(`
+          <svg width="200" height="100" xmlns="http://www.w3.org/2000/svg">
+            <rect width="200" height="100" fill="#87CEEB"/>
+            <text x="100" y="35" font-family="Arial, sans-serif" font-size="16" font-weight="bold" text-anchor="middle" fill="#333">
+              Etimuè
+            </text>
+            <text x="100" y="65" font-family="Arial, sans-serif" font-size="14" text-anchor="middle" fill="#333">
+              Bottle Dropper
+            </text>
+          </svg>
+        `))
+      }
+    })
 
     // Check PWA installability
     this.checkPWAInstallability()
@@ -104,10 +116,18 @@ export class BootScene extends Phaser.Scene {
     this.registry.set('analyticsConsent', analyticsConsent === 'true')
 
     // Show title briefly then go to preload
-    this.add.image(this.cameras.main.centerX, this.cameras.main.centerY - 50, 'logo')
+    // Use Charlie if available, otherwise use logo
+    const imageKey = this.textures.exists('boot_charlie') ? 'boot_charlie' : 'logo'
+    const bootImage = this.add.image(this.cameras.main.centerX, this.cameras.main.centerY - 50, imageKey)
       .setOrigin(0.5)
+    
+    // If using Charlie, scale it appropriately for boot screen
+    if (imageKey === 'boot_charlie') {
+      bootImage.setScale(0.3) // Scale down Charlie to fit boot screen
+    }
 
-    this.add.text(this.cameras.main.centerX, this.cameras.main.centerY + 50, 'Initializing...', {
+    this.add.text(this.cameras.main.centerX, this.cameras.main.centerY + 50, 
+      i18n.getCurrentLanguage() === 'it' ? 'Inizializzazione...' : 'Initializing...', {
       fontSize: '16px',
       color: '#333333'
     }).setOrigin(0.5)
