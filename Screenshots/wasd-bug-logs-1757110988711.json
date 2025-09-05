@@ -1,0 +1,1143 @@
+{
+  "timestamp": "2025-09-05T22:23:08.710Z",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36",
+  "url": "https://astounding-rolypoly-fc5137.netlify.app/",
+  "logs": [
+    {
+      "timestamp": 1757110944324,
+      "level": "NUCLEAR",
+      "category": "AUTH_MODAL_SHOW",
+      "message": "AuthModal.show() called - NUCLEAR WASD FIX ACTIVE"
+    },
+    {
+      "timestamp": 1757110944350,
+      "level": "NUCLEAR",
+      "category": "PHASER_KEYBOARD",
+      "message": "Calling managePhaserKeyboard.disable()"
+    },
+    {
+      "timestamp": 1757110944351,
+      "level": "NUCLEAR",
+      "category": "WASD_FIX",
+      "message": "Starting NUCLEAR game key prevention system"
+    },
+    {
+      "timestamp": 1757110944352,
+      "level": "NUCLEAR",
+      "category": "WASD_LISTENERS",
+      "message": "Added MAXIMUM PRIORITY key event listeners",
+      "data": {
+        "listenerCount": 3,
+        "captureMode": true,
+        "passiveMode": false
+      }
+    },
+    {
+      "timestamp": 1757110944455,
+      "level": "INFO",
+      "category": "AUTH_MODAL_FOCUS",
+      "message": "Focused first input element",
+      "data": {
+        "inputId": "auth-email-input",
+        "inputType": "email",
+        "inputValue": ""
+      }
+    },
+    {
+      "timestamp": 1757110947850,
+      "level": "NUCLEAR",
+      "category": "AUTH_MODAL_SHOW",
+      "message": "AuthModal.show() called - NUCLEAR WASD FIX ACTIVE"
+    },
+    {
+      "timestamp": 1757110947851,
+      "level": "NUCLEAR",
+      "category": "PHASER_KEYBOARD",
+      "message": "Calling managePhaserKeyboard.disable()"
+    },
+    {
+      "timestamp": 1757110947852,
+      "level": "NUCLEAR",
+      "category": "WASD_FIX",
+      "message": "Starting NUCLEAR game key prevention system"
+    },
+    {
+      "timestamp": 1757110947853,
+      "level": "NUCLEAR",
+      "category": "WASD_LISTENERS",
+      "message": "Added MAXIMUM PRIORITY key event listeners",
+      "data": {
+        "listenerCount": 3,
+        "captureMode": true,
+        "passiveMode": false
+      }
+    },
+    {
+      "timestamp": 1757110947954,
+      "level": "INFO",
+      "category": "AUTH_MODAL_FOCUS",
+      "message": "Focused first input element",
+      "data": {
+        "inputId": "auth-email-input",
+        "inputType": "email",
+        "inputValue": ""
+      }
+    },
+    {
+      "timestamp": 1757110948665,
+      "level": "NUCLEAR",
+      "category": "WASD_KEY_INTERCEPTED",
+      "message": "Intercepted KeyA",
+      "data": {
+        "eventType": "keydown",
+        "target": "INPUT",
+        "targetId": "nickname-input",
+        "targetValue": "Marco Cardia",
+        "defaultPrevented": false,
+        "bubbles": true,
+        "cancelable": true,
+        "timestamp": 155325.59999999404
+      }
+    },
+    {
+      "timestamp": 1757110948667,
+      "level": "NUCLEAR",
+      "category": "WASD_MANUAL_INSERT",
+      "message": "Manually inserted 'a'",
+      "data": {
+        "originalValue": "Marco Cardia",
+        "newValue": "Marco Cardiaa",
+        "cursorStart": 12,
+        "cursorEnd": 12,
+        "success": true
+      }
+    },
+    {
+      "timestamp": 1757110948756,
+      "level": "NUCLEAR",
+      "category": "WASD_KEY_INTERCEPTED",
+      "message": "Intercepted KeyA",
+      "data": {
+        "eventType": "keyup",
+        "target": "INPUT",
+        "targetId": "nickname-input",
+        "targetValue": "Marco Cardiaa",
+        "defaultPrevented": false,
+        "bubbles": true,
+        "cancelable": true,
+        "timestamp": 155416.89999999106
+      }
+    },
+    {
+      "timestamp": 1757110948758,
+      "level": "NUCLEAR",
+      "category": "WASD_MANUAL_INSERT",
+      "message": "Manually inserted 'a'",
+      "data": {
+        "originalValue": "Marco Cardiaa",
+        "newValue": "Marco Cardiaaa",
+        "cursorStart": 13,
+        "cursorEnd": 13,
+        "success": true
+      }
+    },
+    {
+      "timestamp": 1757110952030,
+      "level": "NUCLEAR",
+      "category": "WASD_KEY_INTERCEPTED",
+      "message": "Intercepted KeyA",
+      "data": {
+        "eventType": "keydown",
+        "target": "INPUT",
+        "targetId": "nickname-input",
+        "targetValue": "T",
+        "defaultPrevented": false,
+        "bubbles": true,
+        "cancelable": true,
+        "timestamp": 158690.39999999106
+      }
+    },
+    {
+      "timestamp": 1757110952032,
+      "level": "NUCLEAR",
+      "category": "WASD_MANUAL_INSERT",
+      "message": "Manually inserted 'a'",
+      "data": {
+        "originalValue": "T",
+        "newValue": "Ta",
+        "cursorStart": 1,
+        "cursorEnd": 1,
+        "success": true
+      }
+    },
+    {
+      "timestamp": 1757110952078,
+      "level": "NUCLEAR",
+      "category": "WASD_KEY_INTERCEPTED",
+      "message": "Intercepted KeyA",
+      "data": {
+        "eventType": "keyup",
+        "target": "INPUT",
+        "targetId": "nickname-input",
+        "targetValue": "Ta",
+        "defaultPrevented": false,
+        "bubbles": true,
+        "cancelable": true,
+        "timestamp": 158738.5
+      }
+    },
+    {
+      "timestamp": 1757110952079,
+      "level": "NUCLEAR",
+      "category": "WASD_MANUAL_INSERT",
+      "message": "Manually inserted 'a'",
+      "data": {
+        "originalValue": "Ta",
+        "newValue": "Taa",
+        "cursorStart": 2,
+        "cursorEnd": 2,
+        "success": true
+      }
+    },
+    {
+      "timestamp": 1757110952817,
+      "level": "NUCLEAR",
+      "category": "WASD_KEY_INTERCEPTED",
+      "message": "Intercepted KeyA",
+      "data": {
+        "eventType": "keydown",
+        "target": "INPUT",
+        "targetId": "nickname-input",
+        "targetValue": "Ta",
+        "defaultPrevented": false,
+        "bubbles": true,
+        "cancelable": true,
+        "timestamp": 159477.69999998808
+      }
+    },
+    {
+      "timestamp": 1757110952819,
+      "level": "NUCLEAR",
+      "category": "WASD_MANUAL_INSERT",
+      "message": "Manually inserted 'a'",
+      "data": {
+        "originalValue": "Ta",
+        "newValue": "Taa",
+        "cursorStart": 2,
+        "cursorEnd": 2,
+        "success": true
+      }
+    },
+    {
+      "timestamp": 1757110952910,
+      "level": "NUCLEAR",
+      "category": "WASD_KEY_INTERCEPTED",
+      "message": "Intercepted KeyA",
+      "data": {
+        "eventType": "keyup",
+        "target": "INPUT",
+        "targetId": "nickname-input",
+        "targetValue": "Taa",
+        "defaultPrevented": false,
+        "bubbles": true,
+        "cancelable": true,
+        "timestamp": 159571.19999998808
+      }
+    },
+    {
+      "timestamp": 1757110952912,
+      "level": "NUCLEAR",
+      "category": "WASD_MANUAL_INSERT",
+      "message": "Manually inserted 'a'",
+      "data": {
+        "originalValue": "Taa",
+        "newValue": "Taaa",
+        "cursorStart": 3,
+        "cursorEnd": 3,
+        "success": true
+      }
+    },
+    {
+      "timestamp": 1757110953397,
+      "level": "NUCLEAR",
+      "category": "WASD_KEY_INTERCEPTED",
+      "message": "Intercepted KeyA",
+      "data": {
+        "eventType": "keydown",
+        "target": "INPUT",
+        "targetId": "nickname-input",
+        "targetValue": "Taaa",
+        "defaultPrevented": false,
+        "bubbles": true,
+        "cancelable": true,
+        "timestamp": 160058.09999999404
+      }
+    },
+    {
+      "timestamp": 1757110953400,
+      "level": "NUCLEAR",
+      "category": "WASD_MANUAL_INSERT",
+      "message": "Manually inserted 'a'",
+      "data": {
+        "originalValue": "Taaa",
+        "newValue": "Taaaa",
+        "cursorStart": 4,
+        "cursorEnd": 4,
+        "success": true
+      }
+    },
+    {
+      "timestamp": 1757110953471,
+      "level": "NUCLEAR",
+      "category": "WASD_KEY_INTERCEPTED",
+      "message": "Intercepted KeyA",
+      "data": {
+        "eventType": "keyup",
+        "target": "INPUT",
+        "targetId": "nickname-input",
+        "targetValue": "Taaaa",
+        "defaultPrevented": false,
+        "bubbles": true,
+        "cancelable": true,
+        "timestamp": 160131.29999999702
+      }
+    },
+    {
+      "timestamp": 1757110953473,
+      "level": "NUCLEAR",
+      "category": "WASD_MANUAL_INSERT",
+      "message": "Manually inserted 'a'",
+      "data": {
+        "originalValue": "Taaaa",
+        "newValue": "Taaaaa",
+        "cursorStart": 5,
+        "cursorEnd": 5,
+        "success": true
+      }
+    },
+    {
+      "timestamp": 1757110953819,
+      "level": "NUCLEAR",
+      "category": "WASD_KEY_INTERCEPTED",
+      "message": "Intercepted KeyA",
+      "data": {
+        "eventType": "keydown",
+        "target": "INPUT",
+        "targetId": "nickname-input",
+        "targetValue": "Taaaaa",
+        "defaultPrevented": false,
+        "bubbles": true,
+        "cancelable": true,
+        "timestamp": 160479.5
+      }
+    },
+    {
+      "timestamp": 1757110953821,
+      "level": "NUCLEAR",
+      "category": "WASD_MANUAL_INSERT",
+      "message": "Manually inserted 'a'",
+      "data": {
+        "originalValue": "Taaaaa",
+        "newValue": "Taaaaaa",
+        "cursorStart": 6,
+        "cursorEnd": 6,
+        "success": true
+      }
+    },
+    {
+      "timestamp": 1757110953870,
+      "level": "NUCLEAR",
+      "category": "WASD_KEY_INTERCEPTED",
+      "message": "Intercepted KeyA",
+      "data": {
+        "eventType": "keyup",
+        "target": "INPUT",
+        "targetId": "nickname-input",
+        "targetValue": "Taaaaaa",
+        "defaultPrevented": false,
+        "bubbles": true,
+        "cancelable": true,
+        "timestamp": 160530.69999998808
+      }
+    },
+    {
+      "timestamp": 1757110953873,
+      "level": "NUCLEAR",
+      "category": "WASD_MANUAL_INSERT",
+      "message": "Manually inserted 'a'",
+      "data": {
+        "originalValue": "Taaaaaa",
+        "newValue": "Taaaaaaa",
+        "cursorStart": 7,
+        "cursorEnd": 7,
+        "success": true
+      }
+    },
+    {
+      "timestamp": 1757110954195,
+      "level": "NUCLEAR",
+      "category": "WASD_KEY_INTERCEPTED",
+      "message": "Intercepted KeyA",
+      "data": {
+        "eventType": "keydown",
+        "target": "INPUT",
+        "targetId": "nickname-input",
+        "targetValue": "Taaaaaaa",
+        "defaultPrevented": false,
+        "bubbles": true,
+        "cancelable": true,
+        "timestamp": 160855.79999999702
+      }
+    },
+    {
+      "timestamp": 1757110954198,
+      "level": "NUCLEAR",
+      "category": "WASD_MANUAL_INSERT",
+      "message": "Manually inserted 'a'",
+      "data": {
+        "originalValue": "Taaaaaaa",
+        "newValue": "Taaaaaaaa",
+        "cursorStart": 8,
+        "cursorEnd": 8,
+        "success": true
+      }
+    },
+    {
+      "timestamp": 1757110954265,
+      "level": "NUCLEAR",
+      "category": "WASD_KEY_INTERCEPTED",
+      "message": "Intercepted KeyA",
+      "data": {
+        "eventType": "keyup",
+        "target": "INPUT",
+        "targetId": "nickname-input",
+        "targetValue": "Taaaaaaaa",
+        "defaultPrevented": false,
+        "bubbles": true,
+        "cancelable": true,
+        "timestamp": 160925.39999999106
+      }
+    },
+    {
+      "timestamp": 1757110954267,
+      "level": "NUCLEAR",
+      "category": "WASD_MANUAL_INSERT",
+      "message": "Manually inserted 'a'",
+      "data": {
+        "originalValue": "Taaaaaaaa",
+        "newValue": "Taaaaaaaaa",
+        "cursorStart": 9,
+        "cursorEnd": 9,
+        "success": true
+      }
+    },
+    {
+      "timestamp": 1757110961202,
+      "level": "NUCLEAR",
+      "category": "WASD_KEY_INTERCEPTED",
+      "message": "Intercepted Space",
+      "data": {
+        "eventType": "keydown",
+        "target": "INPUT",
+        "targetId": "nickname-input",
+        "targetValue": "Taky",
+        "defaultPrevented": false,
+        "bubbles": true,
+        "cancelable": true,
+        "timestamp": 167862.59999999404
+      }
+    },
+    {
+      "timestamp": 1757110961248,
+      "level": "NUCLEAR",
+      "category": "WASD_KEY_INTERCEPTED",
+      "message": "Intercepted Space",
+      "data": {
+        "eventType": "keyup",
+        "target": "INPUT",
+        "targetId": "nickname-input",
+        "targetValue": "Taky",
+        "defaultPrevented": false,
+        "bubbles": true,
+        "cancelable": true,
+        "timestamp": 167908.69999998808
+      }
+    },
+    {
+      "timestamp": 1757110962910,
+      "level": "NUCLEAR",
+      "category": "WASD_KEY_INTERCEPTED",
+      "message": "Intercepted Space",
+      "data": {
+        "eventType": "keydown",
+        "target": "INPUT",
+        "targetId": "nickname-input",
+        "targetValue": "Taky",
+        "defaultPrevented": false,
+        "bubbles": true,
+        "cancelable": true,
+        "timestamp": 169571.09999999404
+      }
+    },
+    {
+      "timestamp": 1757110963001,
+      "level": "NUCLEAR",
+      "category": "WASD_KEY_INTERCEPTED",
+      "message": "Intercepted Space",
+      "data": {
+        "eventType": "keyup",
+        "target": "INPUT",
+        "targetId": "nickname-input",
+        "targetValue": "Taky",
+        "defaultPrevented": false,
+        "bubbles": true,
+        "cancelable": true,
+        "timestamp": 169662.09999999404
+      }
+    },
+    {
+      "timestamp": 1757110963097,
+      "level": "NUCLEAR",
+      "category": "WASD_KEY_INTERCEPTED",
+      "message": "Intercepted Space",
+      "data": {
+        "eventType": "keydown",
+        "target": "INPUT",
+        "targetId": "nickname-input",
+        "targetValue": "Taky",
+        "defaultPrevented": false,
+        "bubbles": true,
+        "cancelable": true,
+        "timestamp": 169757.79999999702
+      }
+    },
+    {
+      "timestamp": 1757110963187,
+      "level": "NUCLEAR",
+      "category": "WASD_KEY_INTERCEPTED",
+      "message": "Intercepted Space",
+      "data": {
+        "eventType": "keyup",
+        "target": "INPUT",
+        "targetId": "nickname-input",
+        "targetValue": "Taky",
+        "defaultPrevented": false,
+        "bubbles": true,
+        "cancelable": true,
+        "timestamp": 169847.69999998808
+      }
+    },
+    {
+      "timestamp": 1757110963937,
+      "level": "NUCLEAR",
+      "category": "WASD_KEY_INTERCEPTED",
+      "message": "Intercepted Space",
+      "data": {
+        "eventType": "keydown",
+        "target": "INPUT",
+        "targetId": "nickname-input",
+        "targetValue": "Taky",
+        "defaultPrevented": false,
+        "bubbles": true,
+        "cancelable": true,
+        "timestamp": 170597.5
+      }
+    },
+    {
+      "timestamp": 1757110964006,
+      "level": "NUCLEAR",
+      "category": "WASD_KEY_INTERCEPTED",
+      "message": "Intercepted Space",
+      "data": {
+        "eventType": "keyup",
+        "target": "INPUT",
+        "targetId": "nickname-input",
+        "targetValue": "Taky",
+        "defaultPrevented": false,
+        "bubbles": true,
+        "cancelable": true,
+        "timestamp": 170666.59999999404
+      }
+    },
+    {
+      "timestamp": 1757110964460,
+      "level": "NUCLEAR",
+      "category": "WASD_KEY_INTERCEPTED",
+      "message": "Intercepted KeyW",
+      "data": {
+        "eventType": "keydown",
+        "target": "INPUT",
+        "targetId": "nickname-input",
+        "targetValue": "Taky",
+        "defaultPrevented": false,
+        "bubbles": true,
+        "cancelable": true,
+        "timestamp": 171120.89999999106
+      }
+    },
+    {
+      "timestamp": 1757110964464,
+      "level": "NUCLEAR",
+      "category": "WASD_MANUAL_INSERT",
+      "message": "Manually inserted 'w'",
+      "data": {
+        "originalValue": "Taky",
+        "newValue": "Takyw",
+        "cursorStart": 4,
+        "cursorEnd": 4,
+        "success": true
+      }
+    },
+    {
+      "timestamp": 1757110964625,
+      "level": "NUCLEAR",
+      "category": "WASD_KEY_INTERCEPTED",
+      "message": "Intercepted KeyW",
+      "data": {
+        "eventType": "keyup",
+        "target": "INPUT",
+        "targetId": "nickname-input",
+        "targetValue": "Takyw",
+        "defaultPrevented": false,
+        "bubbles": true,
+        "cancelable": true,
+        "timestamp": 171286.19999998808
+      }
+    },
+    {
+      "timestamp": 1757110964629,
+      "level": "NUCLEAR",
+      "category": "WASD_MANUAL_INSERT",
+      "message": "Manually inserted 'w'",
+      "data": {
+        "originalValue": "Takyw",
+        "newValue": "Takyww",
+        "cursorStart": 5,
+        "cursorEnd": 5,
+        "success": true
+      }
+    },
+    {
+      "timestamp": 1757110964911,
+      "level": "NUCLEAR",
+      "category": "WASD_KEY_INTERCEPTED",
+      "message": "Intercepted KeyW",
+      "data": {
+        "eventType": "keydown",
+        "target": "INPUT",
+        "targetId": "nickname-input",
+        "targetValue": "Takywwe",
+        "defaultPrevented": false,
+        "bubbles": true,
+        "cancelable": true,
+        "timestamp": 171571.5
+      }
+    },
+    {
+      "timestamp": 1757110964915,
+      "level": "NUCLEAR",
+      "category": "WASD_MANUAL_INSERT",
+      "message": "Manually inserted 'w'",
+      "data": {
+        "originalValue": "Takywwe",
+        "newValue": "Takywwew",
+        "cursorStart": 7,
+        "cursorEnd": 7,
+        "success": true
+      }
+    },
+    {
+      "timestamp": 1757110965049,
+      "level": "NUCLEAR",
+      "category": "WASD_KEY_INTERCEPTED",
+      "message": "Intercepted KeyW",
+      "data": {
+        "eventType": "keyup",
+        "target": "INPUT",
+        "targetId": "nickname-input",
+        "targetValue": "Takywwew",
+        "defaultPrevented": false,
+        "bubbles": true,
+        "cancelable": true,
+        "timestamp": 171709.59999999404
+      }
+    },
+    {
+      "timestamp": 1757110965054,
+      "level": "NUCLEAR",
+      "category": "WASD_MANUAL_INSERT",
+      "message": "Manually inserted 'w'",
+      "data": {
+        "originalValue": "Takywwew",
+        "newValue": "Takywweww",
+        "cursorStart": 8,
+        "cursorEnd": 8,
+        "success": true
+      }
+    },
+    {
+      "timestamp": 1757110965899,
+      "level": "NUCLEAR",
+      "category": "WASD_KEY_INTERCEPTED",
+      "message": "Intercepted KeyW",
+      "data": {
+        "eventType": "keydown",
+        "target": "INPUT",
+        "targetId": "nickname-input",
+        "targetValue": "Takywweww",
+        "defaultPrevented": false,
+        "bubbles": true,
+        "cancelable": true,
+        "timestamp": 172559.39999999106
+      }
+    },
+    {
+      "timestamp": 1757110965904,
+      "level": "NUCLEAR",
+      "category": "WASD_MANUAL_INSERT",
+      "message": "Manually inserted 'w'",
+      "data": {
+        "originalValue": "Takywweww",
+        "newValue": "Takywwewww",
+        "cursorStart": 9,
+        "cursorEnd": 9,
+        "success": true
+      }
+    },
+    {
+      "timestamp": 1757110965950,
+      "level": "NUCLEAR",
+      "category": "WASD_KEY_INTERCEPTED",
+      "message": "Intercepted KeyW",
+      "data": {
+        "eventType": "keyup",
+        "target": "INPUT",
+        "targetId": "nickname-input",
+        "targetValue": "Takywwewww",
+        "defaultPrevented": false,
+        "bubbles": true,
+        "cancelable": true,
+        "timestamp": 172610.5
+      }
+    },
+    {
+      "timestamp": 1757110965954,
+      "level": "NUCLEAR",
+      "category": "WASD_MANUAL_INSERT",
+      "message": "Manually inserted 'w'",
+      "data": {
+        "originalValue": "Takywwewww",
+        "newValue": "Takywwewwww",
+        "cursorStart": 10,
+        "cursorEnd": 10,
+        "success": true
+      }
+    },
+    {
+      "timestamp": 1757110975420,
+      "level": "NUCLEAR",
+      "category": "WASD_KEY_INTERCEPTED",
+      "message": "Intercepted KeyA",
+      "data": {
+        "eventType": "keydown",
+        "target": "INPUT",
+        "targetId": "nickname-input",
+        "targetValue": "Taky",
+        "defaultPrevented": false,
+        "bubbles": true,
+        "cancelable": true,
+        "timestamp": 182080.89999999106
+      }
+    },
+    {
+      "timestamp": 1757110975425,
+      "level": "NUCLEAR",
+      "category": "WASD_MANUAL_INSERT",
+      "message": "Manually inserted 'a'",
+      "data": {
+        "originalValue": "Taky",
+        "newValue": "Takya",
+        "cursorStart": 4,
+        "cursorEnd": 4,
+        "success": true
+      }
+    },
+    {
+      "timestamp": 1757110975515,
+      "level": "NUCLEAR",
+      "category": "WASD_KEY_INTERCEPTED",
+      "message": "Intercepted KeyA",
+      "data": {
+        "eventType": "keyup",
+        "target": "INPUT",
+        "targetId": "nickname-input",
+        "targetValue": "Takya",
+        "defaultPrevented": false,
+        "bubbles": true,
+        "cancelable": true,
+        "timestamp": 182175.5
+      }
+    },
+    {
+      "timestamp": 1757110975519,
+      "level": "NUCLEAR",
+      "category": "WASD_MANUAL_INSERT",
+      "message": "Manually inserted 'a'",
+      "data": {
+        "originalValue": "Takya",
+        "newValue": "Takyaa",
+        "cursorStart": 5,
+        "cursorEnd": 5,
+        "success": true
+      }
+    },
+    {
+      "timestamp": 1757110975660,
+      "level": "NUCLEAR",
+      "category": "WASD_KEY_INTERCEPTED",
+      "message": "Intercepted KeyS",
+      "data": {
+        "eventType": "keydown",
+        "target": "INPUT",
+        "targetId": "nickname-input",
+        "targetValue": "Takyaa",
+        "defaultPrevented": false,
+        "bubbles": true,
+        "cancelable": true,
+        "timestamp": 182321.09999999404
+      }
+    },
+    {
+      "timestamp": 1757110975665,
+      "level": "NUCLEAR",
+      "category": "WASD_MANUAL_INSERT",
+      "message": "Manually inserted 's'",
+      "data": {
+        "originalValue": "Takyaa",
+        "newValue": "Takyaas",
+        "cursorStart": 6,
+        "cursorEnd": 6,
+        "success": true
+      }
+    },
+    {
+      "timestamp": 1757110975737,
+      "level": "NUCLEAR",
+      "category": "WASD_KEY_INTERCEPTED",
+      "message": "Intercepted KeyS",
+      "data": {
+        "eventType": "keyup",
+        "target": "INPUT",
+        "targetId": "nickname-input",
+        "targetValue": "Takyaas",
+        "defaultPrevented": false,
+        "bubbles": true,
+        "cancelable": true,
+        "timestamp": 182397.79999999702
+      }
+    },
+    {
+      "timestamp": 1757110975745,
+      "level": "NUCLEAR",
+      "category": "WASD_MANUAL_INSERT",
+      "message": "Manually inserted 's'",
+      "data": {
+        "originalValue": "Takyaas",
+        "newValue": "Takyaass",
+        "cursorStart": 7,
+        "cursorEnd": 7,
+        "success": true
+      }
+    },
+    {
+      "timestamp": 1757110975867,
+      "level": "NUCLEAR",
+      "category": "WASD_KEY_INTERCEPTED",
+      "message": "Intercepted KeyD",
+      "data": {
+        "eventType": "keydown",
+        "target": "INPUT",
+        "targetId": "nickname-input",
+        "targetValue": "Takyaass",
+        "defaultPrevented": false,
+        "bubbles": true,
+        "cancelable": true,
+        "timestamp": 182526.69999998808
+      }
+    },
+    {
+      "timestamp": 1757110975872,
+      "level": "NUCLEAR",
+      "category": "WASD_MANUAL_INSERT",
+      "message": "Manually inserted 'd'",
+      "data": {
+        "originalValue": "Takyaass",
+        "newValue": "Takyaassd",
+        "cursorStart": 8,
+        "cursorEnd": 8,
+        "success": true
+      }
+    },
+    {
+      "timestamp": 1757110975931,
+      "level": "NUCLEAR",
+      "category": "WASD_KEY_INTERCEPTED",
+      "message": "Intercepted KeyD",
+      "data": {
+        "eventType": "keyup",
+        "target": "INPUT",
+        "targetId": "nickname-input",
+        "targetValue": "Takyaassd",
+        "defaultPrevented": false,
+        "bubbles": true,
+        "cancelable": true,
+        "timestamp": 182592
+      }
+    },
+    {
+      "timestamp": 1757110975937,
+      "level": "NUCLEAR",
+      "category": "WASD_MANUAL_INSERT",
+      "message": "Manually inserted 'd'",
+      "data": {
+        "originalValue": "Takyaassd",
+        "newValue": "Takyaassdd",
+        "cursorStart": 9,
+        "cursorEnd": 9,
+        "success": true
+      }
+    },
+    {
+      "timestamp": 1757110980464,
+      "level": "NUCLEAR",
+      "category": "WASD_KEY_INTERCEPTED",
+      "message": "Intercepted KeyW",
+      "data": {
+        "eventType": "keydown",
+        "target": "INPUT",
+        "targetId": "nickname-input",
+        "targetValue": "Taky",
+        "defaultPrevented": false,
+        "bubbles": true,
+        "cancelable": true,
+        "timestamp": 187124.89999999106
+      }
+    },
+    {
+      "timestamp": 1757110980470,
+      "level": "NUCLEAR",
+      "category": "WASD_MANUAL_INSERT",
+      "message": "Manually inserted 'w'",
+      "data": {
+        "originalValue": "Taky",
+        "newValue": "Takyw",
+        "cursorStart": 4,
+        "cursorEnd": 4,
+        "success": true
+      }
+    },
+    {
+      "timestamp": 1757110980519,
+      "level": "NUCLEAR",
+      "category": "WASD_KEY_INTERCEPTED",
+      "message": "Intercepted KeyW",
+      "data": {
+        "eventType": "keyup",
+        "target": "INPUT",
+        "targetId": "nickname-input",
+        "targetValue": "Takyw",
+        "defaultPrevented": false,
+        "bubbles": true,
+        "cancelable": true,
+        "timestamp": 187179.59999999404
+      }
+    },
+    {
+      "timestamp": 1757110980525,
+      "level": "NUCLEAR",
+      "category": "WASD_MANUAL_INSERT",
+      "message": "Manually inserted 'w'",
+      "data": {
+        "originalValue": "Takyw",
+        "newValue": "Takyww",
+        "cursorStart": 5,
+        "cursorEnd": 5,
+        "success": true
+      }
+    },
+    {
+      "timestamp": 1757110980980,
+      "level": "NUCLEAR",
+      "category": "WASD_KEY_INTERCEPTED",
+      "message": "Intercepted KeyA",
+      "data": {
+        "eventType": "keydown",
+        "target": "INPUT",
+        "targetId": "nickname-input",
+        "targetValue": "Takyww",
+        "defaultPrevented": false,
+        "bubbles": true,
+        "cancelable": true,
+        "timestamp": 187640.39999999106
+      }
+    },
+    {
+      "timestamp": 1757110980985,
+      "level": "NUCLEAR",
+      "category": "WASD_MANUAL_INSERT",
+      "message": "Manually inserted 'a'",
+      "data": {
+        "originalValue": "Takyww",
+        "newValue": "Takywwa",
+        "cursorStart": 6,
+        "cursorEnd": 6,
+        "success": true
+      }
+    },
+    {
+      "timestamp": 1757110981029,
+      "level": "NUCLEAR",
+      "category": "WASD_KEY_INTERCEPTED",
+      "message": "Intercepted KeyA",
+      "data": {
+        "eventType": "keyup",
+        "target": "INPUT",
+        "targetId": "nickname-input",
+        "targetValue": "Takywwa",
+        "defaultPrevented": false,
+        "bubbles": true,
+        "cancelable": true,
+        "timestamp": 187689.69999998808
+      }
+    },
+    {
+      "timestamp": 1757110981035,
+      "level": "NUCLEAR",
+      "category": "WASD_MANUAL_INSERT",
+      "message": "Manually inserted 'a'",
+      "data": {
+        "originalValue": "Takywwa",
+        "newValue": "Takywwaa",
+        "cursorStart": 7,
+        "cursorEnd": 7,
+        "success": true
+      }
+    },
+    {
+      "timestamp": 1757110981653,
+      "level": "NUCLEAR",
+      "category": "WASD_KEY_INTERCEPTED",
+      "message": "Intercepted KeyS",
+      "data": {
+        "eventType": "keydown",
+        "target": "INPUT",
+        "targetId": "nickname-input",
+        "targetValue": "Takywwaa",
+        "defaultPrevented": false,
+        "bubbles": true,
+        "cancelable": true,
+        "timestamp": 188313.39999999106
+      }
+    },
+    {
+      "timestamp": 1757110981659,
+      "level": "NUCLEAR",
+      "category": "WASD_MANUAL_INSERT",
+      "message": "Manually inserted 's'",
+      "data": {
+        "originalValue": "Takywwaa",
+        "newValue": "Takywwaas",
+        "cursorStart": 8,
+        "cursorEnd": 8,
+        "success": true
+      }
+    },
+    {
+      "timestamp": 1757110981677,
+      "level": "NUCLEAR",
+      "category": "WASD_KEY_INTERCEPTED",
+      "message": "Intercepted KeyS",
+      "data": {
+        "eventType": "keyup",
+        "target": "INPUT",
+        "targetId": "nickname-input",
+        "targetValue": "Takywwaas",
+        "defaultPrevented": false,
+        "bubbles": true,
+        "cancelable": true,
+        "timestamp": 188337.89999999106
+      }
+    },
+    {
+      "timestamp": 1757110981686,
+      "level": "NUCLEAR",
+      "category": "WASD_MANUAL_INSERT",
+      "message": "Manually inserted 's'",
+      "data": {
+        "originalValue": "Takywwaas",
+        "newValue": "Takywwaass",
+        "cursorStart": 9,
+        "cursorEnd": 9,
+        "success": true
+      }
+    },
+    {
+      "timestamp": 1757110982194,
+      "level": "NUCLEAR",
+      "category": "WASD_KEY_INTERCEPTED",
+      "message": "Intercepted KeyD",
+      "data": {
+        "eventType": "keydown",
+        "target": "INPUT",
+        "targetId": "nickname-input",
+        "targetValue": "Takywwaass",
+        "defaultPrevented": false,
+        "bubbles": true,
+        "cancelable": true,
+        "timestamp": 188855
+      }
+    },
+    {
+      "timestamp": 1757110982201,
+      "level": "NUCLEAR",
+      "category": "WASD_MANUAL_INSERT",
+      "message": "Manually inserted 'd'",
+      "data": {
+        "originalValue": "Takywwaass",
+        "newValue": "Takywwaassd",
+        "cursorStart": 10,
+        "cursorEnd": 10,
+        "success": true
+      }
+    },
+    {
+      "timestamp": 1757110982247,
+      "level": "NUCLEAR",
+      "category": "WASD_KEY_INTERCEPTED",
+      "message": "Intercepted KeyD",
+      "data": {
+        "eventType": "keyup",
+        "target": "INPUT",
+        "targetId": "nickname-input",
+        "targetValue": "Takywwaassd",
+        "defaultPrevented": false,
+        "bubbles": true,
+        "cancelable": true,
+        "timestamp": 188907.19999998808
+      }
+    },
+    {
+      "timestamp": 1757110982254,
+      "level": "NUCLEAR",
+      "category": "WASD_MANUAL_INSERT",
+      "message": "Manually inserted 'd'",
+      "data": {
+        "originalValue": "Takywwaassd",
+        "newValue": "Takywwaassdd",
+        "cursorStart": 11,
+        "cursorEnd": 11,
+        "success": true
+      }
+    }
+  ]
+}

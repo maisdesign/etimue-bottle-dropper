@@ -214,3 +214,4 @@ The system is **PRODUCTION READY** and deployed. Ready for character selection s
 - Controlla sempre se ci sono screenshot, leggili e poi cancellali
 - memory Netlify gets its file from the dist folder so to push things online we have to build and then push the changes there.\
 Other files are for the local version of the game
+- I file dist non sono ignorati, sono quello che fa funzionare Netlify

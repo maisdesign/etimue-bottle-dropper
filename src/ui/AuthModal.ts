@@ -694,8 +694,8 @@ export class AuthModal {
         event.stopPropagation()
         event.stopImmediatePropagation()
         
-        // For input fields, manually insert the character
-        if (target && (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA')) {
+        // For input fields, manually insert the character ONLY on keydown (not keyup)
+        if (target && (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA') && event.type === 'keydown') {
           const char = event.code.replace('Key', '').toLowerCase()
           if (['w', 'a', 's', 'd'].includes(char)) {
             const originalValue = target.value
@@ -709,7 +709,7 @@ export class AuthModal {
             // Trigger input event
             target.dispatchEvent(new Event('input', { bubbles: true }))
             
-            advancedLogger.nuclear('WASD_MANUAL_INSERT', `Manually inserted '${char}'`, {
+            advancedLogger.nuclear('WASD_MANUAL_INSERT', `Manually inserted '${char}' on ${event.type}`, {
               originalValue,
               newValue: target.value,
               cursorStart: start,
