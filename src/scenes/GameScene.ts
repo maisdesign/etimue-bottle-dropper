@@ -2,6 +2,8 @@ import Phaser from 'phaser'
 import { scoreService } from '@/net/supabaseClient'
 import { authManager } from '@/net/authManager'
 import { t } from '@/i18n'
+import { logger } from '@/utils/Logger'
+import { gameStateTracker } from '@/utils/GameStateTracker'
 
 interface MobileControls {
   leftPressed: boolean
@@ -62,8 +64,27 @@ export class GameScene extends Phaser.Scene {
   }
 
   create() {
+    logger.info('GAME_CREATE', 'GameScene create started')
+    
     const width = this.cameras.main.width
     const height = this.cameras.main.height
+    
+    // Check texture availability before starting
+    const requiredTextures = ['charlie', 'btn_pause']
+    const mobileTextures = ['btn_left', 'btn_right']
+    const isMobile = this.isMobile()
+    
+    if (isMobile) {
+      requiredTextures.push(...mobileTextures)
+    }
+    
+    const texturesOK = gameStateTracker.checkTextures(this, requiredTextures)
+    
+    gameStateTracker.updateGame({
+      currentScene: 'GameScene',
+      isMobile,
+      screenSize: { width, height }
+    })
 
     // Get audio setting
     const gameSettings = this.registry.get('gameSettings')
@@ -84,6 +105,13 @@ export class GameScene extends Phaser.Scene {
     if (this.audioEnabled) {
       this.startBackgroundMusic()
     }
+
+    logger.info('GAME_CREATE', 'GameScene create completed', {
+      texturesOK,
+      isMobile,
+      audioEnabled: this.audioEnabled,
+      gameState: { width, height }
+    })
 
     // Auto-start the game (remove countdown for now)
     this.startGame()
@@ -182,11 +210,24 @@ export class GameScene extends Phaser.Scene {
   private createMobileControls() {
     const width = this.cameras.main.width
     const height = this.cameras.main.height
-    console.log('📱 Creating mobile controls at dimensions:', width, height)
+    
+    logger.info('MOBILE_CONTROLS', 'Creating mobile controls', { width, height })
     
     // Check if UI sprites exist before creating controls
-    if (!this.textures.exists('btn_left') || !this.textures.exists('btn_right')) {
-      console.warn('⚠️ Mobile control sprites not ready, skipping mobile controls')
+    const hasLeftBtn = this.textures.exists('btn_left')
+    const hasRightBtn = this.textures.exists('btn_right')
+    
+    logger.info('MOBILE_CONTROLS', 'Checking mobile sprite availability', {
+      btn_left: hasLeftBtn,
+      btn_right: hasRightBtn
+    })
+    
+    if (!hasLeftBtn || !hasRightBtn) {
+      logger.error('MOBILE_CONTROLS', 'Mobile control sprites not ready, skipping mobile controls', {
+        btn_left: hasLeftBtn,
+        btn_right: hasRightBtn,
+        allTextures: this.textures.list
+      })
       return
     }
     

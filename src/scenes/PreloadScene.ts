@@ -1,4 +1,6 @@
 import Phaser from 'phaser'
+import { logger } from '@/utils/Logger'
+import { gameStateTracker } from '@/utils/GameStateTracker'
 
 export class PreloadScene extends Phaser.Scene {
   constructor() {
@@ -264,38 +266,67 @@ export class PreloadScene extends Phaser.Scene {
   }
 
   create() {
+    logger.info('PRELOAD_CREATE', 'PreloadScene create started')
+    
     // Generate UI sprites after all loading is complete
-    console.log('🎮 Generating UI sprites in create()...')
+    logger.info('PRELOAD_CREATE', 'Generating UI sprites...')
     this.generateUISprites()
+    gameStateTracker.updateLoading({ uiSpritesGenerated: true })
     
     // Debug texture status
-    console.log('🔍 Charlie texture exists:', this.textures.exists('charlie'))
-    console.log('🔍 Player texture exists:', this.textures.exists('player'))
+    const charlieExists = this.textures.exists('charlie')
+    const playerExists = this.textures.exists('player')
+    
+    logger.info('TEXTURE_STATUS', 'Texture availability check', {
+      charlie: charlieExists,
+      player: playerExists,
+      uiSprites: {
+        btn_left: this.textures.exists('btn_left'),
+        btn_right: this.textures.exists('btn_right'),
+        btn_pause: this.textures.exists('btn_pause')
+      }
+    })
     
     // Ensure charlie texture exists as final failsafe
-    if (!this.textures.exists('charlie')) {
-      if (this.textures.exists('player')) {
+    if (!charlieExists) {
+      if (playerExists) {
         this.textures.addImage('charlie', this.textures.get('player').source[0].image)
-        console.log('🔧 Created charlie from player texture (charlie missing)')
+        logger.warn('TEXTURE_FALLBACK', 'Created charlie from player texture (charlie missing)')
+        gameStateTracker.updateLoading({ charlieLoaded: true })
       } else {
-        console.error('❌ Both charlie and player textures missing!')
+        logger.error('TEXTURE_ERROR', 'Both charlie and player textures missing!')
+        gameStateTracker.updateLoading({ charlieLoaded: false })
       }
     } else {
-      console.log('✅ Charlie texture loaded successfully')
+      logger.info('TEXTURE_SUCCESS', 'Charlie texture loaded successfully')
+      gameStateTracker.updateLoading({ charlieLoaded: true })
     }
+
+    gameStateTracker.updateLoading({ preloadComplete: true })
 
     // Wait a moment then handle navigation
     this.time.delayedCall(1000, () => {
-      // Check for homepage navigation flags
-      if ((window as any).skipToGame) {
-        console.log('🎯 Skipping to GameScene as requested from homepage (after preload)')
+      const skipToGame = (window as any).skipToGame
+      const skipToLeaderboard = (window as any).skipToLeaderboard
+      
+      logger.info('NAVIGATION', 'Handling post-preload navigation', {
+        skipToGame,
+        skipToLeaderboard
+      })
+      
+      if (skipToGame) {
+        logger.info('NAVIGATION', 'Skipping to GameScene as requested from homepage')
+        gameStateTracker.trackSceneTransition('PreloadScene', 'GameScene', 'skipToGame flag')
         ;(window as any).skipToGame = false
         this.scene.start('GameScene')
-      } else if ((window as any).skipToLeaderboard) {
-        console.log('📊 Skipping to LeaderboardScene as requested from homepage (after preload)')
+      } else if (skipToLeaderboard) {
+        logger.info('NAVIGATION', 'Skipping to LeaderboardScene as requested from homepage')
+        gameStateTracker.trackSceneTransition('PreloadScene', 'LeaderboardScene', 'skipToLeaderboard flag')
         ;(window as any).skipToLeaderboard = false
         this.scene.start('LeaderboardScene')
       } else {
+        logger.info('NAVIGATION', 'Going to MenuScene (normal flow)')
+        gameStateTracker.trackSceneTransition('PreloadScene', 'MenuScene', 'normal flow')
         this.scene.start('MenuScene')
       }
     })

@@ -8,6 +8,9 @@ import { LeaderboardScene } from '@/scenes/LeaderboardScene'
 import { authManager } from '@/net/authManager'
 import { i18n } from '@/i18n'
 import { AuthModal } from '@/ui/AuthModal'
+import { logger } from '@/utils/Logger'
+import { gameStateTracker } from '@/utils/GameStateTracker'
+import { debugPanel } from '@/utils/DebugPanel'
 
 // Game configuration
 const config: Phaser.Types.Core.GameConfig = {
@@ -95,7 +98,18 @@ async function initGame() {
   
   // Handle direct navigation from homepage
   game.events.on('ready', () => {
-    console.log('🎮 Game ready, checking for homepage navigation flags...')
+    logger.info('GAME_INIT', 'Phaser game ready', {
+      scenes: game.scene.getScenes().map(s => s.scene.key),
+      skipToGame: !!(window as any).skipToGame,
+      skipToLeaderboard: !!(window as any).skipToLeaderboard
+    })
+    
+    gameStateTracker.updateNavigation({
+      skipToGame: !!(window as any).skipToGame,
+      skipToLeaderboard: !!(window as any).skipToLeaderboard,
+      cameFromHomepage: !!(window as any).skipToGame || !!(window as any).skipToLeaderboard
+    })
+    
     // Note: Don't bypass PreloadScene! Let it complete first, then it will handle the skip flags
   })
   

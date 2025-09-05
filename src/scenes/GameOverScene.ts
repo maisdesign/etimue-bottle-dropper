@@ -2,6 +2,8 @@ import Phaser from 'phaser'
 import { scoreService } from '@/net/supabaseClient'
 import { authManager } from '@/net/authManager'
 import { t } from '@/i18n'
+import { logger } from '@/utils/Logger'
+import { gameStateTracker } from '@/utils/GameStateTracker'
 
 interface GameData {
   score: number
@@ -27,6 +29,17 @@ export class GameOverScene extends Phaser.Scene {
   }
 
   create() {
+    logger.info('GAME_OVER', 'GameOverScene create started', {
+      score: this.gameData?.score,
+      reason: this.gameData?.reason,
+      duration: this.gameData?.actualDuration
+    })
+    
+    gameStateTracker.updateGameState({
+      currentScene: 'GameOverScene',
+      gameData: this.gameData
+    })
+
     const width = this.cameras.main.width
     const height = this.cameras.main.height
 
@@ -180,20 +193,40 @@ export class GameOverScene extends Phaser.Scene {
   }
 
   private async checkAndSubmitScore() {
+    logger.info('AUTH_FLOW', 'checkAndSubmitScore called')
     const authState = authManager.getState()
     
+    logger.info('AUTH_FLOW', 'Auth state check', {
+      isAuthenticated: authState.isAuthenticated,
+      hasMarketingConsent: authState.hasMarketingConsent,
+      hasUser: !!authState.user,
+      userEmail: authState.user?.email
+    })
+    
     if (!authState.isAuthenticated) {
+      logger.info('AUTH_FLOW', 'User not authenticated, showing sign in message')
       this.submitStatus.setText(t('auth.signInToSubmit'))
       this.submitButton.setText(t('auth.signInAndSubmit'))
       return
     }
     
     if (!authState.hasMarketingConsent) {
+      logger.info('AUTH_FLOW', 'Marketing consent missing, opening auth modal automatically')
       this.submitStatus.setText(t('auth.newsletterRequired'))
       this.submitButton.setText(t('auth.signInAndSubmit'))
+      
+      // Auto-open auth modal for consent instead of blocking user
+      try {
+        await authManager.showAuthModal()
+        // After consent, retry submission
+        this.checkAndSubmitScore()
+      } catch (error) {
+        logger.error('AUTH_FLOW', 'Auto consent failed', error)
+      }
       return
     }
 
+    logger.info('AUTH_FLOW', 'All checks passed, auto-submitting score')
     // Auto-submit if user is authenticated
     this.submitScore()
   }
@@ -327,11 +360,20 @@ export class GameOverScene extends Phaser.Scene {
   }
 
   private goToMenu() {
+    logger.info('NAVIGATION', 'GameOverScene goToMenu called')
+    gameStateTracker.updateNavigation({
+      action: 'goToMenu',
+      from: 'GameOverScene',
+      timestamp: Date.now()
+    })
+    
     // Return to homepage instead of MenuScene
     if (typeof window !== 'undefined' && (window as any).returnToHomepage) {
-      (window as any).returnToHomepage()
+      logger.info('NAVIGATION', 'Using returnToHomepage function')
+      ;(window as any).returnToHomepage()
     } else {
       // Fallback to MenuScene if homepage function not available
+      logger.warn('NAVIGATION', 'returnToHomepage not available, falling back to MenuScene')
       this.scene.start('MenuScene')
     }
   }
