@@ -509,10 +509,29 @@
       document.getElementById('game-container').style.display = 'block';
       document.getElementById('home-button').style.display = 'flex';
       
-      // If game is already initialized, go directly to game scene
+      // If game is already initialized, check if textures are ready
       if (window.gameInstance) {
-        console.log('🎯 Starting GameScene directly');
-        window.gameInstance.scene.start('GameScene');
+        // Check if critical textures are loaded
+        const bootScene = window.gameInstance.scene.getScene('BootScene');
+        const preloadScene = window.gameInstance.scene.getScene('PreloadScene');
+        const gameScene = window.gameInstance.scene.getScene('GameScene');
+        
+        // Check if we have essential textures loaded
+        const hasCharlie = gameScene && gameScene.textures && gameScene.textures.exists('charlie');
+        const hasPauseBtn = gameScene && gameScene.textures && gameScene.textures.exists('btn_pause');
+        
+        if (hasCharlie && hasPauseBtn) {
+          console.log('🎯 Textures ready, starting GameScene directly');
+          window.gameInstance.scene.start('GameScene');
+        } else {
+          console.log('⚠️ Textures not ready, going through PreloadScene first');
+          // Set flag and let PreloadScene handle the transition
+          window.skipToGame = true;
+          // Make sure we go through PreloadScene to load textures
+          if (preloadScene && !preloadScene.scene.isActive()) {
+            window.gameInstance.scene.start('PreloadScene');
+          }
+        }
       } else {
         console.log('⚠️ Game instance not ready yet');
         // Set flag to skip menu when game loads
