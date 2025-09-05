@@ -52,7 +52,8 @@
       "Read(/D:\\etimue-bottle-dropper\\src\\net/**)",
       "Read(/D:\\etimue-bottle-dropper\\src\\net/**)",
       "Read(/D:\\etimue-bottle-dropper\\src\\ui/**)",
-      "Read(/D:\\etimue-bottle-dropper\\src\\ui/**)"
+      "Read(/D:\\etimue-bottle-dropper\\src\\ui/**)",
+      "Bash(npm run preview:*)"
     ],
     "deny": [],
     "ask": []
