@@ -195,11 +195,9 @@ export class PreloadScene extends Phaser.Scene {
     suppressErrors = true
     
     // Player mascotte - use charlie character
-    this.load.image('player_real', '/characters/charlie.png')
-    this.load.on('filecomplete-image-player_real', () => {
+    this.load.image('charlie', '/characters/charlie.png')
+    this.load.on('filecomplete-image-charlie', () => {
       console.log('✅ Loaded real player sprite (charlie)')
-      this.textures.remove('player')
-      this.textures.addImage('player', this.textures.get('player_real').source[0].image)
     })
 
     // Bottles  
@@ -226,20 +224,20 @@ export class PreloadScene extends Phaser.Scene {
       this.textures.addImage('powerup_star', this.textures.get('powerup_real').source[0].image)
     })
 
-    // Audio files
-    this.load.audio('music_real', '/assets/music.ogg')
-    this.load.audio('pickup_good_real', '/assets/pickup.wav')
-    this.load.audio('pickup_bad_real', '/assets/hit.wav')
-    this.load.audio('powerup_real', '/assets/powerup.wav')
+    // Audio files - disabled as files don't exist, using silent fallbacks
+    // this.load.audio('music_real', '/assets/music.ogg')
+    // this.load.audio('pickup_good_real', '/assets/pickup.wav')
+    // this.load.audio('pickup_bad_real', '/assets/hit.wav')
+    // this.load.audio('powerup_real', '/assets/powerup.wav')
     
-    // Audio success handlers
-    this.load.on('filecomplete-audio-music_real', () => {
-      console.log('✅ Loaded real background music')
-    })
-    
-    this.load.on('filecomplete-audio-pickup_good_real', () => {
-      console.log('✅ Loaded real pickup sound')
-    })
+    // Audio success handlers - disabled as audio files don't exist
+    // this.load.on('filecomplete-audio-music_real', () => {
+    //   console.log('✅ Loaded real background music')
+    // })
+    // 
+    // this.load.on('filecomplete-audio-pickup_good_real', () => {
+    //   console.log('✅ Loaded real pickup sound')
+    // })
     
     // Restore console.error after loading
     this.load.on('complete', () => {

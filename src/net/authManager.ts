@@ -23,6 +23,7 @@ export class AuthManager {
 
   private authModal: AuthModal | null = null
   private listeners: Array<(state: AuthState) => void> = []
+  private isProcessingAuth = false
 
   constructor() {
     this.initializeAuth()
@@ -99,6 +100,13 @@ export class AuthManager {
   }
 
   private async handleAuthChange(session: Session): Promise<void> {
+    if (this.isProcessingAuth) {
+      console.log('⏭️ Skipping auth change - already processing')
+      return
+    }
+    
+    this.isProcessingAuth = true
+    
     try {
       console.log('🔄 Starting handleAuthChange for user:', session.user.email)
       
@@ -165,6 +173,8 @@ export class AuthManager {
       console.error('❌ Error in handleAuthChange:', error)
       // Always set loading to false even on error
       this.state.isLoading = false
+    } finally {
+      this.isProcessingAuth = false
     }
   }
 
@@ -195,6 +205,15 @@ export class AuthManager {
 
   public getState(): AuthState {
     return { ...this.state }
+  }
+
+  public updateMarketingConsent(hasConsent: boolean, profile?: Profile): void {
+    console.log('🔄 Updating marketing consent:', hasConsent)
+    this.state.hasMarketingConsent = hasConsent
+    if (profile) {
+      this.state.profile = profile
+    }
+    this.notifyListeners()
   }
 
   public isReady(): boolean {

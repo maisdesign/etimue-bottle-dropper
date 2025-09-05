@@ -593,8 +593,12 @@ export class AuthModal {
         setTimeout(() => reject(new Error('Profile update timeout')), 10000)
       )
 
-      await Promise.race([updatePromise, timeoutPromise])
+      const updatedProfile = await Promise.race([updatePromise, timeoutPromise])
       console.log('✅ Profile updated successfully')
+      
+      // Immediately update AuthManager state
+      const { authManager } = await import('@/net/authManager')
+      authManager.updateMarketingConsent(true, updatedProfile)
 
       // Subscribe to Mailchimp (non-blocking with detailed logging)
       console.log('🔄 Starting Mailchimp subscription for:', user.email)

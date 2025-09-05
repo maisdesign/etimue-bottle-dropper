@@ -142,7 +142,7 @@ export class GameScene extends Phaser.Scene {
   private createPlayer() {
     const width = this.cameras.main.width
     
-    this.player = this.physics.add.sprite(width / 2, 550, 'player')
+    this.player = this.physics.add.sprite(width / 2, 550, 'charlie')
     this.player.setCollideWorldBounds(true)
     this.player.setScale(0.4) // 50% smaller for charlie sprite - better hitbox
     
@@ -218,21 +218,30 @@ export class GameScene extends Phaser.Scene {
     // Score
     this.scoreText = this.add.text(16, 16, t('game.score', { score: this.score }), {
       fontSize: '18px',
+      fontFamily: 'Inter, sans-serif',
       color: '#333333',
-      fontWeight: 'bold'
+      fontWeight: 'bold',
+      stroke: '#ffffff',
+      strokeThickness: 2
     })
 
     // Lives
     this.livesText = this.add.text(16, 45, this.getLivesText(), {
       fontSize: '18px',
-      color: '#333333'
+      fontFamily: 'Inter, sans-serif',
+      color: '#333333',
+      stroke: '#ffffff',
+      strokeThickness: 2
     })
 
     // Time
     this.timeText = this.add.text(width - 16, 16, t('game.time', { time: this.gameTime }), {
       fontSize: '18px',
+      fontFamily: 'Inter, sans-serif',
       color: '#333333',
-      fontWeight: 'bold'
+      fontWeight: 'bold',
+      stroke: '#ffffff',
+      strokeThickness: 2
     }).setOrigin(1, 0)
 
     // Pause button

@@ -38,30 +38,46 @@ export class GameOverScene extends Phaser.Scene {
     modalBg.setStrokeStyle(4, 0x333333)
 
     // Title
-    this.add.text(width / 2, height / 2 - 150, t('game.gameOver'), {
+    const titleText = this.add.text(width / 2, height / 2 - 150, t('game.gameOver'), {
       fontSize: '32px',
+      fontFamily: 'Playfair Display, serif',
       fontWeight: 'bold',
-      color: '#333333'
+      color: '#333333',
+      resolution: 2
     }).setOrigin(0.5)
+    
+    // Enhance title rendering
+    titleText.setFill('#333333')
+    titleText.setStroke('#ffffff', 1)
 
     // Final Score
-    this.add.text(width / 2, height / 2 - 100, t('game.finalScore', { score: this.gameData.score }), {
+    const scoreText = this.add.text(width / 2, height / 2 - 100, t('game.finalScore', { score: this.gameData.score }), {
       fontSize: '24px',
-      color: '#333333'
+      fontFamily: 'Inter, sans-serif',
+      fontWeight: '600',
+      color: '#333333',
+      resolution: 2
     }).setOrigin(0.5)
+    
+    // Fix text rendering quality
+    scoreText.setFill('#333333')
+    scoreText.setStroke('#ffffff', 1)
 
     // Game stats
     const reason = this.gameData.reason === 'lives' ? 'No lives left!' : 'Time\'s up!'
     this.add.text(width / 2, height / 2 - 60, reason, {
       fontSize: '16px',
+      fontFamily: 'Inter, sans-serif',
       color: '#666666'
     }).setOrigin(0.5)
 
     // Submit status text
     this.submitStatus = this.add.text(width / 2, height / 2 - 20, '', {
       fontSize: '14px',
+      fontFamily: 'Inter, sans-serif',
       color: '#666666',
-      align: 'center'
+      align: 'center',
+      wordWrap: { width: width - 80 }
     }).setOrigin(0.5)
 
     // Buttons
@@ -83,6 +99,7 @@ export class GameOverScene extends Phaser.Scene {
     // Submit Score button
     this.submitButton = this.add.text(width / 2, buttonY, t('game.submitScore'), {
       fontSize: '18px',
+      fontFamily: 'Inter, sans-serif',
       fontWeight: 'bold',
       color: '#ffffff',
       backgroundColor: '#28a745',
@@ -97,6 +114,8 @@ export class GameOverScene extends Phaser.Scene {
     // Play Again button
     const playAgainButton = this.add.text(width / 2 - 80, buttonY + 60, t('game.playAgain'), {
       fontSize: '16px',
+      fontFamily: 'Inter, sans-serif',
+      fontWeight: '600',
       color: '#ffffff',
       backgroundColor: '#007bff',
       padding: { x: 15, y: 8 }
@@ -110,6 +129,8 @@ export class GameOverScene extends Phaser.Scene {
     // Leaderboard button
     const leaderboardButton = this.add.text(width / 2 + 80, buttonY + 60, t('leaderboard.title'), {
       fontSize: '16px',
+      fontFamily: 'Inter, sans-serif',
+      fontWeight: '600',
       color: '#ffffff',
       backgroundColor: '#ffc107',
       padding: { x: 15, y: 8 }
@@ -123,6 +144,8 @@ export class GameOverScene extends Phaser.Scene {
     // Menu button
     const menuButton = this.add.text(width / 2, buttonY + 120, 'Menu', {
       fontSize: '14px',
+      fontFamily: 'Inter, sans-serif',
+      fontWeight: '600',
       color: '#ffffff',
       backgroundColor: '#6c757d',
       padding: { x: 12, y: 6 }
@@ -159,8 +182,14 @@ export class GameOverScene extends Phaser.Scene {
   private async checkAndSubmitScore() {
     const authState = authManager.getState()
     
-    if (!authState.isAuthenticated || !authState.hasMarketingConsent) {
+    if (!authState.isAuthenticated) {
       this.submitStatus.setText('Sign in to submit your score to the leaderboard')
+      this.submitButton.setText('Sign In & Submit')
+      return
+    }
+    
+    if (!authState.hasMarketingConsent) {
+      this.submitStatus.setText('Newsletter subscription required')
       this.submitButton.setText('Sign In & Submit')
       return
     }
@@ -204,7 +233,7 @@ export class GameOverScene extends Phaser.Scene {
 
     if (!authState.hasMarketingConsent) {
       console.log('❌ No marketing consent')
-      this.submitStatus.setText('Newsletter subscription required to submit scores')
+      this.submitStatus.setText('Newsletter subscription required')
       return
     }
 
