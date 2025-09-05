@@ -676,6 +676,12 @@ export class AuthModal {
     this.isVisible = true
     this.element.classList.remove('hidden')
     
+    // Disable Phaser keyboard to allow typing in HTML inputs
+    if (typeof window !== 'undefined' && (window as any).managePhaserKeyboard) {
+      console.log('🎹 AuthModal: Disabling Phaser keyboard for HTML inputs')
+      ;(window as any).managePhaserKeyboard.disable()
+    }
+    
     // Check if user is already authenticated but needs consent
     supabase.auth.getUser().then(({ data: { user } }) => {
       if (user) {
@@ -722,6 +728,12 @@ export class AuthModal {
   public hide(): void {
     this.isVisible = false
     this.element.classList.add('hidden')
+    
+    // Re-enable Phaser keyboard when modal closes
+    if (typeof window !== 'undefined' && (window as any).managePhaserKeyboard) {
+      console.log('🎹 AuthModal: Re-enabling Phaser keyboard after modal close')
+      ;(window as any).managePhaserKeyboard.enable()
+    }
     
     // Clear countdown timer when hiding
     if (this.countdownInterval) {
