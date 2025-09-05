@@ -169,18 +169,24 @@ export class GameScene extends Phaser.Scene {
 
     // Detect mobile
     this.isMobile = this.sys.game.device.input.touch
+    console.log('📱 Mobile detection:', this.isMobile)
     
     if (this.isMobile) {
+      console.log('📱 Creating mobile controls...')
       this.createMobileControls()
+    } else {
+      console.log('🖥️ Desktop mode - no mobile controls')
     }
   }
 
   private createMobileControls() {
     const width = this.cameras.main.width
     const height = this.cameras.main.height
+    console.log('📱 Creating mobile controls at dimensions:', width, height)
     
     // Left button
     this.leftButton = this.add.image(80, height - 80, 'btn_left')
+    console.log('📱 Left button created at', 80, height - 80)
       .setInteractive()
       .setAlpha(0.8)
       .on('pointerdown', () => {
@@ -198,6 +204,7 @@ export class GameScene extends Phaser.Scene {
 
     // Right button
     this.rightButton = this.add.image(width - 80, height - 80, 'btn_right')
+    console.log('📱 Right button created at', width - 80, height - 80)
       .setInteractive()
       .setAlpha(0.8)
       .on('pointerdown', () => {
@@ -250,6 +257,7 @@ export class GameScene extends Phaser.Scene {
       .setScale(0.8)
       .setInteractive({ useHandCursor: true })
       .on('pointerdown', () => this.togglePause())
+    console.log('✅ Pause button created at', width - 16, 50)
 
     // Power-up indicator
     this.powerupIndicator = this.add.text(width / 2, 100, '', {
