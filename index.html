@@ -956,57 +956,92 @@
       console.log('🏠 Homepage initialized');
     });
 
-    // Phaser Keyboard Management for WASD fix
+    // Phaser Keyboard Management for WASD fix - NUCLEAR OPTION
     window.managePhaserKeyboard = {
       disable: function() {
-        console.log('🎹 Globally disabling Phaser keyboard');
+        console.log('💥 NUCLEAR KEYBOARD DISABLE - REMOVING ALL PHASER KEY LISTENERS');
         if (window.gameInstance && window.gameInstance.scene) {
           // Get all active scenes
           const scenes = window.gameInstance.scene.scenes;
           scenes.forEach(scene => {
             if (scene.input && scene.input.keyboard) {
-              console.log(`🎹 Disabling keyboard for scene: ${scene.scene.key}`);
-              scene.input.keyboard.enabled = false;
+              console.log(`💥 NUCLEAR disabling keyboard for scene: ${scene.scene.key}`);
               
-              // Also disable individual key objects
+              // Complete nuclear shutdown of keyboard
+              scene.input.keyboard.enabled = false;
+              scene.input.keyboard.manager.enabled = false;
+              
+              // Store original keys for restoration
+              if (!scene.originalKeys) {
+                scene.originalKeys = {
+                  cursors: scene.cursors,
+                  wasdKeys: scene.wasdKeys
+                };
+              }
+              
+              // Remove all key objects completely
               if (scene.cursors) {
                 Object.values(scene.cursors).forEach(key => {
-                  if (key && key.enabled !== undefined) key.enabled = false;
+                  if (key && key.destroy) key.destroy();
                 });
+                scene.cursors = null;
               }
               if (scene.wasdKeys) {
                 Object.values(scene.wasdKeys).forEach(key => {
-                  if (key && key.enabled !== undefined) key.enabled = false;
+                  if (key && key.destroy) key.destroy();
                 });
+                scene.wasdKeys = null;
               }
+              
+              // Remove all keyboard event listeners
+              scene.input.keyboard.removeAllListeners();
+              
+              console.log(`💥 NUCLEAR: Completely destroyed keyboard for ${scene.scene.key}`);
             }
           });
+          
+          // Also disable the main keyboard manager
+          if (window.gameInstance.input && window.gameInstance.input.keyboard) {
+            window.gameInstance.input.keyboard.enabled = false;
+            console.log('💥 NUCLEAR: Disabled main game keyboard manager');
+          }
         }
       },
       
       enable: function() {
-        console.log('🎹 Globally re-enabling Phaser keyboard');
+        console.log('🔄 NUCLEAR KEYBOARD RE-ENABLE - RECREATING PHASER KEY LISTENERS');
         if (window.gameInstance && window.gameInstance.scene) {
           // Get all active scenes
           const scenes = window.gameInstance.scene.scenes;
           scenes.forEach(scene => {
             if (scene.input && scene.input.keyboard) {
-              console.log(`🎹 Re-enabling keyboard for scene: ${scene.scene.key}`);
-              scene.input.keyboard.enabled = true;
+              console.log(`🔄 NUCLEAR re-enabling keyboard for scene: ${scene.scene.key}`);
               
-              // Also re-enable individual key objects
-              if (scene.cursors) {
-                Object.values(scene.cursors).forEach(key => {
-                  if (key && key.enabled !== undefined) key.enabled = true;
-                });
+              // Re-enable keyboard managers
+              scene.input.keyboard.enabled = true;
+              scene.input.keyboard.manager.enabled = true;
+              
+              // Recreate key objects from stored originals
+              if (scene.originalKeys) {
+                if (scene.originalKeys.cursors && !scene.cursors) {
+                  scene.cursors = scene.input.keyboard.createCursorKeys();
+                  console.log(`🔄 Recreated cursor keys for ${scene.scene.key}`);
+                }
+                if (scene.originalKeys.wasdKeys && !scene.wasdKeys) {
+                  scene.wasdKeys = scene.input.keyboard.addKeys('W,S,A,D');
+                  console.log(`🔄 Recreated WASD keys for ${scene.scene.key}`);
+                }
               }
-              if (scene.wasdKeys) {
-                Object.values(scene.wasdKeys).forEach(key => {
-                  if (key && key.enabled !== undefined) key.enabled = true;
-                });
-              }
+              
+              console.log(`🔄 NUCLEAR: Restored keyboard for ${scene.scene.key}`);
             }
           });
+          
+          // Re-enable main keyboard manager
+          if (window.gameInstance.input && window.gameInstance.input.keyboard) {
+            window.gameInstance.input.keyboard.enabled = true;
+            console.log('🔄 NUCLEAR: Re-enabled main game keyboard manager');
+          }
         }
       }
     };

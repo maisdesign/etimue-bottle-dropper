@@ -1,6 +1,7 @@
 import { supabase, profileService } from '@/net/supabaseClient'
 import { mailchimpService } from '@/net/mailchimp'
 import { t, i18n } from '@/i18n'
+import { advancedLogger } from '@/utils/AdvancedLogger'
 
 export class AuthModal {
   private element: HTMLElement
@@ -668,46 +669,102 @@ export class AuthModal {
   }
 
   private preventGameKeys(): void {
-    // Prevent WASD and arrow keys from being handled by Phaser while modal is open
+    advancedLogger.nuclear('WASD_FIX', 'Starting NUCLEAR game key prevention system')
+    
+    // NUCLEAR PREVENTION - Block ALL game keys EVERYWHERE
     this.keyEventHandler = (event: KeyboardEvent) => {
       const gameKeys = ['KeyW', 'KeyA', 'KeyS', 'KeyD', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Space']
       
       if (gameKeys.includes(event.code)) {
-        // Only prevent default if the target is not an input field
-        const target = event.target as HTMLElement
-        if (target.tagName !== 'INPUT' && target.tagName !== 'TEXTAREA') {
-          event.preventDefault()
-          event.stopPropagation()
-          console.log('🎹 Prevented game key:', event.code, 'while modal is open')
+        const target = event.target as HTMLInputElement
+        
+        advancedLogger.nuclear('WASD_KEY_INTERCEPTED', `Intercepted ${event.code}`, {
+          eventType: event.type,
+          target: target?.tagName,
+          targetId: target?.id,
+          targetValue: target?.value,
+          defaultPrevented: event.defaultPrevented,
+          bubbles: event.bubbles,
+          cancelable: event.cancelable,
+          timestamp: event.timeStamp
+        })
+
+        // ALWAYS prevent default and stop propagation for game keys
+        event.preventDefault()
+        event.stopPropagation()
+        event.stopImmediatePropagation()
+        
+        // For input fields, manually insert the character
+        if (target && (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA')) {
+          const char = event.code.replace('Key', '').toLowerCase()
+          if (['w', 'a', 's', 'd'].includes(char)) {
+            const originalValue = target.value
+            const start = target.selectionStart || 0
+            const end = target.selectionEnd || 0
+            
+            // Manually insert the character at cursor position
+            target.value = originalValue.substring(0, start) + char + originalValue.substring(end)
+            target.setSelectionRange(start + 1, start + 1)
+            
+            // Trigger input event
+            target.dispatchEvent(new Event('input', { bubbles: true }))
+            
+            advancedLogger.nuclear('WASD_MANUAL_INSERT', `Manually inserted '${char}'`, {
+              originalValue,
+              newValue: target.value,
+              cursorStart: start,
+              cursorEnd: end,
+              success: target.value !== originalValue
+            })
+          }
+        } else {
+          advancedLogger.nuclear('WASD_NON_INPUT', `Blocked ${event.code} on non-input element`, {
+            targetElement: target?.tagName,
+            targetClass: target?.className
+          })
         }
+        
+        return false
       }
     }
 
-    document.addEventListener('keydown', this.keyEventHandler, true)
-    document.addEventListener('keyup', this.keyEventHandler, true)
-    console.log('🎹 Added global key event prevention for game keys')
+    // Add listeners with highest priority (capture phase)
+    document.addEventListener('keydown', this.keyEventHandler, { capture: true, passive: false })
+    document.addEventListener('keyup', this.keyEventHandler, { capture: true, passive: false })
+    document.addEventListener('keypress', this.keyEventHandler, { capture: true, passive: false })
+    
+    advancedLogger.nuclear('WASD_LISTENERS', 'Added MAXIMUM PRIORITY key event listeners', {
+      listenerCount: 3,
+      captureMode: true,
+      passiveMode: false
+    })
   }
 
   private removeGameKeyPrevention(): void {
     if (this.keyEventHandler) {
-      document.removeEventListener('keydown', this.keyEventHandler, true)
-      document.removeEventListener('keyup', this.keyEventHandler, true)
+      document.removeEventListener('keydown', this.keyEventHandler, { capture: true })
+      document.removeEventListener('keyup', this.keyEventHandler, { capture: true })
+      document.removeEventListener('keypress', this.keyEventHandler, { capture: true })
       this.keyEventHandler = undefined
-      console.log('🎹 Removed global key event prevention')
+      console.log('💥 NUCLEAR: Removed MAXIMUM PRIORITY key event prevention')
     }
   }
 
   public show(): void {
+    advancedLogger.nuclear('AUTH_MODAL_SHOW', 'AuthModal.show() called - NUCLEAR WASD FIX ACTIVE')
+    
     this.isVisible = true
     this.element.classList.remove('hidden')
     
+    // Show the advanced logger modal as well for debugging
+    advancedLogger.showModal()
+    
     // Disable Phaser keyboard to allow typing in HTML inputs
-    console.log('🚨 WASD FIX TEST - AuthModal show() called - BUILD ENHANCED_KEYBOARD_FIX')
     if (typeof window !== 'undefined' && (window as any).managePhaserKeyboard) {
-      console.log('🎹 AuthModal: Disabling Phaser keyboard for HTML inputs - WASD SHOULD WORK NOW')
+      advancedLogger.nuclear('PHASER_KEYBOARD', 'Calling managePhaserKeyboard.disable()')
       ;(window as any).managePhaserKeyboard.disable()
     } else {
-      console.log('❌ managePhaserKeyboard not available!')
+      advancedLogger.error('PHASER_KEYBOARD', 'managePhaserKeyboard not available on window object!')
     }
 
     // Add global keyboard event prevention for game keys while modal is open
@@ -718,7 +775,13 @@ export class AuthModal {
       const firstInput = this.element.querySelector('input:not([type="checkbox"])')
       if (firstInput) {
         (firstInput as HTMLInputElement).focus()
-        console.log('🎹 AuthModal: Focused first input element')
+        advancedLogger.info('AUTH_MODAL_FOCUS', 'Focused first input element', {
+          inputId: firstInput.id,
+          inputType: (firstInput as HTMLInputElement).type,
+          inputValue: (firstInput as HTMLInputElement).value
+        })
+      } else {
+        advancedLogger.warn('AUTH_MODAL_FOCUS', 'No input element found to focus')
       }
     }, 100)
     
