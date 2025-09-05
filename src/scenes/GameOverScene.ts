@@ -327,7 +327,13 @@ export class GameOverScene extends Phaser.Scene {
   }
 
   private goToMenu() {
-    this.scene.start('MenuScene')
+    // Return to homepage instead of MenuScene
+    if (typeof window !== 'undefined' && (window as any).returnToHomepage) {
+      (window as any).returnToHomepage()
+    } else {
+      // Fallback to MenuScene if homepage function not available
+      this.scene.start('MenuScene')
+    }
   }
 
   private setupKeyboardControls() {

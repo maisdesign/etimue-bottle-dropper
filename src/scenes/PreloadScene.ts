@@ -268,10 +268,20 @@ export class PreloadScene extends Phaser.Scene {
     console.log('🎮 Generating UI sprites in create()...')
     this.generateUISprites()
     
+    // Debug texture status
+    console.log('🔍 Charlie texture exists:', this.textures.exists('charlie'))
+    console.log('🔍 Player texture exists:', this.textures.exists('player'))
+    
     // Ensure charlie texture exists as final failsafe
-    if (!this.textures.exists('charlie') && this.textures.exists('player')) {
-      this.textures.addImage('charlie', this.textures.get('player').source[0].image)
-      console.log('🔧 Final failsafe: Created charlie from player texture')
+    if (!this.textures.exists('charlie')) {
+      if (this.textures.exists('player')) {
+        this.textures.addImage('charlie', this.textures.get('player').source[0].image)
+        console.log('🔧 Created charlie from player texture (charlie missing)')
+      } else {
+        console.error('❌ Both charlie and player textures missing!')
+      }
+    } else {
+      console.log('✅ Charlie texture loaded successfully')
     }
 
     // Wait a moment then transition to menu

@@ -155,7 +155,7 @@
       z-index: 1;
     }
     .mascot .bubble{
-      width:86px;height:86px;border-radius:20px;
+      width:96px;height:96px;border-radius:20px;
       background:
         conic-gradient(from 120deg at 70% 30%, #0ea5a333, transparent 40%),
         radial-gradient(120px 90px at 30% 20%, #8be7ff55, #22a3b51c);
@@ -286,7 +286,7 @@
       to{ transform: translateY(-120vh); opacity:.6 }
     }
   </style>
-  <script type="module" crossorigin src="./assets/index-CKflyVqg.js"></script>
+  <script type="module" crossorigin src="./assets/index-CfpzBJ9P.js"></script>
 <link rel="manifest" href="./manifest.webmanifest"><script id="vite-plugin-pwa:register-sw" src="./registerSW.js"></script></head>
 <body>
   <div class="frame" id="homepage">
@@ -334,7 +334,7 @@
         </div>
         <div class="mascot">
           <div class="bubble">
-            <img src="./characters/charlie.png" alt="Charlie mascot" style="width: 80px; height: 80px; border-radius: 16px; object-fit: cover; background: #f0f0f0;" onerror="this.style.background='#ff0000'; this.alt='❌ ERRORE CARICAMENTO'; console.error('Failed to load:', this.src);" onload="console.log('✅ Charlie loaded successfully:', this.src);" />
+            <img src="./characters/charlie.png" alt="Charlie mascot" style="width: 90px; height: 90px; border-radius: 16px; object-fit: cover; background: #fff; box-shadow: 0 2px 8px rgba(0,0,0,0.2);" onerror="this.style.background='#ff0000'; this.alt='❌ ERRORE CARICAMENTO'; console.error('Failed to load:', this.src);" onload="console.log('✅ Charlie loaded successfully:', this.src);" />
           </div>
           <div>
             <h2 data-translate="ready">Prontə, a far cadere le bottiglie?</h2>
@@ -590,18 +590,161 @@
 
     function showHowToPlay() {
       console.log('❓ showHowToPlay called');
-      alert(currentLang === 'it' ? 
-        'Muoviti a sinistra e destra per acchiappare le bottiglie giuste (marrone) e evita quelle sbagliate (verde).\n\nRaccogli le stelle gialle per punti bonus e tempo extra!\n\nDesktop: Usa i tasti ← → o A D\nMobile: Tocca i pulsanti sinistra/destra\n\nHai 3 vite e 60 secondi.\nBuona fortuna!' :
-        'Move left and right to catch good bottles (brown) and avoid bad bottles (green).\n\nCollect yellow stars for bonus points and extra time!\n\nDesktop: Use ← → or A D keys\nMobile: Tap the left/right buttons\n\nYou have 3 lives and 60 seconds.\nGood luck!'
-      );
+      // Show how to play page instead of modal
+      showContentPage('howto');
     }
 
     function showPrizes() {
       console.log('🏆 showPrizes called');
-      alert(currentLang === 'it' ?
-        '🏆 CLASSIFICA SETTIMANALE\nChi è in cima alla classifica a fine settimana vince uno sconto del 5% su una cena al pub Etimuè!\n\n🥇 CLASSIFICA MENSILE\nChi vincerà la classifica mensile vincerà uno sconto del 10% su una cena al pub Etimuè!\n\nGioca, divertiti e vinci con Etimuè Bottle Dropper!' :
-        '🏆 WEEKLY LEADERBOARD\nWhoever is at the top of the leaderboard at the end of the week wins a 5% discount on a dinner at Etimuè pub!\n\n🥇 MONTHLY LEADERBOARD\nWhoever wins the monthly leaderboard will win a 10% discount on a dinner at Etimuè pub!\n\nPlay, have fun and win with Etimuè Bottle Dropper!'
-      );
+      // Show prizes page instead of modal
+      showContentPage('prizes');
+    }
+
+    function showContentPage(pageType) {
+      const homepage = document.getElementById('homepage');
+      const existingPage = document.getElementById('content-page');
+      
+      if (existingPage) {
+        existingPage.remove();
+      }
+
+      const pageContent = {
+        howto: {
+          title: currentLang === 'it' ? 'Come si gioca' : 'How to Play',
+          emoji: '🎮',
+          content: currentLang === 'it' ? 
+            `<div style="font-size:18px; line-height:1.6; color:#0b2b33;">
+              <h3 style="color:#0ea5a3; margin:0 0 16px;"><strong>🎯 Obiettivo</strong></h3>
+              <p>Muoviti a sinistra e destra per <strong>acchiappare le bottiglie artigianali</strong> (marroni) e <strong>evitare quelle industriali</strong> (verdi).</p>
+              
+              <h3 style="color:#0ea5a3; margin:24px 0 16px;"><strong>⭐ Bonus</strong></h3>
+              <p>Raccogli le <strong>stelle gialle</strong> per ottenere punti bonus e tempo extra!</p>
+              
+              <h3 style="color:#0ea5a3; margin:24px 0 16px;"><strong>🎮 Controlli</strong></h3>
+              <p><strong>Desktop:</strong> Usa i tasti <kbd style="background:#f0f0f0;padding:4px 8px;border-radius:4px;font-family:monospace;">← →</kbd> oppure <kbd style="background:#f0f0f0;padding:4px 8px;border-radius:4px;font-family:monospace;">A D</kbd></p>
+              <p><strong>Mobile:</strong> Tocca i pulsanti sinistra/destra sullo schermo</p>
+              
+              <h3 style="color:#0ea5a3; margin:24px 0 16px;"><strong>⏱️ Regole</strong></h3>
+              <p>Hai <strong>3 vite</strong> e <strong>60 secondi</strong> di tempo. Ogni bottiglia verde ti fa perdere una vita!</p>
+              
+              <div style="background:#e6fbf7;padding:16px;border-radius:12px;margin:20px 0;border-left:4px solid #0ea5a3;">
+                <strong style="color:#0b2b33;">💡 Suggerimento:</strong> Le stelle ti danno tempo extra - raccogline il più possibile!
+              </div>
+            </div>` :
+            `<div style="font-size:18px; line-height:1.6; color:#0b2b33;">
+              <h3 style="color:#0ea5a3; margin:0 0 16px;"><strong>🎯 Objective</strong></h3>
+              <p>Move left and right to <strong>catch craft bottles</strong> (brown) and <strong>avoid industrial bottles</strong> (green).</p>
+              
+              <h3 style="color:#0ea5a3; margin:24px 0 16px;"><strong>⭐ Bonuses</strong></h3>
+              <p>Collect <strong>yellow stars</strong> for bonus points and extra time!</p>
+              
+              <h3 style="color:#0ea5a3; margin:24px 0 16px;"><strong>🎮 Controls</strong></h3>
+              <p><strong>Desktop:</strong> Use <kbd style="background:#f0f0f0;padding:4px 8px;border-radius:4px;font-family:monospace;">← →</kbd> or <kbd style="background:#f0f0f0;padding:4px 8px;border-radius:4px;font-family:monospace;">A D</kbd> keys</p>
+              <p><strong>Mobile:</strong> Tap the left/right buttons on screen</p>
+              
+              <h3 style="color:#0ea5a3; margin:24px 0 16px;"><strong>⏱️ Rules</strong></h3>
+              <p>You have <strong>3 lives</strong> and <strong>60 seconds</strong>. Each green bottle costs you a life!</p>
+              
+              <div style="background:#e6fbf7;padding:16px;border-radius:12px;margin:20px 0;border-left:4px solid #0ea5a3;">
+                <strong style="color:#0b2b33;">💡 Tip:</strong> Stars give you extra time - collect as many as possible!
+              </div>
+            </div>`
+        },
+        prizes: {
+          title: currentLang === 'it' ? 'Cosa si vince' : 'What You Win',
+          emoji: '🏆',
+          content: currentLang === 'it' ?
+            `<div style="font-size:18px; line-height:1.6; color:#0b2b33;">
+              <div style="background:linear-gradient(135deg,#ffd700,#ffed4e);padding:24px;border-radius:16px;text-align:center;margin:20px 0;">
+                <h3 style="margin:0 0 12px;font-size:24px;color:#5c3d00;">🏆 CLASSIFICA SETTIMANALE</h3>
+                <p style="margin:0;font-weight:600;color:#5c3d00;">Chi è in cima alla classifica a <strong>fine settimana</strong> vince uno <strong>sconto del 5%</strong> su una cena al pub Etimuè!</p>
+              </div>
+              
+              <div style="background:linear-gradient(135deg,#ff6b6b,#ff8e8e);padding:24px;border-radius:16px;text-align:center;margin:20px 0;">
+                <h3 style="margin:0 0 12px;font-size:24px;color:#fff;">🥇 CLASSIFICA MENSILE</h3>
+                <p style="margin:0;font-weight:600;color:#fff;">Chi vincerà la classifica mensile vincerà uno <strong>sconto del 10%</strong> su una cena al pub Etimuè!</p>
+              </div>
+              
+              <div style="background:#e6fbf7;padding:20px;border-radius:12px;text-align:center;margin:24px 0;border:2px solid #0ea5a3;">
+                <h4 style="margin:0 0 8px;color:#0ea5a3;">🎮 Come partecipare</h4>
+                <p style="margin:0;color:#0b2b33;">Gioca, fai il punteggio più alto e controlla la classifica per vedere se hai vinto!</p>
+              </div>
+              
+              <p style="text-align:center;font-size:20px;font-weight:700;color:#0ea5a3;margin:24px 0;">
+                Gioca, divertiti e vinci<br/>con <em>Etimuè Bottle Dropper</em>! 🍻
+              </p>
+            </div>` :
+            `<div style="font-size:18px; line-height:1.6; color:#0b2b33;">
+              <div style="background:linear-gradient(135deg,#ffd700,#ffed4e);padding:24px;border-radius:16px;text-align:center;margin:20px 0;">
+                <h3 style="margin:0 0 12px;font-size:24px;color:#5c3d00;">🏆 WEEKLY LEADERBOARD</h3>
+                <p style="margin:0;font-weight:600;color:#5c3d00;">Whoever is at the top of the leaderboard at the <strong>end of the week</strong> wins a <strong>5% discount</strong> on a dinner at Etimuè pub!</p>
+              </div>
+              
+              <div style="background:linear-gradient(135deg,#ff6b6b,#ff8e8e);padding:24px;border-radius:16px;text-align:center;margin:20px 0;">
+                <h3 style="margin:0 0 12px;font-size:24px;color:#fff;">🥇 MONTHLY LEADERBOARD</h3>
+                <p style="margin:0;font-weight:600;color:#fff;">Whoever wins the monthly leaderboard will win a <strong>10% discount</strong> on a dinner at Etimuè pub!</p>
+              </div>
+              
+              <div style="background:#e6fbf7;padding:20px;border-radius:12px;text-center;margin:24px 0;border:2px solid #0ea5a3;">
+                <h4 style="margin:0 0 8px;color:#0ea5a3;">🎮 How to participate</h4>
+                <p style="margin:0;color:#0b2b33;">Play, get the highest score and check the leaderboard to see if you won!</p>
+              </div>
+              
+              <p style="text-align:center;font-size:20px;font-weight:700;color:#0ea5a3;margin:24px 0;">
+                Play, have fun and win<br/>with <em>Etimuè Bottle Dropper</em>! 🍻
+              </p>
+            </div>`
+        }
+      };
+
+      const page = document.createElement('div');
+      page.id = 'content-page';
+      page.className = 'frame';
+      page.style.position = 'absolute';
+      page.style.top = '0';
+      page.style.left = '0';
+      page.style.zIndex = '10';
+      page.innerHTML = `
+        <div class="topbar">
+          <div class="brand">
+            <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <defs>
+                <linearGradient id="g1" x1="0" x2="0" y1="0" y2="1">
+                  <stop stop-color="#22c1d1" offset="0"/>
+                  <stop stop-color="#0ea5a3" offset="1"/>
+                </linearGradient>
+              </defs>
+              <g>
+                <circle cx="32" cy="32" r="26" fill="url(#g1)" stroke="#0a3b44" stroke-opacity=".18" stroke-width="1.5"/>
+                <circle cx="32" cy="32" r="20" fill="#fff" fill-opacity=".92" stroke="#0a3b44" stroke-opacity=".12"/>
+                <text x="32" y="38" text-anchor="middle" font-family="Alfa Slab One" font-size="16" fill="#0a3b44">EB</text>
+              </g>
+            </svg>
+            <div class="brand-title">${pageContent[pageType].emoji} ${pageContent[pageType].title}</div>
+          </div>
+          <button onclick="closePage()" style="background:none;border:none;font-size:24px;cursor:pointer;color:#0b2b33;padding:8px;border-radius:8px;" title="Chiudi">✕</button>
+        </div>
+        
+        <div style="padding:32px clamp(20px,4vw,40px) 28px;">
+          ${pageContent[pageType].content}
+          
+          <div style="text-align:center;margin:32px 0 16px;">
+            <button onclick="closePage()" class="btn btn-primary" style="margin-right:12px;">${currentLang === 'it' ? 'Torna alla Home' : 'Back to Home'}</button>
+            <button onclick="closePage(); startGame();" class="btn btn-secondary">${currentLang === 'it' ? 'Gioca Ora!' : 'Play Now!'}</button>
+          </div>
+        </div>
+      `;
+
+      homepage.style.display = 'none';
+      document.body.appendChild(page);
+    }
+
+    function closePage() {
+      const page = document.getElementById('content-page');
+      if (page) {
+        page.remove();
+      }
+      document.getElementById('homepage').style.display = 'grid';
     }
 
     // Audio toggle functionality
