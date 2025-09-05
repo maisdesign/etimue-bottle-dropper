@@ -8,6 +8,7 @@ export class AuthModal {
   private onAuthSuccess?: (user: any) => void
   private hasCompletedConsent: boolean = false
   private countdownInterval?: NodeJS.Timeout
+  private keyEventHandler?: (event: KeyboardEvent) => void
 
   constructor() {
     this.element = this.createElement()
@@ -666,18 +667,60 @@ export class AuthModal {
     this.setupEventListeners()
   }
 
+  private preventGameKeys(): void {
+    // Prevent WASD and arrow keys from being handled by Phaser while modal is open
+    this.keyEventHandler = (event: KeyboardEvent) => {
+      const gameKeys = ['KeyW', 'KeyA', 'KeyS', 'KeyD', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Space']
+      
+      if (gameKeys.includes(event.code)) {
+        // Only prevent default if the target is not an input field
+        const target = event.target as HTMLElement
+        if (target.tagName !== 'INPUT' && target.tagName !== 'TEXTAREA') {
+          event.preventDefault()
+          event.stopPropagation()
+          console.log('🎹 Prevented game key:', event.code, 'while modal is open')
+        }
+      }
+    }
+
+    document.addEventListener('keydown', this.keyEventHandler, true)
+    document.addEventListener('keyup', this.keyEventHandler, true)
+    console.log('🎹 Added global key event prevention for game keys')
+  }
+
+  private removeGameKeyPrevention(): void {
+    if (this.keyEventHandler) {
+      document.removeEventListener('keydown', this.keyEventHandler, true)
+      document.removeEventListener('keyup', this.keyEventHandler, true)
+      this.keyEventHandler = undefined
+      console.log('🎹 Removed global key event prevention')
+    }
+  }
+
   public show(): void {
     this.isVisible = true
     this.element.classList.remove('hidden')
     
     // Disable Phaser keyboard to allow typing in HTML inputs
-    console.log('🚨 WASD FIX TEST - AuthModal show() called - BUILD 3f1126c')
+    console.log('🚨 WASD FIX TEST - AuthModal show() called - BUILD ENHANCED_KEYBOARD_FIX')
     if (typeof window !== 'undefined' && (window as any).managePhaserKeyboard) {
       console.log('🎹 AuthModal: Disabling Phaser keyboard for HTML inputs - WASD SHOULD WORK NOW')
       ;(window as any).managePhaserKeyboard.disable()
     } else {
       console.log('❌ managePhaserKeyboard not available!')
     }
+
+    // Add global keyboard event prevention for game keys while modal is open
+    this.preventGameKeys()
+
+    // Focus first input when modal opens (after a brief delay to ensure DOM is ready)
+    setTimeout(() => {
+      const firstInput = this.element.querySelector('input:not([type="checkbox"])')
+      if (firstInput) {
+        (firstInput as HTMLInputElement).focus()
+        console.log('🎹 AuthModal: Focused first input element')
+      }
+    }, 100)
     
     // Check if user is already authenticated but needs consent
     supabase.auth.getUser().then(({ data: { user } }) => {
@@ -726,6 +769,9 @@ export class AuthModal {
     this.isVisible = false
     this.element.classList.add('hidden')
     
+    // Remove global key event prevention
+    this.removeGameKeyPrevention()
+    
     // Re-enable Phaser keyboard when modal closes
     if (typeof window !== 'undefined' && (window as any).managePhaserKeyboard) {
       console.log('🎹 AuthModal: Re-enabling Phaser keyboard after modal close')
@@ -745,6 +791,9 @@ export class AuthModal {
 
   public destroy(): void {
     this.hasCompletedConsent = false
+    
+    // Remove global key event prevention
+    this.removeGameKeyPrevention()
     
     // Clear countdown timer when destroying
     if (this.countdownInterval) {
