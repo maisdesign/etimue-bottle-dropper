@@ -286,7 +286,7 @@
       to{ transform: translateY(-120vh); opacity:.6 }
     }
   </style>
-  <script type="module" crossorigin src="./assets/index-B7xNA1vS.js"></script>
+  <script type="module" crossorigin src="./assets/index-Dov-fqSO.js"></script>
 <link rel="manifest" href="./manifest.webmanifest"><script id="vite-plugin-pwa:register-sw" src="./registerSW.js"></script></head>
 <body>
   <div class="frame" id="homepage">
@@ -955,6 +955,61 @@
       
       console.log('🏠 Homepage initialized');
     });
+
+    // Phaser Keyboard Management for WASD fix
+    window.managePhaserKeyboard = {
+      disable: function() {
+        console.log('🎹 Globally disabling Phaser keyboard');
+        if (window.gameInstance && window.gameInstance.scene) {
+          // Get all active scenes
+          const scenes = window.gameInstance.scene.scenes;
+          scenes.forEach(scene => {
+            if (scene.input && scene.input.keyboard) {
+              console.log(`🎹 Disabling keyboard for scene: ${scene.scene.key}`);
+              scene.input.keyboard.enabled = false;
+              
+              // Also disable individual key objects
+              if (scene.cursors) {
+                Object.values(scene.cursors).forEach(key => {
+                  if (key && key.enabled !== undefined) key.enabled = false;
+                });
+              }
+              if (scene.wasdKeys) {
+                Object.values(scene.wasdKeys).forEach(key => {
+                  if (key && key.enabled !== undefined) key.enabled = false;
+                });
+              }
+            }
+          });
+        }
+      },
+      
+      enable: function() {
+        console.log('🎹 Globally re-enabling Phaser keyboard');
+        if (window.gameInstance && window.gameInstance.scene) {
+          // Get all active scenes
+          const scenes = window.gameInstance.scene.scenes;
+          scenes.forEach(scene => {
+            if (scene.input && scene.input.keyboard) {
+              console.log(`🎹 Re-enabling keyboard for scene: ${scene.scene.key}`);
+              scene.input.keyboard.enabled = true;
+              
+              // Also re-enable individual key objects
+              if (scene.cursors) {
+                Object.values(scene.cursors).forEach(key => {
+                  if (key && key.enabled !== undefined) key.enabled = true;
+                });
+              }
+              if (scene.wasdKeys) {
+                Object.values(scene.wasdKeys).forEach(key => {
+                  if (key && key.enabled !== undefined) key.enabled = true;
+                });
+              }
+            }
+          });
+        }
+      }
+    };
 
     // Make functions available globally for game integration
     window.homepageAPI = {
