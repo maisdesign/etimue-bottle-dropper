@@ -184,29 +184,40 @@ export class GameScene extends Phaser.Scene {
     const height = this.cameras.main.height
     console.log('📱 Creating mobile controls at dimensions:', width, height)
     
+    // Check if UI sprites exist before creating controls
+    if (!this.textures.exists('btn_left') || !this.textures.exists('btn_right')) {
+      console.warn('⚠️ Mobile control sprites not ready, skipping mobile controls')
+      return
+    }
+    
     // Left button
     this.leftButton = this.add.image(80, height - 80, 'btn_left')
-    console.log('📱 Left button created at', 80, height - 80)
-      .setInteractive()
-      .setAlpha(0.8)
-      .on('pointerdown', () => {
-        this.mobileControls.leftPressed = true
-      })
-      .on('pointerup', () => {
-        this.mobileControls.leftPressed = false
-      })
-      .on('pointerout', () => {
-        this.mobileControls.leftPressed = false
-      })
-      .on('pointercancel', () => {
-        this.mobileControls.leftPressed = false
-      })
+    if (this.leftButton) {
+      console.log('📱 Left button created at', 80, height - 80)
+      this.leftButton
+        .setInteractive()
+        .setAlpha(0.8)
+        .on('pointerdown', () => {
+          this.mobileControls.leftPressed = true
+        })
+        .on('pointerup', () => {
+          this.mobileControls.leftPressed = false
+        })
+        .on('pointerout', () => {
+          this.mobileControls.leftPressed = false
+        })
+        .on('pointercancel', () => {
+          this.mobileControls.leftPressed = false
+        })
+    }
 
     // Right button
     this.rightButton = this.add.image(width - 80, height - 80, 'btn_right')
-    console.log('📱 Right button created at', width - 80, height - 80)
-      .setInteractive()
-      .setAlpha(0.8)
+    if (this.rightButton) {
+      console.log('📱 Right button created at', width - 80, height - 80)
+      this.rightButton
+        .setInteractive()
+        .setAlpha(0.8)
       .on('pointerdown', () => {
         this.mobileControls.rightPressed = true
       })
@@ -219,6 +230,7 @@ export class GameScene extends Phaser.Scene {
       .on('pointercancel', () => {
         this.mobileControls.rightPressed = false
       })
+    }
   }
 
   private createUI(width: number, height: number) {
@@ -252,12 +264,16 @@ export class GameScene extends Phaser.Scene {
     }).setOrigin(1, 0)
 
     // Pause button
-    this.pauseButton = this.add.image(width - 16, 50, 'btn_pause')
-      .setOrigin(1, 0)
-      .setScale(0.8)
-      .setInteractive({ useHandCursor: true })
-      .on('pointerdown', () => this.togglePause())
-    console.log('✅ Pause button created at', width - 16, 50)
+    if (this.textures.exists('btn_pause')) {
+      this.pauseButton = this.add.image(width - 16, 50, 'btn_pause')
+        .setOrigin(1, 0)
+        .setScale(0.8)
+        .setInteractive({ useHandCursor: true })
+        .on('pointerdown', () => this.togglePause())
+      console.log('✅ Pause button created at', width - 16, 50)
+    } else {
+      console.warn('⚠️ Pause button sprite not ready, skipping pause button')
+    }
 
     // Power-up indicator
     this.powerupIndicator = this.add.text(width / 2, 100, '', {

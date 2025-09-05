@@ -284,9 +284,20 @@ export class PreloadScene extends Phaser.Scene {
       console.log('✅ Charlie texture loaded successfully')
     }
 
-    // Wait a moment then transition to menu
+    // Wait a moment then handle navigation
     this.time.delayedCall(1000, () => {
-      this.scene.start('MenuScene')
+      // Check for homepage navigation flags
+      if ((window as any).skipToGame) {
+        console.log('🎯 Skipping to GameScene as requested from homepage (after preload)')
+        ;(window as any).skipToGame = false
+        this.scene.start('GameScene')
+      } else if ((window as any).skipToLeaderboard) {
+        console.log('📊 Skipping to LeaderboardScene as requested from homepage (after preload)')
+        ;(window as any).skipToLeaderboard = false
+        this.scene.start('LeaderboardScene')
+      } else {
+        this.scene.start('MenuScene')
+      }
     })
   }
 }

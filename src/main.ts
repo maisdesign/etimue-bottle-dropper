@@ -96,19 +96,7 @@ async function initGame() {
   // Handle direct navigation from homepage
   game.events.on('ready', () => {
     console.log('🎮 Game ready, checking for homepage navigation flags...')
-    if ((window as any).skipToGame) {
-      console.log('🎯 Skipping to GameScene as requested from homepage')
-      setTimeout(() => {
-        game.scene.start('GameScene')
-      }, 500)
-      ;(window as any).skipToGame = false
-    } else if ((window as any).skipToLeaderboard) {
-      console.log('📊 Skipping to LeaderboardScene as requested from homepage')
-      setTimeout(() => {
-        game.scene.start('LeaderboardScene')
-      }, 500)
-      ;(window as any).skipToLeaderboard = false
-    }
+    // Note: Don't bypass PreloadScene! Let it complete first, then it will handle the skip flags
   })
   
   // Global function to manage Phaser keyboard conflicts with HTML inputs
