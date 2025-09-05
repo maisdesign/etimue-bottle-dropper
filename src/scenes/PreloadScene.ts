@@ -200,9 +200,22 @@ export class PreloadScene extends Phaser.Scene {
     suppressErrors = true
     
     // Player mascotte - use charlie character
-    this.load.image('charlie', './characters/charlie.png')
+    this.load.image('charlie', '/characters/charlie.png')
     this.load.on('filecomplete-image-charlie', () => {
       console.log('✅ Loaded real player sprite (charlie)')
+    })
+
+    this.load.on('loaderror', (fileObj: any) => {
+      if (fileObj.key === 'charlie') {
+        console.warn('❌ Failed to load charlie.png, using generated player sprite as fallback')
+        // Create fallback 'charlie' texture using 'player' texture
+        this.load.on('complete', () => {
+          if (!this.textures.exists('charlie') && this.textures.exists('player')) {
+            this.textures.addImage('charlie', this.textures.get('player').source[0].image)
+            console.log('✅ Created charlie fallback from player texture')
+          }
+        })
+      }
     })
 
     // Bottles  
@@ -253,6 +266,12 @@ export class PreloadScene extends Phaser.Scene {
   }
 
   create() {
+    // Ensure charlie texture exists as final failsafe
+    if (!this.textures.exists('charlie') && this.textures.exists('player')) {
+      this.textures.addImage('charlie', this.textures.get('player').source[0].image)
+      console.log('🔧 Final failsafe: Created charlie from player texture')
+    }
+
     // Wait a moment then transition to menu
     this.time.delayedCall(1000, () => {
       this.scene.start('MenuScene')

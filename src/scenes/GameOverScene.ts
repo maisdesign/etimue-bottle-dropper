@@ -183,14 +183,14 @@ export class GameOverScene extends Phaser.Scene {
     const authState = authManager.getState()
     
     if (!authState.isAuthenticated) {
-      this.submitStatus.setText('Sign in to submit your score to the leaderboard')
-      this.submitButton.setText('Sign In & Submit')
+      this.submitStatus.setText(t('auth.signInToSubmit'))
+      this.submitButton.setText(t('auth.signInAndSubmit'))
       return
     }
     
     if (!authState.hasMarketingConsent) {
-      this.submitStatus.setText('Newsletter subscription required')
-      this.submitButton.setText('Sign In & Submit')
+      this.submitStatus.setText(t('auth.newsletterRequired'))
+      this.submitButton.setText(t('auth.signInAndSubmit'))
       return
     }
 
@@ -232,8 +232,17 @@ export class GameOverScene extends Phaser.Scene {
     }
 
     if (!authState.hasMarketingConsent) {
-      console.log('❌ No marketing consent')
-      this.submitStatus.setText('Newsletter subscription required')
+      console.log('❌ No marketing consent, showing auth modal for consent')
+      // Show auth modal for consent
+      try {
+        await authManager.showAuthModal()
+        // After consent, retry submission
+        console.log('🔄 Retrying submission after consent')
+        this.submitScore()
+      } catch (error) {
+        console.error('❌ Consent failed:', error)
+        this.submitStatus.setText(t('auth.newsletterRequired'))
+      }
       return
     }
 

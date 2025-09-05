@@ -24,7 +24,10 @@
     "password": "Password",
     "signInWithOtp": "Accedi con codice",
     "enterOtpCode": "Inserisci il codice ricevuto via email",
-    "verify": "Verifica"
+    "verify": "Verifica",
+    "signInToSubmit": "Accedi per inviare il tuo punteggio alla classifica",
+    "signInAndSubmit": "Accedi e Invia",
+    "newsletterRequired": "Iscrizione newsletter richiesta"
   },
   "mailchimp": {
     "consent": "Acconsento a iscrivermi alla mailing list di Etimuè per ricevere aggiornamenti e offerte esclusive",
