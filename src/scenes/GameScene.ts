@@ -363,8 +363,18 @@ export class GameScene extends Phaser.Scene {
     .setOrigin(0.5)
     .setInteractive({ useHandCursor: true })
     .on('pointerdown', () => {
+      logger.info('NAVIGATION', 'GameScene pause menu -> returning to homepage')
       this.scene.stop()
-      this.scene.start('MenuScene')
+      
+      // Return to homepage instead of MenuScene
+      if (typeof window !== 'undefined' && (window as any).returnToHomepage) {
+        logger.info('NAVIGATION', 'Using returnToHomepage function from pause menu')
+        ;(window as any).returnToHomepage()
+      } else {
+        // Fallback to MenuScene if homepage function not available
+        logger.warn('NAVIGATION', 'returnToHomepage not available, falling back to MenuScene')
+        this.scene.start('MenuScene')
+      }
     })
 
     this.pauseOverlay.add([pauseBg, pauseText, resumeButton, menuButton])

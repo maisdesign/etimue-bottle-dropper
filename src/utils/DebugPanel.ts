@@ -106,6 +106,9 @@ class DebugPanel {
         return
       }
       
+      // Debug logging
+      console.log('🔧 DebugPanel keydown:', e.key, 'sequence:', keySequence)
+      
       keySequence.push(e.key.toLowerCase())
       
       // Keep only the last 5 keys
@@ -113,8 +116,11 @@ class DebugPanel {
         keySequence = keySequence.slice(-targetSequence.length)
       }
       
+      console.log('🔧 Updated sequence:', keySequence, 'target:', targetSequence)
+      
       // Check if sequence matches
       if (keySequence.join('') === targetSequence.join('')) {
+        console.log('🔧 DEBUG SEQUENCE MATCHED! Opening panel...')
         this.toggle()
         keySequence = []
       }
@@ -130,6 +136,7 @@ class DebugPanel {
     // Also allow Ctrl+Alt+D to avoid conflict with browser DevTools
     document.addEventListener('keydown', (e) => {
       if (e.ctrlKey && e.altKey && e.key === 'd') {
+        console.log('🔧 Ctrl+Alt+D pressed! Opening debug panel...')
         e.preventDefault()
         this.toggle()
       }
