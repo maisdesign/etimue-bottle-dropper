@@ -75,10 +75,15 @@ supabase/.temp/
 # Temporary files
 *.tmp
 *.temp
-*.png
-*.html
 mailchimp-function*.ts
 SITUAZIONE_PROGETTO.md
 
-# Test files
+# Test files  
 test-*.html
+
+# Exclude most PNG and HTML files but allow specific ones
+*.png
+!public/characters/*.png
+!public/*.png
+*.html
+!index.html
