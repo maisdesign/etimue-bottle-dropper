@@ -17,6 +17,7 @@ export class GameOverScene extends Phaser.Scene {
   private gameData!: GameData
   private submitButton!: Phaser.GameObjects.Text
   private submitStatus!: Phaser.GameObjects.Text
+  private leaderboardButton!: Phaser.GameObjects.Text
   private scoreSubmitted: boolean = false
 
   constructor() {
@@ -139,7 +140,7 @@ export class GameOverScene extends Phaser.Scene {
     .on('pointerout', () => playAgainButton.setScale(1))
 
     // Leaderboard button
-    const leaderboardButton = this.add.text(width / 2 + 80, buttonY + 60, t('leaderboard.title'), {
+    this.leaderboardButton = this.add.text(width / 2 + 80, buttonY + 60, t('leaderboard.title'), {
       fontSize: '16px',
       fontFamily: 'Inter, sans-serif',
       fontWeight: '600',
@@ -150,8 +151,8 @@ export class GameOverScene extends Phaser.Scene {
     .setOrigin(0.5)
     .setInteractive({ useHandCursor: true })
     .on('pointerdown', () => this.showLeaderboard())
-    .on('pointerover', () => leaderboardButton.setScale(1.05))
-    .on('pointerout', () => leaderboardButton.setScale(1))
+    .on('pointerover', () => this.leaderboardButton.setScale(1.05))
+    .on('pointerout', () => this.leaderboardButton.setScale(1))
 
     // Menu button
     const menuButton = this.add.text(width / 2, buttonY + 120, 'Menu', {
@@ -307,6 +308,9 @@ export class GameOverScene extends Phaser.Scene {
         this.submitStatus.setText('Score submitted successfully!')
         this.submitButton.setText(t('leaderboard.title'))
         this.submitButton.setAlpha(1)
+        
+        // Hide the separate leaderboard button to avoid duplicates
+        this.leaderboardButton.setVisible(false)
         
         // Show success effect
         this.cameras.main.flash(300, 0, 255, 0)
