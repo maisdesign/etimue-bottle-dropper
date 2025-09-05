@@ -286,7 +286,7 @@
       to{ transform: translateY(-120vh); opacity:.6 }
     }
   </style>
-  <script type="module" crossorigin src="./assets/index-DBXxBDA0.js"></script>
+  <script type="module" crossorigin src="./assets/index-iySILXK4.js"></script>
 <link rel="manifest" href="./manifest.webmanifest"><script id="vite-plugin-pwa:register-sw" src="./registerSW.js"></script></head>
 <body>
   <div class="frame" id="homepage">
@@ -312,12 +312,12 @@
         <button class="lang-toggle" onclick="toggleLanguage()" style="display:none;">
           <span id="current-lang">🇮🇹</span>
         </button>
-        <span class="signin" id="auth-status" title="Login status">
+        <span class="signin" id="auth-status" style="cursor: pointer;" title="Login status" onclick="handleAuthClick()">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-            <rect x="3" y="11" width="18" height="10" rx="2" ry="2"></rect>
-            <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+            <circle cx="12" cy="7" r="4"></circle>
           </svg>
-          <span data-translate="loginStatus">Accedi per giocare</span>
+          <span id="auth-status-text" data-translate="loginStatus">Accedi per giocare</span>
         </span>
       </div>
     </div>
@@ -403,7 +403,7 @@
         quickSettings: 'Impostazioni rapide',
         audio: 'Audio',
         language: 'Lingua',
-        loginStatus: 'Accedi per giocare',
+        loginStatus: 'Accedi',
         privacy: 'Privacy',
         terms: 'Termini'
       },
@@ -419,7 +419,7 @@
         quickSettings: 'Quick Settings',
         audio: 'Audio',
         language: 'Language',
-        loginStatus: 'Login to play',
+        loginStatus: 'Login',
         privacy: 'Privacy',
         terms: 'Terms'
       }
@@ -892,17 +892,80 @@
     function updateAuthStatus() {
       if (window.authManager) {
         const authState = window.authManager.getState();
-        const authStatus = document.getElementById('auth-status').querySelector('span');
+        const authStatusText = document.getElementById('auth-status-text');
+        const authStatusContainer = document.getElementById('auth-status');
         
         if (authState.isAuthenticated) {
-          authStatus.textContent = currentLang === 'it' ? 
-            `Bentornatə ${authState.user?.email || 'Utente'}!` : 
-            `Welcome back ${authState.user?.email || 'User'}!`;
+          const username = authState.profile?.username || authState.user?.email || 'Utente';
+          authStatusText.textContent = currentLang === 'it' ? 
+            `${username}` : 
+            `${username}`;
+          authStatusContainer.title = currentLang === 'it' ? 'Gestisci profilo' : 'Manage profile';
         } else {
-          authStatus.textContent = currentLang === 'it' ? 
-            'Accedi per giocare' : 
-            'Login to play';
+          authStatusText.textContent = currentLang === 'it' ? 
+            'Accedi' : 
+            'Login';
+          authStatusContainer.title = currentLang === 'it' ? 'Accedi per giocare' : 'Login to play';
         }
+      }
+    }
+
+    // Handle auth button click
+    function handleAuthClick() {
+      console.log('🔐 Auth button clicked');
+      
+      if (window.authManager) {
+        const authState = window.authManager.getState();
+        
+        if (authState.isAuthenticated) {
+          // User is logged in - show profile menu
+          const username = authState.profile?.username || authState.user?.email || 'Utente';
+          const action = confirm(currentLang === 'it' ? 
+            `Ciao ${username}!\n\nVuoi cambiare nickname o disconnetterti?\n\nOK = Cambia nickname\nAnnulla = Disconnetti` :
+            `Hi ${username}!\n\nDo you want to change nickname or logout?\n\nOK = Change nickname\nCancel = Logout`);
+          
+          if (action) {
+            // Change nickname - show auth modal for profile update
+            if (window.homepageAuthModal) {
+              window.homepageAuthModal.show();
+            } else if (window.AuthModal) {
+              window.homepageAuthModal = new window.AuthModal();
+              window.homepageAuthModal.show();
+            }
+          } else {
+            // Logout
+            const confirmLogout = confirm(currentLang === 'it' ? 
+              'Sei sicuro di voler uscire?' : 
+              'Are you sure you want to logout?');
+            if (confirmLogout) {
+              window.authManager.signOut().then(() => {
+                alert(currentLang === 'it' ? 'Disconnesso!' : 'Logged out!');
+                updateAuthStatus();
+              }).catch(error => {
+                console.error('Logout error:', error);
+                alert(currentLang === 'it' ? 'Errore durante disconnessione' : 'Logout error');
+              });
+            }
+          }
+        } else {
+          // User not logged in - show auth modal
+          if (window.homepageAuthModal) {
+            window.homepageAuthModal.show();
+          } else if (window.AuthModal) {
+            window.homepageAuthModal = new window.AuthModal();
+            window.homepageAuthModal.show();
+          } else {
+            // Fallback if AuthModal not available yet
+            alert(currentLang === 'it' ? 
+              'Sistema di login in caricamento... Riprova tra qualche secondo.' : 
+              'Login system loading... Try again in a few seconds.');
+          }
+        }
+      } else {
+        // AuthManager not ready
+        alert(currentLang === 'it' ? 
+          'Sistema di autenticazione in caricamento... Riprova tra qualche secondo.' : 
+          'Authentication system loading... Try again in a few seconds.');
       }
     }
 
