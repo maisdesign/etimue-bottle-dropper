@@ -15,20 +15,35 @@ Use the Supabase CLI for database operations:
 - `supabase functions deploy submit-score` - Deploy score submission edge function
 - `supabase functions deploy mailchimp-subscribe` - Deploy newsletter subscription function
 
-## Project Status (as of September 3, 2025)
+## Project Status (as of September 6, 2025 - 00:45)
 
-**✅ PRODUCTION READY** - All critical issues resolved. New character selection system ready for implementation.
+**⚠️ NEEDS URGENT FIXES** - Homepage interactivity implemented but has critical bugs requiring immediate attention.
 
-### Current Working State
+### Recently Completed Features
+- ✅ **NUCLEAR WASD Fix**: Fully resolved double character insertion bug in input fields after gameplay
+- ✅ **Charlie Character Selection**: Clickable mascot with modal for character selection (Charlie, Scrocca, Irlandese)
+- ✅ **Homepage Auth Button**: Clickable profile/login button in header area
+
+### CRITICAL ISSUES REQUIRING IMMEDIATE FIX
+- 🔴 **Homepage Auth Button Bugs**:
+  1. **Nickname Change Broken**: Clicking OK to change nickname shows advanced logger modal instead of profile edit
+  2. **Language Switch Bug**: After login, changing language reverts button to "LOGIN" instead of showing username
+  3. **Auth Flow Confusion**: User gets authentication modal when trying to change nickname (should get profile modal)
+
+### Current Working State  
 - ✅ Google OAuth authentication working completely (production OAuth URLs configured)
 - ✅ Game fully playable with score submission
-- ✅ Nickname system with profanity filtering implemented
+- ✅ Nickname system with profanity filtering implemented (but broken on homepage)
 - ✅ Leaderboards with correct UI alignment and translations
-- ✅ All critical UI bugs fixed (modal cleanup, positioning, header alignment)
+- ✅ WASD keyboard fix working perfectly (nuclear solution deployed)
 - ✅ Database connectivity verified and working
 - ✅ Character assets optimized and ready (Charlie, Scrocca, Irlandese at 256px ~58KB each)
-- ✅ All translations verified and correct (IT/EN)
+- ✅ All translations verified and correct (IT/EN) 
 - ✅ Site deployed at: https://astounding-rolypoly-fc5137.netlify.app/ with OAuth properly configured
+
+### Screenshots Available
+- 📸 Screenshots of homepage auth bugs available in Screenshots/ folder (ITA and ENG versions)
+- 📊 Advanced logger debug data available for debugging session duration and bugs
 
 ### Environment Configuration
 - Supabase URL: `https://xtpfssiraytzvdvgrsol.supabase.co`
@@ -108,7 +123,18 @@ Score submission includes validation:
 - Consent timestamp stored in profiles
 - Privacy policy and terms integration
 
-### Recent Updates (September 3, 2025)
+### Recent Updates (September 6, 2025)
+
+**🔴 URGENT SESSION NOTES (September 6, 2025 - 00:45)**:
+- **Session Duration**: Approaching 5-hour limit, may need interruption soon
+- **Critical Bugs Found**: Homepage auth button implementation has 3 major bugs requiring immediate fixes:
+  1. **Nickname Change Broken**: Clicking OK shows advanced logger modal instead of profile edit
+  2. **Language Switch Bug**: After login, changing language reverts button text to "LOGIN" 
+  3. **Auth Flow Wrong**: Should show profile modal for nickname change, not auth modal
+- **Debug Data**: Screenshots available in Screenshots/ folder showing auth button bugs (ITA/ENG versions)
+- **Next Actions Required**: Fix nickname change flow, language switching persistence, and modal routing
+
+### Previous Updates (September 3, 2025)
 
 **🐛 CRITICAL BUG FOUND & FIXED - OAuth Double Hash Issue**:
 - 🔍 **Bug**: OAuth callback URL contained double hash: `#auth-callback#access_token=...` instead of proper format

@@ -1,7 +1,7 @@
 # Situazione Progetto Etimuè Bottle Dropper
 
-**Ultimo aggiornamento**: 5 Settembre 2025, ore 21:30  
-**Stato generale**: ✅ **COMPLETAMENTE OPERATIVO** - Tutti i bug critici risolti, gioco funzionante
+**Ultimo aggiornamento**: 6 Settembre 2025, ore 00:50  
+**Stato generale**: ⚠️ **NECESSITA URGENTI CORREZIONI** - Homepage interattiva implementata ma con bug critici
 
 ---
 
@@ -17,9 +17,9 @@
 - **🎯 Anti-cheat**: Validazione punteggi implementata
 - **🌐 Internazionalizzazione**: Italiano/Inglese supportati
 
-### 🔧 **CORREZIONI APPLICATE (2-5 SETTEMBRE)**
+### 🔧 **CORREZIONI APPLICATE (2-6 SETTEMBRE)**
 - ✅ **Login Loop**: Risolto completamente nel AuthModal
-- ✅ **WASD Keys**: Tasti funzionanti negli input HTML 
+- ✅ **WASD Keys NUCLEAR FIX (6 SET)**: Soluzione definitiva implementata - doppia inserzione risolta
 - ✅ **Audio Errors**: Fix compatibilità Phaser 3 (`sound.exists` → `cache.audio.exists`)
 - ✅ **Spelling**: Brand corretto "Etimuè" (non "Etimüè") in tutto il progetto
 - ✅ **Nickname Duplicati**: Sistema di controllo unicità implementato
@@ -34,6 +34,11 @@
 - ✅ **Audio Errors (5 SET)**: Errori decodifica audio eliminati (files non esistenti)
 - ✅ **Marketing Consent Bug (5 SET)**: Sistema riconosce correttamente il consenso dato
 
+### 🆕 **NUOVE FUNZIONALITÀ IMPLEMENTATE (6 SETTEMBRE 2025)**
+- ✅ **Charlie Character Selection**: Mascotte cliccabile con modal selezione personaggi
+- ✅ **Homepage Auth Button**: Pulsante profilo/login cliccabile nel header
+- ✅ **Character System**: 3 personaggi disponibili (Charlie, Scrocca, Irlandese)
+
 ### 🆕 **SISTEMA DEBUG IMPLEMENTATO (5 SETTEMBRE ORE 20:00)**
 - ✅ **Logger System**: Sistema di logging categorizzato per debug produzione
 - ✅ **GameStateTracker**: Monitoraggio real-time di auth, loading, navigation
@@ -41,13 +46,21 @@
 - ✅ **Error Handling**: Try-catch per AudioContext e timeout auth ridotti
 - ✅ **Boot Screen**: Charlie image invece del placeholder SVG + traduzione italiana
 
-### ✅ **BUG CRITICI RISOLTI (5 SETTEMBRE ORE 21:30)**  
-#### 🚨 **GAME CRASH - COMPLETAMENTE RISOLTI**
+### 🔴 **BUG CRITICI DA RISOLVERE URGENTEMENTE (6 SETTEMBRE ORE 00:50)**
+#### 🚨 **HOMEPAGE AUTH BUTTON - RICHIEDE CORREZIONE IMMEDIATA**
+- ❌ **Nickname Change Broken**: Cliccando OK per cambiare nickname appare il logger modal invece di profile edit
+- ❌ **Language Switch Bug**: Dopo login, cambiando lingua il pulsante torna a "LOGIN" invece di mostrare username
+- ❌ **Auth Flow Confusion**: Sistema mostra auth modal per nickname change invece di profile modal
+- 📸 **Debug Data**: Screenshots disponibili in Screenshots/Versione_ITA.png e Versione_ENG.png
+- 🎯 **Location Bug**: Funzioni `handleAuthClick()` e `updateAuthStatus()` in index.html
+
+### ✅ **BUG CRITICI RISOLTI PRECEDENTEMENTE**  
+#### 🚨 **GAME CRASH - COMPLETAMENTE RISOLTI (5 SETTEMBRE)**
 - ✅ **GameScene TypeError**: `this.isMobile()` → `this.isMobile` - RISOLTO
 - ✅ **GameOverScene Crash**: `updateGameState()` → `updateGame()` - RISOLTO
 - ✅ **Blue Screen Hang**: Gioco ora si avvia correttamente dopo login  
 - ✅ **Pause Button Navigation**: Ora torna alla homepage invece della vecchia UI
-- 🔧 **Debug Panel**: Aggiunto logging diagnostico per troubleshooting
+- ✅ **WASD Double Insertion (6 SET)**: Fix nuclear implementato - inserzione singola confermata
 - ⚠️ **Mailchimp 400 Error**: Non critico - newsletter fallisce ma gioco funziona
 
 #### 🎮 **GIOCO COMPLETAMENTE FUNZIONANTE**:
