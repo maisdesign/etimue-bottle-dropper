@@ -4,6 +4,7 @@ import { authManager } from '@/net/authManager'
 import { t } from '@/i18n'
 import { logger } from '@/utils/Logger'
 import { gameStateTracker } from '@/utils/GameStateTracker'
+import { characterManager } from '@/utils/CharacterManager'
 
 interface MobileControls {
   leftPressed: boolean
@@ -70,7 +71,8 @@ export class GameScene extends Phaser.Scene {
     const height = this.cameras.main.height
     
     // Check texture availability before starting
-    const requiredTextures = ['charlie', 'btn_pause']
+    const selectedCharacterTexture = characterManager.getSelectedCharacterTextureKey()
+    const requiredTextures = [selectedCharacterTexture, 'btn_pause']
     const mobileTextures = ['btn_left', 'btn_right']
     const isMobile = this.isMobile
     
@@ -170,9 +172,16 @@ export class GameScene extends Phaser.Scene {
   private createPlayer() {
     const width = this.cameras.main.width
     
-    this.player = this.physics.add.sprite(width / 2, 550, 'charlie')
+    // Get selected character from CharacterManager
+    const selectedCharacter = characterManager.getSelectedCharacterTextureKey()
+    logger.info('CHARACTER_SELECTION', 'Creating player with selected character', { 
+      character: selectedCharacter,
+      characterData: characterManager.getSelectedCharacter()
+    })
+    
+    this.player = this.physics.add.sprite(width / 2, 550, selectedCharacter)
     this.player.setCollideWorldBounds(true)
-    this.player.setScale(0.4) // 50% smaller for charlie sprite - better hitbox
+    this.player.setScale(0.4) // 50% smaller for sprite - better hitbox
     
     // Set player body size for more precise collisions
     this.player.body?.setSize(this.player.width * 0.7, this.player.height * 0.7)

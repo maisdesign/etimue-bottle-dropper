@@ -211,20 +211,29 @@ export class PreloadScene extends Phaser.Scene {
     
     suppressErrors = true
     
-    // Player mascotte - use charlie character
-    this.load.image('charlie', '/characters/charlie.png')
-    this.load.on('filecomplete-image-charlie', () => {
-      console.log('✅ Loaded real player sprite (charlie)')
+    // Player characters - load all available characters
+    const characters = ['charlie', 'scrocca', 'irlandese']
+    const characterLoadStatus: { [key: string]: boolean } = {}
+    
+    characters.forEach(character => {
+      this.load.image(character, `/characters/${character}.png`)
+      this.load.on(`filecomplete-image-${character}`, () => {
+        console.log(`✅ Loaded real character sprite (${character})`)
+        characterLoadStatus[character] = true
+      })
     })
 
     this.load.on('loaderror', (fileObj: any) => {
-      if (fileObj.key === 'charlie') {
-        console.warn('❌ Failed to load charlie.png, using generated player sprite as fallback')
-        // Create fallback 'charlie' texture using 'player' texture
+      const characterKey = fileObj.key as string
+      if (characters.includes(characterKey)) {
+        console.warn(`❌ Failed to load ${characterKey}.png, using generated player sprite as fallback`)
+        characterLoadStatus[characterKey] = false
+        
+        // Create fallback texture using 'player' texture
         this.load.on('complete', () => {
-          if (!this.textures.exists('charlie') && this.textures.exists('player')) {
-            this.textures.addImage('charlie', this.textures.get('player').source[0].image)
-            console.log('✅ Created charlie fallback from player texture')
+          if (!this.textures.exists(characterKey) && this.textures.exists('player')) {
+            this.textures.addImage(characterKey, this.textures.get('player').source[0].image)
+            console.log(`✅ Created ${characterKey} fallback from player texture`)
           }
         })
       }
@@ -299,20 +308,27 @@ export class PreloadScene extends Phaser.Scene {
       }
     })
     
-    // Ensure charlie texture exists as final failsafe
-    if (!charlieExists) {
-      if (playerExists) {
-        this.textures.addImage('charlie', this.textures.get('player').source[0].image)
-        logger.warn('TEXTURE_FALLBACK', 'Created charlie from player texture (charlie missing)')
-        gameStateTracker.updateLoading({ charlieLoaded: true })
+    // Ensure all character textures exist as final failsafe
+    const characters = ['charlie', 'scrocca', 'irlandese']
+    const charactersLoaded = { charlie: charlieExists }
+    
+    characters.forEach(character => {
+      const exists = this.textures.exists(character)
+      charactersLoaded[character as keyof typeof charactersLoaded] = exists
+      
+      if (!exists) {
+        if (playerExists) {
+          this.textures.addImage(character, this.textures.get('player').source[0].image)
+          logger.warn('TEXTURE_FALLBACK', `Created ${character} from player texture (${character} missing)`)
+        } else {
+          logger.error('TEXTURE_ERROR', `Both ${character} and player textures missing!`)
+        }
       } else {
-        logger.error('TEXTURE_ERROR', 'Both charlie and player textures missing!')
-        gameStateTracker.updateLoading({ charlieLoaded: false })
+        logger.info('TEXTURE_SUCCESS', `${character} texture loaded successfully`)
       }
-    } else {
-      logger.info('TEXTURE_SUCCESS', 'Charlie texture loaded successfully')
-      gameStateTracker.updateLoading({ charlieLoaded: true })
-    }
+    })
+    
+    gameStateTracker.updateLoading({ charactersLoaded })
 
     gameStateTracker.updateLoading({ preloadComplete: true })
 
