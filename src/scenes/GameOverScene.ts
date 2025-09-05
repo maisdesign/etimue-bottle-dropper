@@ -35,9 +35,8 @@ export class GameOverScene extends Phaser.Scene {
       duration: this.gameData?.actualDuration
     })
     
-    gameStateTracker.updateGameState({
-      currentScene: 'GameOverScene',
-      gameData: this.gameData
+    gameStateTracker.updateGame({
+      currentScene: 'GameOverScene'
     })
 
     const width = this.cameras.main.width
