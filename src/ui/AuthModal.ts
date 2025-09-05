@@ -51,8 +51,6 @@ export class AuthModal {
                 id="auth-email-input" 
                 placeholder="${t('auth.email')}"
                 class="auth-input"
-                onfocus="window.managePhaserKeyboard?.disable()"
-                onblur="window.managePhaserKeyboard?.enable()"
               >
               <button id="auth-send-otp" class="auth-button auth-button-primary">
                 ${t('auth.signInWithOtp')}
@@ -74,8 +72,6 @@ export class AuthModal {
                 placeholder="000000"
                 class="auth-input auth-input-otp"
                 maxlength="6"
-                onfocus="window.managePhaserKeyboard?.disable()"
-                onblur="window.managePhaserKeyboard?.enable()"
               >
               <button id="auth-verify-otp" class="auth-button auth-button-primary">
                 ${t('auth.verify')}
@@ -96,8 +92,6 @@ export class AuthModal {
                 placeholder="${t('profile.nickname')}"
                 class="auth-input"
                 maxlength="20"
-                onfocus="window.managePhaserKeyboard?.disable()"
-                onblur="window.managePhaserKeyboard?.enable()"
               >
               
               <div class="consent-checkbox">
