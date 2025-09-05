@@ -55,7 +55,8 @@
       "Read(/D:\\etimue-bottle-dropper\\src\\ui/**)",
       "Bash(npm run preview:*)",
       "Bash(cat:*)",
-      "Bash(dir:*)"
+      "Bash(dir:*)",
+      "Bash(git restore:*)"
     ],
     "deny": [],
     "ask": []

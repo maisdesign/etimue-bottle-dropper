@@ -212,3 +212,5 @@ The system is **PRODUCTION READY** and deployed. Ready for character selection s
 - 🎯 LocalStorage persistence for character choice
 - Aggiorna SITUAZIONE_PROGETTO.md ogni volta che troviamo un bug o lo risolviamo, anche ogni volta che pensiamo ad una nuova feature o la implementiamo
 - Controlla sempre se ci sono screenshot, leggili e poi cancellali
+- memory Netlify gets its file from the dist folder so to push things online we have to build and then push the changes there.\
+Other files are for the local version of the game
