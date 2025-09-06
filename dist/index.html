@@ -337,7 +337,7 @@
             <img src="./characters/charlie.png" alt="Charlie mascot" id="character-mascot" 
                  style="width: 90px; height: 90px; border-radius: 16px; object-fit: cover; background: #fff; box-shadow: 0 2px 8px rgba(0,0,0,0.2); padding-right: 50px; cursor: pointer; transition: transform 0.2s;" 
                  title="Click to choose your character!"
-                 onclick="showCharacterSelection()"
+                 onclick="try { console.log('🐱 Charlie clicked!'); showCharacterSelection(); } catch(e) { console.error('❌ Charlie click error:', e); alert('Charlie click error: ' + e.message); }"
                  onmouseover="this.style.transform='scale(1.05)'"
                  onmouseout="this.style.transform='scale(1)'"
                  onerror="this.style.background='#ff0000'; this.alt='❌ ERRORE CARICAMENTO'; console.error('Failed to load:', this.src);" 
@@ -910,32 +910,50 @@
       }
     }
 
-    // Handle auth without starting game - NO browser alerts
+    // Handle auth - starts Phaser to load AuthModal system
     function startGameForAuth() {
       console.log('🔐 Auth button clicked from homepage');
       
-      if (window.authManager) {
-        const authState = window.authManager.getState();
+      // Initialize Phaser system to get AuthModal available
+      if (typeof window.startGame === 'function') {
+        console.log('🎮 Starting Phaser to load auth system...');
         
-        if (authState.isAuthenticated) {
-          // User logged in - show profile modal for nickname/logout options
-          console.log('User authenticated, showing profile options');
-          // TODO: Show custom profile modal instead of browser dialogs
-          console.log('Profile modal not implemented yet - will need custom UI');
-        } else {
-          // User not logged in - show auth modal for login only
-          console.log('User not authenticated, showing auth modal');
-          if (window.homepageAuthModal) {
-            window.homepageAuthModal.show();
-          } else if (window.AuthModal) {
-            window.homepageAuthModal = new window.AuthModal();
-            window.homepageAuthModal.show();
+        // Start Phaser but keep homepage visible initially
+        window.startGame();
+        
+        // Wait for Phaser to load, then handle auth
+        setTimeout(() => {
+          console.log('⏰ Checking if AuthModal is now available...');
+          if (window.AuthModal && window.authManager) {
+            const authState = window.authManager.getState();
+            
+            if (!authState.isAuthenticated) {
+              console.log('🔑 User not authenticated, showing auth modal');
+              const authModal = new window.AuthModal();
+            ./assets/main-BJfeEEvO.tshow();
+            } else {
+              console.log('✅ User already authenticated:', authState.profile?.username);
+              // User is already logged in - could show profile menu here
+            }
           } else {
-            console.log('AuthModal not ready yet');
+            console.log('❌ AuthModal still not available after Phaser load');
           }
-        }
+        }, 2000); // Wait 2 seconds for Phaser to initialize
+        
       } else {
-        console.log('AuthManager not ready yet');
+        console.log('❌ startGame function not available');
+        // Fallback: try to initialize Phaser manually
+        import('./src/main.ts').then(() => {
+          console.log('✅ Phaser loaded via fallback');
+          setTimeout(() => {
+            if (window.AuthModal) {
+              const authModal = new window.AuthModal();
+              authModal.show();
+            }
+          }, 1000);
+        }).catch(error => {
+          console.error('❌ Failed to load Phaser:', error);
+        });
       }
     }
 
