@@ -24,6 +24,8 @@ export class AuthManager {
   private authModal: AuthModal | null = null
   private listeners: Array<(state: AuthState) => void> = []
   private isProcessingAuth = false
+  private lastProcessedUserId: string | null = null
+  private lastProcessTime: number = 0
 
   constructor() {
     this.initializeAuth()
@@ -105,6 +107,13 @@ export class AuthManager {
       return
     }
     
+    // Anti-loop: Skip if same user processed recently (within 30 seconds)
+    const now = Date.now()
+    if (this.lastProcessedUserId === session.user.id && (now - this.lastProcessTime) < 30000) {
+      console.log(`⏭️ Skipping auth change - user ${session.user.email} processed recently`)
+      return
+    }
+    
     this.isProcessingAuth = true
     
     try {
@@ -119,7 +128,7 @@ export class AuthManager {
       
       const profilePromise = profileService.getProfile(session.user.id)
       const timeoutPromise = new Promise((_, reject) =>
-        setTimeout(() => reject(new Error('Profile loading timeout')), 5000)
+        setTimeout(() => reject(new Error('Profile loading timeout')), 20000)
       )
       
       let profile
@@ -147,7 +156,7 @@ export class AuthManager {
           })
           
           const createTimeoutPromise = new Promise((_, reject) =>
-            setTimeout(() => reject(new Error('Profile creation timeout')), 5000)
+            setTimeout(() => reject(new Error('Profile creation timeout')), 20000)
           )
           
           profile = await Promise.race([createPromise, createTimeoutPromise])
@@ -174,6 +183,9 @@ export class AuthManager {
       // Always set loading to false even on error
       this.state.isLoading = false
     } finally {
+      // Update anti-loop trackers
+      this.lastProcessedUserId = session.user.id
+      this.lastProcessTime = Date.now()
       this.isProcessingAuth = false
     }
   }
