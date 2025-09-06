@@ -284,3 +284,4 @@ Perché il progetto Netlify ( https://astounding-rolypoly-fc5137.netlify.app/) m
 │   il nickname o eseguire il logout.\         │
 │   12)cambio di personaggio cliccando su      │
 │   Charlie in homepage
+- il sync changes non è su Netlify ma su VS Code
