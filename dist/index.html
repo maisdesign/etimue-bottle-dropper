@@ -286,7 +286,7 @@
       to{ transform: translateY(-120vh); opacity:.6 }
     }
   </style>
-  <script type="module" crossorigin src="./assets/index-rqL_ZsPx.js"></script>
+  <script type="module" crossorigin src="./assets/index-Bx-9LydJ.js"></script>
 <link rel="manifest" href="./manifest.webmanifest"><script id="vite-plugin-pwa:register-sw" src="./registerSW.js"></script></head>
 <body>
   <div class="frame" id="homepage">
@@ -312,7 +312,7 @@
         <button class="lang-toggle" onclick="toggleLanguage()" style="display:none;">
           <span id="current-lang">🇮🇹</span>
         </button>
-        <span class="signin" id="auth-status" style="cursor: pointer;" title="Login status" onclick="handleAuthClick()">
+        <span class="signin" id="auth-status" style="cursor: default; display: none;" title="Login status">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
             <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
             <circle cx="12" cy="7" r="4"></circle>
@@ -486,7 +486,7 @@
           // Set callback to handle any pending action after successful auth
           window.homepageAuthModal.onAuth((user) => {
             console.log('✅ Auth successful from homepage, executing pending action:', pendingAction);
-            updateAuthStatus(); // Update the homepage status
+            // updateAuthStatus(); // DISABLED - handled by Phaser
             
             if (pendingAction === 'startGame') {
               startGame(); // Retry starting the game
@@ -576,7 +576,7 @@
           window.homepageAuthModal = new window.AuthModal();
           window.homepageAuthModal.onAuth((user) => {
             console.log('✅ Auth successful from homepage, executing pending action:', pendingAction);
-            updateAuthStatus(); // Update the homepage status
+            // updateAuthStatus(); // DISABLED - handled by Phaser
             
             if (pendingAction === 'startGame') {
               startGame(); // Retry starting the game
@@ -888,86 +888,15 @@
       }
     });
 
-    // Update auth status
-    function updateAuthStatus() {
-      if (window.authManager) {
-        const authState = window.authManager.getState();
-        const authStatusText = document.getElementById('auth-status-text');
-        const authStatusContainer = document.getElementById('auth-status');
-        
-        if (authState.isAuthenticated) {
-          const username = authState.profile?.username || authState.user?.email || 'Utente';
-          authStatusText.textContent = currentLang === 'it' ? 
-            `${username}` : 
-            `${username}`;
-          authStatusContainer.title = currentLang === 'it' ? 'Gestisci profilo' : 'Manage profile';
-        } else {
-          authStatusText.textContent = currentLang === 'it' ? 
-            'Accedi' : 
-            'Login';
-          authStatusContainer.title = currentLang === 'it' ? 'Accedi per giocare' : 'Login to play';
-        }
-      }
-    }
+    // DISABLED: Auth status update is now handled by Phaser MenuScene
+    // function updateAuthStatus() {
+    //   // Legacy HTML auth status update - replaced by Phaser system
+    // }
 
-    // Handle auth button click
-    function handleAuthClick() {
-      console.log('🔐 Auth button clicked');
-      
-      if (window.authManager) {
-        const authState = window.authManager.getState();
-        
-        if (authState.isAuthenticated) {
-          // User is logged in - show profile menu
-          const username = authState.profile?.username || authState.user?.email || 'Utente';
-          const action = confirm(currentLang === 'it' ? 
-            `Ciao ${username}!\n\nVuoi cambiare nickname o disconnetterti?\n\nOK = Cambia nickname\nAnnulla = Disconnetti` :
-            `Hi ${username}!\n\nDo you want to change nickname or logout?\n\nOK = Change nickname\nCancel = Logout`);
-          
-          if (action) {
-            // Change nickname - show auth modal for profile update
-            if (window.homepageAuthModal) {
-              window.homepageAuthModal.show();
-            } else if (window.AuthModal) {
-              window.homepageAuthModal = new window.AuthModal();
-              window.homepageAuthModal.show();
-            }
-          } else {
-            // Logout
-            const confirmLogout = confirm(currentLang === 'it' ? 
-              'Sei sicuro di voler uscire?' : 
-              'Are you sure you want to logout?');
-            if (confirmLogout) {
-              window.authManager.signOut().then(() => {
-                alert(currentLang === 'it' ? 'Disconnesso!' : 'Logged out!');
-                updateAuthStatus();
-              }).catch(error => {
-                console.error('Logout error:', error);
-                alert(currentLang === 'it' ? 'Errore durante disconnessione' : 'Logout error');
-              });
-            }
-          }
-        } else {
-          // User not logged in - show auth modal
-          if (window.homepageAuthModal) {
-            window.homepageAuthModal.show();
-          } else if (window.AuthModal) {
-            window.homepageAuthModal = new window.AuthModal();
-            window.homepageAuthModal.show();
-          } else {
-            // Fallback if AuthModal not available yet
-            alert(currentLang === 'it' ? 
-              'Sistema di login in caricamento... Riprova tra qualche secondo.' : 
-              'Login system loading... Try again in a few seconds.');
-          }
-        }
-      } else {
-        // AuthManager not ready
-        alert(currentLang === 'it' ? 
-          'Sistema di autenticazione in caricamento... Riprova tra qualche secondo.' : 
-          'Authentication system loading... Try again in a few seconds.');
-      }
-    }
+    // DISABLED: Auth button click is now handled by Phaser MenuScene headerAuthButton
+    // function handleAuthClick() {
+    //   // Legacy HTML auth handling - replaced by Phaser system
+    // }
 
     // Initialize page
     document.addEventListener('DOMContentLoaded', () => {
@@ -1009,10 +938,10 @@
       
       // Update auth status when available
       setTimeout(() => {
-        updateAuthStatus();
+        // updateAuthStatus(); // DISABLED - handled by Phaser
         // Subscribe to auth changes if authManager is available
         if (window.authManager) {
-          window.authManager.subscribe(() => updateAuthStatus());
+          // window.authManager.subscribe(() => updateAuthStatus()); // DISABLED - handled by Phaser
         }
       }, 1000);
       
