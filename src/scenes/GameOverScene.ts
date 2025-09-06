@@ -211,18 +211,12 @@ export class GameOverScene extends Phaser.Scene {
     }
     
     if (!authState.hasMarketingConsent) {
-      logger.info('AUTH_FLOW', 'Marketing consent missing, opening auth modal automatically')
+      logger.warn('AUTH_FLOW', 'Marketing consent missing - user needs to manually retry from menu')
       this.submitStatus.setText(t('auth.newsletterRequired'))
       this.submitButton.setText(t('auth.signInAndSubmit'))
       
-      // Auto-open auth modal for consent instead of blocking user
-      try {
-        await authManager.showAuthModal()
-        // After consent, retry submission
-        this.checkAndSubmitScore()
-      } catch (error) {
-        logger.error('AUTH_FLOW', 'Auto consent failed', error)
-      }
+      // Don't auto-open modal in GameOverScene to avoid repeated consent requests
+      // User can retry from menu if needed
       return
     }
 
