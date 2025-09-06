@@ -9,6 +9,7 @@ export class MenuScene extends Phaser.Scene {
   private languageButton!: Phaser.GameObjects.Text
   private profileButton!: Phaser.GameObjects.Text
   private authStatusText!: Phaser.GameObjects.Text
+  private headerAuthButton!: Phaser.GameObjects.Text
   
   private audioEnabled: boolean = true
   private currentLanguage: string = 'it'
@@ -41,6 +42,21 @@ export class MenuScene extends Phaser.Scene {
       stroke: '#ffffff',
       strokeThickness: 2
     }).setOrigin(0.5)
+
+    // Header Auth Button (top right)
+    this.headerAuthButton = this.add.text(width - 20, 20, t('auth.login'), {
+      fontSize: '14px',
+      fontFamily: 'Arial, sans-serif',
+      fontWeight: '600',
+      color: '#ffffff',
+      backgroundColor: '#007bff',
+      padding: { x: 12, y: 6 }
+    })
+    .setOrigin(1, 0)
+    .setInteractive({ useHandCursor: true })
+    .on('pointerdown', () => this.handleHeaderAuthButtonClick())
+    .on('pointerover', () => this.headerAuthButton.setScale(1.05))
+    .on('pointerout', () => this.headerAuthButton.setScale(1))
 
     // Auth status
     this.authStatusText = this.add.text(width / 2, 140, '', {
@@ -610,6 +626,27 @@ export class MenuScene extends Phaser.Scene {
     
     i18n.setLanguage(nextLanguage.code)
     this.currentLanguage = nextLanguage.code
+    
+    // Update auth status to refresh header button text with new language
+    this.updateAuthStatus()
+  }
+
+  private handleHeaderAuthButtonClick() {
+    const authState = authManager.getState()
+    
+    if (authState.isAuthenticated) {
+      // Show profile modal to change nickname
+      this.showProfileModal()
+    } else {
+      // Show auth modal to login
+      this.showAuthModal()
+    }
+  }
+
+  private async showAuthModal() {
+    const { AuthModal } = await import('@/ui/AuthModal')
+    const authModal = new AuthModal(this)
+    authModal.show()
   }
 
   private updateAuthStatus() {
@@ -619,6 +656,8 @@ export class MenuScene extends Phaser.Scene {
       this.authStatusText.setText('Loading...')
       this.playButton.setAlpha(0.5)
       this.profileButton.setVisible(false)
+      this.headerAuthButton.setText('Loading...')
+      this.headerAuthButton.setStyle({ backgroundColor: '#6c757d' })
       return
     }
 
@@ -628,6 +667,10 @@ export class MenuScene extends Phaser.Scene {
       this.playButton.setAlpha(authState.hasMarketingConsent ? 1 : 0.5)
       this.profileButton.setVisible(true)
       
+      // Update header button to show username
+      this.headerAuthButton.setText(username)
+      this.headerAuthButton.setStyle({ backgroundColor: '#28a745' })
+      
       if (!authState.hasMarketingConsent) {
         this.authStatusText.setText(`${this.authStatusText.text}\n(Newsletter subscription required to play)`)
       }
@@ -635,6 +678,10 @@ export class MenuScene extends Phaser.Scene {
       this.authStatusText.setText('Please sign in to play')
       this.playButton.setAlpha(0.5)
       this.profileButton.setVisible(false)
+      
+      // Update header button to show login text
+      this.headerAuthButton.setText(t('auth.login'))
+      this.headerAuthButton.setStyle({ backgroundColor: '#007bff' })
     }
   }
 

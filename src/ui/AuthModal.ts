@@ -756,9 +756,6 @@ export class AuthModal {
     this.isVisible = true
     this.element.classList.remove('hidden')
     
-    // Show the advanced logger modal as well for debugging
-    advancedLogger.showModal()
-    
     // Disable Phaser keyboard to allow typing in HTML inputs
     if (typeof window !== 'undefined' && (window as any).managePhaserKeyboard) {
       advancedLogger.nuclear('PHASER_KEYBOARD', 'Calling managePhaserKeyboard.disable()')
