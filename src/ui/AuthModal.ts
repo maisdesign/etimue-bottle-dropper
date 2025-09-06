@@ -1,7 +1,7 @@
 import { supabase, profileService } from '@/net/supabaseClient'
 import { mailchimpService } from '@/net/mailchimp'
 import { t, i18n } from '@/i18n'
-import { advancedLogger } from '@/utils/AdvancedLogger'
+import { logger } from '@/utils/Logger'
 
 export class AuthModal {
   private element: HTMLElement
@@ -669,7 +669,7 @@ export class AuthModal {
   }
 
   private preventGameKeys(): void {
-    advancedLogger.nuclear('WASD_FIX', 'Starting NUCLEAR game key prevention system')
+    logger.debug('WASD_FIX', 'Starting game key prevention system')
     
     // NUCLEAR PREVENTION - Block ALL game keys EVERYWHERE
     this.keyEventHandler = (event: KeyboardEvent) => {
@@ -678,7 +678,7 @@ export class AuthModal {
       if (gameKeys.includes(event.code)) {
         const target = event.target as HTMLInputElement
         
-        advancedLogger.nuclear('WASD_KEY_INTERCEPTED', `Intercepted ${event.code}`, {
+        logger.debug('WASD_KEY_INTERCEPTED', `Intercepted ${event.code}`, {
           eventType: event.type,
           target: target?.tagName,
           targetId: target?.id,
@@ -709,7 +709,7 @@ export class AuthModal {
             // Trigger input event
             target.dispatchEvent(new Event('input', { bubbles: true }))
             
-            advancedLogger.nuclear('WASD_MANUAL_INSERT', `Manually inserted '${char}' on ${event.type}`, {
+            logger.debug('WASD_MANUAL_INSERT', `Manually inserted '${char}' on ${event.type}`, {
               originalValue,
               newValue: target.value,
               cursorStart: start,
@@ -718,7 +718,7 @@ export class AuthModal {
             })
           }
         } else {
-          advancedLogger.nuclear('WASD_NON_INPUT', `Blocked ${event.code} on non-input element`, {
+          logger.debug('WASD_NON_INPUT', `Blocked ${event.code} on non-input element`, {
             targetElement: target?.tagName,
             targetClass: target?.className
           })
@@ -733,7 +733,7 @@ export class AuthModal {
     document.addEventListener('keyup', this.keyEventHandler, { capture: true, passive: false })
     document.addEventListener('keypress', this.keyEventHandler, { capture: true, passive: false })
     
-    advancedLogger.nuclear('WASD_LISTENERS', 'Added MAXIMUM PRIORITY key event listeners', {
+    logger.debug('WASD_LISTENERS', 'Added MAXIMUM PRIORITY key event listeners', {
       listenerCount: 3,
       captureMode: true,
       passiveMode: false
@@ -751,17 +751,17 @@ export class AuthModal {
   }
 
   public show(): void {
-    advancedLogger.nuclear('AUTH_MODAL_SHOW', 'AuthModal.show() called - NUCLEAR WASD FIX ACTIVE')
+    logger.debug('AUTH_MODAL_SHOW', 'AuthModal.show() called - NUCLEAR WASD FIX ACTIVE')
     
     this.isVisible = true
     this.element.classList.remove('hidden')
     
     // Disable Phaser keyboard to allow typing in HTML inputs
     if (typeof window !== 'undefined' && (window as any).managePhaserKeyboard) {
-      advancedLogger.nuclear('PHASER_KEYBOARD', 'Calling managePhaserKeyboard.disable()')
+      logger.debug('PHASER_KEYBOARD', 'Calling managePhaserKeyboard.disable()')
       ;(window as any).managePhaserKeyboard.disable()
     } else {
-      advancedLogger.error('PHASER_KEYBOARD', 'managePhaserKeyboard not available on window object!')
+      logger.error('PHASER_KEYBOARD', 'managePhaserKeyboard not available on window object!')
     }
 
     // Add global keyboard event prevention for game keys while modal is open
@@ -772,13 +772,13 @@ export class AuthModal {
       const firstInput = this.element.querySelector('input:not([type="checkbox"])')
       if (firstInput) {
         (firstInput as HTMLInputElement).focus()
-        advancedLogger.info('AUTH_MODAL_FOCUS', 'Focused first input element', {
+        logger.info('AUTH_MODAL_FOCUS', 'Focused first input element', {
           inputId: firstInput.id,
           inputType: (firstInput as HTMLInputElement).type,
           inputValue: (firstInput as HTMLInputElement).value
         })
       } else {
-        advancedLogger.warn('AUTH_MODAL_FOCUS', 'No input element found to focus')
+        logger.warn('AUTH_MODAL_FOCUS', 'No input element found to focus')
       }
     }, 100)
     

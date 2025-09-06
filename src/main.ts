@@ -86,7 +86,7 @@ async function initGame() {
           console.log('⚠️ Auth timeout reached, starting game anyway...')
           logger.warn('AUTH_INIT', 'Auth initialization timeout, proceeding anyway')
           resolve()
-        }, 3000) // Reduced to 3 second timeout for faster debugging
+        }, 8000) // Increased timeout for slower connections
       })
       
       await Promise.race([authReadyPromise, timeoutPromise])
