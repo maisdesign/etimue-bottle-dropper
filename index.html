@@ -460,6 +460,9 @@
       // Translate page
       translatePage();
       
+      // 🔥 CRITICAL FIX: Update auth status after language change
+      updateAuthStatus();
+      
       // Update game language if available
       if (window.gameLanguage) {
         window.gameLanguage.setLanguage(lang);
@@ -703,6 +706,12 @@
       
       // Save selection
       localStorage.setItem('selectedCharacter', characterId);
+      
+      // Update CharacterManager if available
+      if (window.characterManager) {
+        window.characterManager.selectCharacter(characterId);
+        console.log('✅ Updated CharacterManager with selection:', characterId);
+      }
       
       // Update homepage mascot image
       const mascotImg = document.getElementById('character-mascot');
@@ -966,6 +975,14 @@
     document.addEventListener('DOMContentLoaded', () => {
       console.log('🏠 Homepage initializing...');
       translatePage();
+      
+      // 🎭 CRITICAL: Load saved character selection
+      const selectedCharacter = localStorage.getItem('selectedCharacter') || 'charlie';
+      const mascotImg = document.getElementById('character-mascot');
+      if (mascotImg) {
+        mascotImg.src = `./characters/${selectedCharacter}.png`;
+        console.log('🎭 Loaded saved character:', selectedCharacter);
+      }
       
       // Debug mascot loading
       console.log('🐱 Testing mascot image access...');

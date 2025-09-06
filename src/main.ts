@@ -11,6 +11,7 @@ import { AuthModal } from '@/ui/AuthModal'
 import { logger } from '@/utils/Logger'
 import { gameStateTracker } from '@/utils/GameStateTracker'
 import { debugPanel } from '@/utils/DebugPanel'
+import { characterManager } from '@/utils/CharacterManager'
 
 // Game configuration
 const config: Phaser.Types.Core.GameConfig = {
@@ -109,6 +110,7 @@ async function initGame() {
   ;(window as any).authManager = authManager
   ;(window as any).i18n = i18n
   ;(window as any).AuthModal = AuthModal
+  ;(window as any).characterManager = characterManager
   
   // Handle direct navigation from homepage
   game.events.on('ready', () => {
