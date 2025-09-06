@@ -379,7 +379,7 @@
           <div>
             <a href="#" data-translate="privacy">Privacy</a> · <a href="#" data-translate="terms">Termini</a>
           </div>
-          <div style="opacity:.7">v0.1 homepage</div>
+          <div style="opacity:.7">v0.1000 homepage</div>
         </div>
       </aside>
     </div>
@@ -910,17 +910,32 @@
       }
     }
 
-    // Start game for auth - homepage button redirects to Phaser system
+    // Handle auth without starting game - NO browser alerts
     function startGameForAuth() {
-      console.log('🎮 Starting game from homepage auth button');
-      // Hide homepage and start Phaser game where auth is handled properly
-      const homepage = document.getElementById('homepage');
-      if (homepage) {
-        homepage.style.display = 'none';
-      }
-      // Initialize Phaser game if not already started
-      if (typeof window.startGame === 'function') {
-        window.startGame();
+      console.log('🔐 Auth button clicked from homepage');
+      
+      if (window.authManager) {
+        const authState = window.authManager.getState();
+        
+        if (authState.isAuthenticated) {
+          // User logged in - show profile modal for nickname/logout options
+          console.log('User authenticated, showing profile options');
+          // TODO: Show custom profile modal instead of browser dialogs
+          console.log('Profile modal not implemented yet - will need custom UI');
+        } else {
+          // User not logged in - show auth modal for login only
+          console.log('User not authenticated, showing auth modal');
+          if (window.homepageAuthModal) {
+            window.homepageAuthModal.show();
+          } else if (window.AuthModal) {
+            window.homepageAuthModal = new window.AuthModal();
+            window.homepageAuthModal.show();
+          } else {
+            console.log('AuthModal not ready yet');
+          }
+        }
+      } else {
+        console.log('AuthManager not ready yet');
       }
     }
 
