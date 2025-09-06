@@ -246,3 +246,41 @@ Other files are for the local version of the game
 - Lo sviluppo funziona in questo modo, tutti i file vanno qui: https://github.com/maisdesign/etimue-bottle-dropper\
 I file presenti nella cartella dist invece vanno qui: https://github.com/maisdesign/bottledropper\
 Perché il progetto Netlify ( https://astounding-rolypoly-fc5137.netlify.app/) mostra quello che è presente nella cartella dist
+- 1)In homepage devono essere presenti       │
+│   questi pulsanti:\                          │
+│   2)Gioca -> se login eseguito fa partire    │
+│   la partita, altrimenti login e poi         │
+│   partita.\                                  │
+│   3)Classifica -> mostra la classifica se    │
+│   si è loggati\                              │
+│   4)Come si gioca -> Mostra regole ed        │
+│   istruzioni\                                │
+│   5)Cosa si vince -> spiega i premi e la     │
+│   modalità per riceverli\                    │
+│   6)Audio -> On/Off (audio da implementare   │
+│   ma lo faremo successivamente)\             │
+│   7)Lingua -> Switch ITA/ENG\                │
+│   8)Privacy -> Manda alla pagina privacy     │
+│   (da implementare)\                         │
+│   9)Termini -> Manda alla pagina termini     │
+│   (da implementare)\                         │
+│   10)V0.1 homepage -> iniziamo a modificare  │
+│   anche quella ad ogni commit così mi        │
+│   posso rendere conto più velocemente se     │
+│   Netlify ha la versione più recente oppure  │
+│   no. Direi che la prossima versione sarà:   │
+│   v0.1000 e quella successiva : v0.1001\     │
+│   In alto a dx pulsante per il cambio        │
+│   lingua (mi va bene un poco di              │
+│   ridondanza)\                               │
+│   11)Pulsante per acesso -> cliccandolo      │
+│   deve triggerare la procedura di accesso    │
+│   ma non fare partire subito il gioco. Mi    │
+│   va bene mostri il nickname selezionato ma  │
+│   deve rimanere visibile quando si cambia    │
+│   lingua (al momento sparisce).\Cliccandolo  │
+│   dopo avere eseguito il login deve aprire   │
+│   una schermata che permette di cambiare     │
+│   il nickname o eseguire il logout.\         │
+│   12)cambio di personaggio cliccando su      │
+│   Charlie in homepage
