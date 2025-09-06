@@ -336,7 +336,7 @@
             <img src="./characters/charlie.png" alt="Charlie mascot" id="character-mascot" 
                  style="width: 90px; height: 90px; border-radius: 16px; object-fit: cover; background: #fff; box-shadow: 0 2px 8px rgba(0,0,0,0.2); padding-right: 50px; cursor: pointer; transition: transform 0.2s;" 
                  title="Click to choose your character!"
-                 onclick="try { console.log('🐱 Charlie clicked!'); showCharacterSelection(); } catch(e) { console.error('❌ Charlie click error:', e); alert('Charlie click error: ' + e.message); }"
+                 onclick="alert('Charlie clicked!'); console.log('🐱 Charlie clicked!'); showCharacterSelection();"
                  onmouseover="this.style.transform='scale(1.05)'"
                  onmouseout="this.style.transform='scale(1)'"
                  onerror="this.style.background='#ff0000'; this.alt='❌ ERRORE CARICAMENTO'; console.error('Failed to load:', this.src);" 
