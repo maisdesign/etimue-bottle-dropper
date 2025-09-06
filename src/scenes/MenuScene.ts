@@ -87,10 +87,10 @@ export class MenuScene extends Phaser.Scene {
       this.checkConsentAfterOAuth(state)
     })
 
-    // Listen for language changes
-    window.addEventListener('languageChanged', () => {
-      this.scene.restart()
-    })
+    // Listen for language changes - DISABLED: causing username loss on header button
+    // window.addEventListener('languageChanged', () => {
+    //   this.scene.restart()
+    // })
 
     // PWA install prompt
     this.showPWAInstallPrompt(width, height)
@@ -188,7 +188,7 @@ export class MenuScene extends Phaser.Scene {
     .setInteractive({ useHandCursor: true })
     .on('pointerdown', () => this.toggleLanguage())
 
-    // Profile button (show only when authenticated)
+    // Profile button (DISABLED - replaced by headerAuthButton)
     this.profileButton = this.add.text(width - 50, settingsY, t('profile.title'), {
       fontSize: '14px',
       fontFamily: 'Arial, sans-serif',
@@ -198,8 +198,9 @@ export class MenuScene extends Phaser.Scene {
       padding: { x: 10, y: 5 }
     })
     .setOrigin(1, 0)
-    .setInteractive({ useHandCursor: true })
-    .on('pointerdown', () => this.showProfile())
+    .setVisible(false) // Always hidden since we use headerAuthButton instead
+    // .setInteractive({ useHandCursor: true })
+    // .on('pointerdown', () => this.showProfile())
 
     // Privacy & Terms links
     const privacyButton = this.add.text(50, height - 40, t('menu.privacy'), {
@@ -627,7 +628,20 @@ export class MenuScene extends Phaser.Scene {
     i18n.setLanguage(nextLanguage.code)
     this.currentLanguage = nextLanguage.code
     
-    // Update auth status to refresh header button text with new language
+    // Update all UI elements with new language without restarting scene
+    this.updateUITexts()
+  }
+
+  private updateUITexts() {
+    // Update main buttons
+    this.playButton.setText(t('game.play'))
+    this.leaderboardButton.setText(t('leaderboard.title'))
+    
+    // Update settings buttons
+    this.audioButton.setText(`${t('menu.audio')}: ${this.audioEnabled ? 'ON' : 'OFF'}`)
+    this.languageButton.setText(`${t('menu.language')}: ${this.currentLanguage.toUpperCase()}`)
+    
+    // Update auth status and header button (maintains username if logged in)
     this.updateAuthStatus()
   }
 
@@ -655,7 +669,6 @@ export class MenuScene extends Phaser.Scene {
     if (authState.isLoading) {
       this.authStatusText.setText('Loading...')
       this.playButton.setAlpha(0.5)
-      this.profileButton.setVisible(false)
       this.headerAuthButton.setText('Loading...')
       this.headerAuthButton.setStyle({ backgroundColor: '#6c757d' })
       return
@@ -665,7 +678,6 @@ export class MenuScene extends Phaser.Scene {
       const username = authState.profile?.username || 'Player'
       this.authStatusText.setText(`Welcome, ${username}!`)
       this.playButton.setAlpha(authState.hasMarketingConsent ? 1 : 0.5)
-      this.profileButton.setVisible(true)
       
       // Update header button to show username
       this.headerAuthButton.setText(username)
@@ -677,7 +689,6 @@ export class MenuScene extends Phaser.Scene {
     } else {
       this.authStatusText.setText('Please sign in to play')
       this.playButton.setAlpha(0.5)
-      this.profileButton.setVisible(false)
       
       // Update header button to show login text
       this.headerAuthButton.setText(t('auth.login'))

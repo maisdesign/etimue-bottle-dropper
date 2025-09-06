@@ -78,12 +78,12 @@ export class AdvancedLogger {
     this.logModal.querySelector('#export-logs')?.addEventListener('click', () => this.exportLogs())
     this.logModal.querySelector('#close-logs')?.addEventListener('click', () => this.hideModal())
 
-    // Add keyboard shortcut to toggle modal (Ctrl+Shift+L)
-    document.addEventListener('keydown', (event) => {
-      if (event.ctrlKey && event.shiftKey && event.code === 'KeyL') {
-        this.toggleModal()
-      }
-    })
+    // Add keyboard shortcut to toggle modal (Ctrl+Shift+L) - DISABLED FOR NOW
+    // document.addEventListener('keydown', (event) => {
+    //   if (event.ctrlKey && event.shiftKey && event.code === 'KeyL') {
+    //     this.toggleModal()
+    //   }
+    // })
   }
 
   public log(level: LogEntry['level'], category: string, message: string, data?: any): void {
