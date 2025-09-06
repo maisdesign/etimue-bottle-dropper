@@ -312,7 +312,7 @@
         <button class="lang-toggle" onclick="toggleLanguage()" style="display:none;">
           <span id="current-lang">🇮🇹</span>
         </button>
-        <span class="signin" id="auth-status" style="cursor: default; display: none;" title="Login status">
+        <span class="signin" id="auth-status" style="cursor: pointer;" title="Login status" onclick="startGameForAuth()">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
             <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
             <circle cx="12" cy="7" r="4"></circle>
@@ -486,7 +486,7 @@
           // Set callback to handle any pending action after successful auth
           window.homepageAuthModal.onAuth((user) => {
             console.log('✅ Auth successful from homepage, executing pending action:', pendingAction);
-            // updateAuthStatus(); // DISABLED - handled by Phaser
+            updateAuthStatus(); // Update homepage status
             
             if (pendingAction === 'startGame') {
               startGame(); // Retry starting the game
@@ -576,7 +576,7 @@
           window.homepageAuthModal = new window.AuthModal();
           window.homepageAuthModal.onAuth((user) => {
             console.log('✅ Auth successful from homepage, executing pending action:', pendingAction);
-            // updateAuthStatus(); // DISABLED - handled by Phaser
+            updateAuthStatus(); // Update homepage status
             
             if (pendingAction === 'startGame') {
               startGame(); // Retry starting the game
@@ -888,15 +888,41 @@
       }
     });
 
-    // DISABLED: Auth status update is now handled by Phaser MenuScene
-    // function updateAuthStatus() {
-    //   // Legacy HTML auth status update - replaced by Phaser system
-    // }
+    // Update auth status for homepage only (Phaser handles in-game)
+    function updateAuthStatus() {
+      if (window.authManager) {
+        const authState = window.authManager.getState();
+        const authStatusText = document.getElementById('auth-status-text');
+        const authStatusContainer = document.getElementById('auth-status');
+        
+        if (authState.isAuthenticated) {
+          const username = authState.profile?.username || 'Player';
+          if (authStatusText) {
+            authStatusText.textContent = username;
+          }
+          authStatusContainer.title = currentLang === 'it' ? 'Clicca per giocare' : 'Click to play';
+        } else {
+          if (authStatusText) {
+            authStatusText.textContent = currentLang === 'it' ? 'Accedi' : 'Login';
+          }
+          authStatusContainer.title = currentLang === 'it' ? 'Accedi per giocare' : 'Login to play';
+        }
+      }
+    }
 
-    // DISABLED: Auth button click is now handled by Phaser MenuScene headerAuthButton
-    // function handleAuthClick() {
-    //   // Legacy HTML auth handling - replaced by Phaser system
-    // }
+    // Start game for auth - homepage button redirects to Phaser system
+    function startGameForAuth() {
+      console.log('🎮 Starting game from homepage auth button');
+      // Hide homepage and start Phaser game where auth is handled properly
+      const homepage = document.getElementById('homepage');
+      if (homepage) {
+        homepage.style.display = 'none';
+      }
+      // Initialize Phaser game if not already started
+      if (typeof window.startGame === 'function') {
+        window.startGame();
+      }
+    }
 
     // Initialize page
     document.addEventListener('DOMContentLoaded', () => {
@@ -938,10 +964,10 @@
       
       // Update auth status when available
       setTimeout(() => {
-        // updateAuthStatus(); // DISABLED - handled by Phaser
+        updateAuthStatus(); // Update homepage status
         // Subscribe to auth changes if authManager is available
         if (window.authManager) {
-          // window.authManager.subscribe(() => updateAuthStatus()); // DISABLED - handled by Phaser
+          window.authManager.subscribe(() => updateAuthStatus()); // Update homepage status
         }
       }, 1000);
       
