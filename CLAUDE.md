@@ -242,3 +242,4 @@ The system is **PRODUCTION READY** and deployed. Ready for character selection s
 Other files are for the local version of the game
 - I file dist non sono ignorati, sono quello che fa funzionare Netlify
 - committa ogni modifica
+- ricordati di buildare ogni volta perché la versione online pesca dalla cartella dist
