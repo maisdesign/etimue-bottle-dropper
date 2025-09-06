@@ -58,7 +58,10 @@
       "Bash(dir:*)",
       "Bash(git restore:*)",
       "Bash(pkill:*)",
-      "Bash(taskkill:*)"
+      "Bash(taskkill:*)",
+      "Bash(git subtree push:*)",
+      "Bash(git subtree split:*)",
+      "Bash(git branch:*)"
     ],
     "deny": [],
     "ask": []

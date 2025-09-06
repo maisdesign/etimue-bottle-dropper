@@ -243,3 +243,6 @@ Other files are for the local version of the game
 - I file dist non sono ignorati, sono quello che fa funzionare Netlify
 - committa ogni modifica
 - ricordati di buildare ogni volta perché la versione online pesca dalla cartella dist
+- Lo sviluppo funziona in questo modo, tutti i file vanno qui: https://github.com/maisdesign/etimue-bottle-dropper\
+I file presenti nella cartella dist invece vanno qui: https://github.com/maisdesign/bottledropper\
+Perché il progetto Netlify ( https://astounding-rolypoly-fc5137.netlify.app/) mostra quello che è presente nella cartella dist
