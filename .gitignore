@@ -87,3 +87,7 @@ test-*.html
 !public/*.png
 *.html
 !index.html
+
+# Project-specific folders to exclude
+Screenshots/
+Performance/
