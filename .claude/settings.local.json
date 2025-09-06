@@ -56,7 +56,9 @@
       "Bash(npm run preview:*)",
       "Bash(cat:*)",
       "Bash(dir:*)",
-      "Bash(git restore:*)"
+      "Bash(git restore:*)",
+      "Bash(pkill:*)",
+      "Bash(taskkill:*)"
     ],
     "deny": [],
     "ask": []
