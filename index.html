@@ -333,14 +333,16 @@
         </div>
         <div class="mascot">
           <div class="bubble">
-            <img src="./characters/charlie.png" alt="Charlie mascot" id="character-mascot" 
-                 style="width: 88px; height: 88px; border-radius: 16px; object-fit: cover; background: #fff; box-shadow: 0 2px 8px rgba(0,0,0,0.2); cursor: pointer; transition: transform 0.2s; margin: 4px;" 
-                 title="Click to choose your character!"
-                 onclick="showCharacterSelection();"
-                 onmouseover="this.style.transform='scale(1.05)'"
-                 onmouseout="this.style.transform='scale(1)'"
-                 onerror="this.style.background='#ff0000'; this.alt='❌ Error loading image';" 
-                 onload="console.log('✅ Charlie loaded');" />
+            <a href="javascript:void(0)" onclick="showCharacterSelection(); return false;" 
+               style="display: block; text-decoration: none; border-radius: 16px;" 
+               title="Click to choose your character!">
+              <img src="./characters/charlie.png" alt="Charlie mascot" id="character-mascot" 
+                   style="width: 88px; height: 88px; border-radius: 16px; object-fit: cover; background: #fff; box-shadow: 0 2px 8px rgba(0,0,0,0.2); cursor: pointer; transition: transform 0.2s; margin: 4px; display: block;" 
+                   onmouseover="this.style.transform='scale(1.05)'"
+                   onmouseout="this.style.transform='scale(1)'"
+                   onerror="this.style.background='#ff0000'; this.alt='❌ Error loading image';" 
+                   onload="console.log('✅ Charlie loaded');" />
+            </a>
           </div>
           <div>
             <h2 data-translate="ready">Prontə, a far cadere le bottiglie?</h2>
