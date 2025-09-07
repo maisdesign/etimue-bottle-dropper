@@ -278,4 +278,25 @@ node test-deploy.js   # → Diagnostica deployment
 - **Navigation Flow**: Menu torna alla homepage elegante
 - **Error Handling**: Gestione graceful degli errori invece di crash
 
-**Il gioco è ora pronto per utenti finali senza limitazioni tecniche.**
+**TODO**
+Ci sono ancora un po' di problemi.\
+  ho provato a selezionare il personaggio di 
+  scrocca e a cliccare su gioca.\
+  mi ha chiesto di fare login (giusto) ho 
+  completato la mia partita ma poi mi ha 
+  chiesto di fare login per inviare il 
+  risultato alla classifica.\
+  Ho fatto login di nuovo e prima di poter 
+  cliccare sul pulsante di conferma nel modale
+   in cui ti chiede il permesso marketing e 
+  puoi inserire il tuo nickname è iniziata una
+   nuova partita al termine della quale 
+  cliccando sul pulsante classifica sono stato
+   mandato alla vecchia interfaccia che, 
+  perlomeno ha il mio nome in alto a sinistra,
+   ma non è l'interfaccia nuova che stiamo 
+  utilizzando.\
+  Già che c'ero ho chiesto a ChatGpt in 
+  versione agente di fare un test del sito, 
+  trovi il report in formato PDF nella 
+  cartella Screenshots
