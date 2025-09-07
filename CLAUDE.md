@@ -9,6 +9,16 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - `npm run build` - Build for production (outputs to `dist/`)
 - `npm run preview` - Preview production build locally
 
+### CRITICAL DEPLOYMENT WORKFLOW
+**⚠️ ALWAYS FOLLOW THIS SEQUENCE FOR EVERY CHANGE:**
+1. Make code changes to source files
+2. Run `npm run build` to update dist/ folder
+3. Run `git add .` to stage ALL files (including dist/)
+4. Commit with descriptive message
+5. Push to deploy to Netlify (Netlify reads from dist/ folder)
+
+**🚨 NEVER SKIP THE BUILD STEP** - Netlify only shows what's in the dist/ folder!
+
 ### Database Management
 Use the Supabase CLI for database operations:
 - `supabase link --project-ref xtpfssiraytzvdvgrsol` - Link to Supabase project
