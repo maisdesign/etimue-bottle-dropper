@@ -85,6 +85,12 @@
     "analytics": "Cookie analitici",
     "necessary": "Cookie necessari"
   },
+  "character": {
+    "selectTitle": "Scegli il tuo personaggio",
+    "charlie": "Charlie",
+    "scrocca": "Scrocca", 
+    "irlandese": "Irlandese"
+  },
   "errors": {
     "networkError": "Errore di connessione",
     "authError": "Errore di autenticazione", 

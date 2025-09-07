@@ -92,6 +92,9 @@ export class MenuScene extends Phaser.Scene {
     //   this.scene.restart()
     // })
 
+    // Add Charlie character (bottom right corner, clickable for character selection)
+    this.addCharlieMascot(width, height)
+
     // PWA install prompt
     this.showPWAInstallPrompt(width, height)
   }
@@ -848,5 +851,142 @@ export class MenuScene extends Phaser.Scene {
     } else if (authState.isAuthenticated && !authState.hasMarketingConsent) {
       console.log('⚠️ User authenticated but needs consent - will be handled on Play button click')
     }
+  }
+
+  private addCharlieMascot(width: number, height: number) {
+    // Check if Charlie texture exists
+    if (!this.textures.exists('charlie')) {
+      console.warn('❌ Charlie texture not found, skipping mascot display')
+      return
+    }
+
+    // Position Charlie in bottom right corner, slightly inset from edge
+    const charlieX = width - 70
+    const charlieY = height - 120
+
+    // Create Charlie sprite
+    const charlieSprite = this.add.image(charlieX, charlieY, 'charlie')
+    
+    // Scale Charlie to appropriate size (not too big)
+    charlieSprite.setScale(0.3)
+    
+    // Make Charlie interactive with click handler
+    charlieSprite.setInteractive({ useHandCursor: true })
+    
+    // Add hover effects
+    charlieSprite.on('pointerover', () => {
+      charlieSprite.setScale(0.35)
+      charlieSprite.setTint(0xdddddd) // Slight highlight
+    })
+    
+    charlieSprite.on('pointerout', () => {
+      charlieSprite.setScale(0.3)
+      charlieSprite.clearTint()
+    })
+    
+    // Add click handler for character selection
+    charlieSprite.on('pointerdown', () => {
+      console.log('🐱 Charlie clicked! Opening character selection...')
+      this.showCharacterSelection()
+    })
+
+    console.log('✅ Charlie mascot added to menu at position:', charlieX, charlieY)
+  }
+
+  private showCharacterSelection() {
+    const width = this.cameras.main.width
+    const height = this.cameras.main.height
+
+    // Create modal overlay
+    const overlay = this.add.rectangle(width / 2, height / 2, width, height, 0x000000, 0.8)
+    .setInteractive()
+
+    const modal = this.add.rectangle(width / 2, height / 2, width - 60, height - 100, 0xffffff)
+    modal.setStrokeStyle(2, 0x007bff)
+
+    // Title
+    const titleText = this.add.text(width / 2, height / 2 - 120, t('character.selectTitle'), {
+      fontSize: '20px',
+      fontWeight: 'bold',
+      color: '#333333'
+    }).setOrigin(0.5)
+
+    // Character options
+    const characters = ['charlie', 'scrocca', 'irlandese']
+    const characterNames = ['Charlie', 'Scrocca', 'Irlandese']
+    const characterImages: any[] = []
+    const characterTexts: any[] = []
+    
+    characters.forEach((character, index) => {
+      const characterX = width / 2 + (index - 1) * 120
+      const characterY = height / 2 - 20
+
+      // Character image
+      if (this.textures.exists(character)) {
+        const charImage = this.add.image(characterX, characterY, character)
+        charImage.setScale(0.4)
+        charImage.setInteractive({ useHandCursor: true })
+        
+        // Hover effects
+        charImage.on('pointerover', () => {
+          charImage.setScale(0.45)
+          charImage.setTint(0xdddddd)
+        })
+        
+        charImage.on('pointerout', () => {
+          charImage.setScale(0.4)
+          charImage.clearTint()
+        })
+        
+        // Selection handler
+        charImage.on('pointerdown', () => {
+          this.selectCharacter(character)
+          this.closeCharacterSelection([overlay, modal, titleText, ...characterImages, ...characterTexts])
+        })
+
+        // Character name
+        const characterText = this.add.text(characterX, characterY + 60, characterNames[index], {
+          fontSize: '14px',
+          fontWeight: 'bold',
+          color: '#333333'
+        }).setOrigin(0.5)
+
+        // Store references for cleanup
+        characterImages.push(charImage)
+        characterTexts.push(characterText)
+      }
+    })
+
+    // Close button
+    const closeButton = this.add.text(width / 2, height / 2 + 100, t('rules.close'), {
+      fontSize: '16px',
+      color: '#ffffff',
+      backgroundColor: '#6c757d',
+      padding: { x: 20, y: 10 }
+    })
+    .setOrigin(0.5)
+    .setInteractive({ useHandCursor: true })
+    .on('pointerdown', () => {
+      this.closeCharacterSelection([overlay, modal, titleText, closeButton, ...characterImages, ...characterTexts])
+    })
+  }
+
+  private selectCharacter(character: string) {
+    console.log(`🎭 Selected character: ${character}`)
+    
+    // Save selection to localStorage
+    localStorage.setItem('selected-character', character)
+    
+    // Could trigger an event or update a character manager here
+    // For now just log the selection
+    console.log(`✅ Character ${character} saved to localStorage`)
+  }
+
+  private closeCharacterSelection(objects: any[]) {
+    objects.forEach(obj => {
+      if (obj && obj.destroy) {
+        obj.destroy()
+      }
+    })
   }
 }
