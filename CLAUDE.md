@@ -302,3 +302,4 @@ Perché il progetto Netlify ( https://astounding-rolypoly-fc5137.netlify.app/) m
 │   Charlie in homepage
 - il sync changes non è su Netlify ma su VS Code
 - i file nella cartella dist sono quelli che alla fine vengono caricati su netlify
+- controlla sempre la cartella screenshot per eventuali screenshot o file, leggili e una volta letti eliminali

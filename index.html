@@ -427,7 +427,7 @@
                    onerror="this.style.background='#ff0000'; this.alt='❌ Error loading image';" 
                    onload="console.log('✅ Charlie loaded');" />
               
-              <!-- Click hint that appears on hover -->
+              <!-- Click hint - always visible on mobile, hover on desktop -->
               <div id="click-hint" style="
                 position: absolute;
                 top: -28px;
@@ -439,13 +439,22 @@
                 border-radius: 12px;
                 font-size: 10px;
                 font-weight: 600;
-                opacity: 0;
+                opacity: 1;
                 transition: opacity 0.2s;
                 white-space: nowrap;
                 z-index: 10;
                 pointer-events: none;
                 box-shadow: 0 2px 8px rgba(0,0,0,0.2);
               ">🎭 Cambia</div>
+              
+              <!-- Desktop-only hover style to hide hint by default -->
+              <style>
+                @media (hover: hover) and (pointer: fine) {
+                  #click-hint {
+                    opacity: 0 !important;
+                  }
+                }
+              </style>
               
               <!-- Subtle pulsing ring to indicate interactivity -->
               <div style="
@@ -517,7 +526,7 @@
           <div>
             <a href="#" data-translate="privacy">Privacy</a> · <a href="#" data-translate="terms">Termini</a>
           </div>
-          <div style="opacity:.7">v0.1015 MOBILE RESPONSIVE</div>
+          <div style="opacity:.7">v0.1016 MOBILE HINT FIX</div>
         </div>
       </aside>
     </div>
