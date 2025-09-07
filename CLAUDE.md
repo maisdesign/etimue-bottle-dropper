@@ -15,7 +15,7 @@ Use the Supabase CLI for database operations:
 - `supabase functions deploy submit-score` - Deploy score submission edge function
 - `supabase functions deploy mailchimp-subscribe` - Deploy newsletter subscription function
 
-## Project Status (as of September 7, 2025 - 02:45)
+## Project Status (as of September 7, 2025 - 03:00)
 
 **✅ CHARLIE IMPLEMENTATION COMPLETED** - Character selection system fully working and deployed.
 
@@ -26,9 +26,11 @@ Use the Supabase CLI for database operations:
 - ✅ **Character Selection System**: Complete implementation with localStorage persistence and modal UI
 - ✅ **Build Deployment**: All dist/ files properly committed and deployed to Netlify
 
-### MINOR UX IMPROVEMENTS NEEDED
-- 🟡 **Charlie Icon Cropping**: Image slightly cropped in homepage bubble - needs CSS adjustment
-- 🟡 **Clickability Indicator**: Users don't know Charlie is clickable - needs visual hint (hover effect, cursor, tooltip)
+### MOBILE UX COMPLETED
+- ✅ **Charlie Mobile Indicators**: Enhanced 28px orange gradient bounce badge with 🎭 emoji
+- ✅ **Responsive Design**: Mobile-first clamp() typography and modal optimization  
+- ✅ **Italian Translations**: Full IT/EN localization in character selection modal
+- ✅ **Touch Interactions**: Proper mobile clickability and visual feedback
 
 ### PREVIOUS CRITICAL ISSUES (RESOLVED)
 - ✅ **Homepage Auth Button Bugs**: Auth flow working correctly
@@ -46,7 +48,7 @@ Use the Supabase CLI for database operations:
 - ✅ Site deployed at: https://astounding-rolypoly-fc5137.netlify.app/ with OAuth properly configured
 
 ### Screenshots Available
-- 📸 Screenshots of homepage auth bugs available in Screenshots/ folder (ITA and ENG versions)
+- 🧹 Screenshots folder cleaned (iPhone UX issues resolved)
 - 📊 Advanced logger debug data available for debugging session duration and bugs
 
 ### Environment Configuration
