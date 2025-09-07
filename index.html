@@ -154,6 +154,9 @@
       position: relative;
       z-index: 1;
     }
+    .mascot > .bubble {
+      position: relative;
+    }
     .mascot .bubble{
       width:96px;height:96px;border-radius:20px;
       background:
@@ -333,17 +336,16 @@
         </div>
         <div class="mascot">
           <div class="bubble">
-            <a href="javascript:void(0)" onclick="showCharacterSelection(); return false;" 
-               style="display: block; text-decoration: none; border-radius: 16px;" 
-               title="Click to choose your character!">
-              <img src="./characters/charlie.png" alt="Charlie mascot" id="character-mascot" 
-                   style="width: 88px; height: 88px; border-radius: 16px; object-fit: cover; background: #fff; box-shadow: 0 2px 8px rgba(0,0,0,0.2); cursor: pointer; transition: transform 0.2s; margin: 4px; display: block;" 
-                   onmouseover="this.style.transform='scale(1.05)'"
-                   onmouseout="this.style.transform='scale(1)'"
-                   onerror="this.style.background='#ff0000'; this.alt='❌ Error loading image';" 
-                   onload="console.log('✅ Charlie loaded');" />
-            </a>
+            <img src="./characters/charlie.png" alt="Charlie mascot" id="character-mascot" 
+                 style="width: 88px; height: 88px; border-radius: 16px; object-fit: cover; background: #fff; box-shadow: 0 2px 8px rgba(0,0,0,0.2); transition: transform 0.2s; margin: 4px; display: block;" 
+                 onerror="this.style.background='#ff0000'; this.alt='❌ Error loading image';" 
+                 onload="console.log('✅ Charlie loaded');" />
           </div>
+          <a href="javascript:void(0)" onclick="showCharacterSelection(); return false;" 
+             style="position: absolute; top: 0; left: 0; width: 96px; height: 96px; border-radius: 20px; display: block; text-decoration: none; cursor: pointer; z-index: 10;" 
+             title="Click to choose your character!"
+             onmouseover="document.getElementById('character-mascot').style.transform='scale(1.05)'"
+             onmouseout="document.getElementById('character-mascot').style.transform='scale(1)'">&nbsp;</a>
           <div>
             <h2 data-translate="ready">Prontə, a far cadere le bottiglie?</h2>
             <p class="lead" data-translate="description">Schiva le verdi, prendi le artigianali e punta alla vetta della classifica per vincere premi e drink!</p>
@@ -381,7 +383,7 @@
           <div>
             <a href="#" data-translate="privacy">Privacy</a> · <a href="#" data-translate="terms">Termini</a>
           </div>
-          <div style="opacity:.7">v0.1003 FORCE DEPLOY</div>
+          <div style="opacity:.7">v0.1006 CHARLIE CLICKABLE</div>
         </div>
       </aside>
     </div>
