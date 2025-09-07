@@ -1,7 +1,23 @@
 # Situazione Progetto Etimuè Bottle Dropper
 
-**Ultimo aggiornamento**: 6 Settembre 2025, ore 04:00  
-**Stato generale**: ✅ **DEPLOYMENT EMERGENZA COMPLETATO** - Fix applicati con successo
+**Ultimo aggiornamento**: 7 Settembre 2025, ore 03:30  
+**Stato generale**: ✅ **MOBILE UX RESPONSIVE COMPLETATO** - Character selection ottimizzata per mobile
+
+---
+
+## ✅ **MOBILE UX RESPONSIVE COMPLETATO** (7 SETTEMBRE ORE 03:30)
+
+### 🔥 **ULTIMI FIX APPLICATI - v0.1016**
+- ✅ **Character Selection Mobile Hint**: Tooltip "🎭 Cambia" ora visibile su mobile
+- ✅ **Mobile-First Responsive Design**: Layout homepage completamente ottimizzato per iPhone
+- ✅ **CSS Media Queries**: `@media (hover: hover) and (pointer: fine)` per distinguere mobile/desktop  
+- ✅ **Viewport Cut-off Fix**: Homepage topbar e character heads non più tagliate su mobile
+- ✅ **Touch-Friendly UX**: Hint permanente su mobile, hover-only su desktop
+
+### 📱 **VERSIONI DEPLOYATE OGGI**
+- ✅ **v0.1015 MOBILE RESPONSIVE**: Fix layout generale mobile con clamp() e flexbox
+- ✅ **v0.1016 MOBILE HINT FIX**: Tooltip character selection visibile su dispositivi touch
+- ✅ **Build & Deploy**: Entrambe le versioni pubblicate su Netlify con workflow completo
 
 ---
 
@@ -47,10 +63,12 @@
 - ✅ **Audio Errors (5 SET)**: Errori decodifica audio eliminati (files non esistenti)
 - ✅ **Marketing Consent Bug (5 SET)**: Sistema riconosce correttamente il consenso dato
 
-### 🆕 **NUOVE FUNZIONALITÀ IMPLEMENTATE (6 SETTEMBRE 2025)**
+### 🆕 **NUOVE FUNZIONALITÀ IMPLEMENTATE (6-7 SETTEMBRE 2025)**
 - ✅ **Charlie Character Selection**: Mascotte cliccabile con modal selezione personaggi
 - ✅ **Homepage Auth Button**: Pulsante profilo/login cliccabile nel header
 - ✅ **Character System**: 3 personaggi disponibili (Charlie, Scrocca, Irlandese)
+- ✅ **Mobile UX Optimization**: Layout responsive completo per iPhone e dispositivi touch
+- ✅ **Smart Tooltip System**: Hint visibili permanentemente su mobile, hover su desktop
 
 ### 🆕 **SISTEMA DEBUG IMPLEMENTATO (5 SETTEMBRE ORE 20:00)**
 - ✅ **Logger System**: Sistema di logging categorizzato per debug produzione
@@ -59,13 +77,13 @@
 - ✅ **Error Handling**: Try-catch per AudioContext e timeout auth ridotti
 - ✅ **Boot Screen**: Charlie image invece del placeholder SVG + traduzione italiana
 
-### 🔴 **BUG CRITICI DA RISOLVERE URGENTEMENTE (6 SETTEMBRE ORE 00:50)**
-#### 🚨 **HOMEPAGE AUTH BUTTON - RICHIEDE CORREZIONE IMMEDIATA**
-- ❌ **Nickname Change Broken**: Cliccando OK per cambiare nickname appare il logger modal invece di profile edit
-- ❌ **Language Switch Bug**: Dopo login, cambiando lingua il pulsante torna a "LOGIN" invece di mostrare username
-- ❌ **Auth Flow Confusion**: Sistema mostra auth modal per nickname change invece di profile modal
-- 📸 **Debug Data**: Screenshots disponibili in Screenshots/Versione_ITA.png e Versione_ENG.png
-- 🎯 **Location Bug**: Funzioni `handleAuthClick()` e `updateAuthStatus()` in index.html
+### ✅ **BUG MOBILE UX RISOLTI (7 SETTEMBRE ORE 03:30)**
+#### 🚨 **MOBILE CHARACTER SELECTION - COMPLETAMENTE RISOLTO**
+- ✅ **Missing Mobile Hint**: Tooltip "🎭 Cambia" non visibile su iPhone - RISOLTO con CSS responsive
+- ✅ **Layout Cut-off Issues**: Homepage topbar e character heads tagliati - RISOLTI con flex layout
+- ✅ **Touch UX Inconsistency**: Hint non funzionante su dispositivi touch - RISOLTO con media queries
+- 📸 **Screenshot Issue**: iPhone screenshot mostrava problema tooltip - RISOLTO e screenshot eliminato
+- 🎯 **Implementation**: CSS `@media (hover: hover) and (pointer: fine)` per distinguere mobile/desktop
 
 ### ✅ **BUG CRITICI RISOLTI PRECEDENTEMENTE**  
 #### 🚨 **GAME CRASH - COMPLETAMENTE RISOLTI (5 SETTEMBRE)**
