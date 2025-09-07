@@ -285,3 +285,4 @@ Perché il progetto Netlify ( https://astounding-rolypoly-fc5137.netlify.app/) m
 │   12)cambio di personaggio cliccando su      │
 │   Charlie in homepage
 - il sync changes non è su Netlify ma su VS Code
+- i file nella cartella dist sono quelli che alla fine vengono caricati su netlify
