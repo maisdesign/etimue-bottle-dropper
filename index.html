@@ -275,14 +275,15 @@
     /* subtle floating bubbles background */
     .bubbles{
       position:absolute; inset:0; pointer-events:none; overflow:hidden; border-radius:inherit;
-      z-index: -2;
+      z-index: -1;
     }
     .bubble{
       position:absolute; width:16px; height:16px; border-radius:50%;
-      background:#ffffffaa; border:1px solid #ffffff;
-      filter: blur(.3px); opacity:.5;
+      background:rgba(255,255,255,0.8); border:1px solid rgba(255,255,255,0.9);
+      filter: blur(.2px); opacity:.7;
       animation: floatUp linear infinite;
       pointer-events: none;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     }
     @keyframes floatUp {
       from{ transform: translateY(20px); opacity:.0 }
@@ -336,17 +337,18 @@
           <div class="bubble" style="left:86%; bottom:-10px; width:14px;height:14px; animation-duration:22s;"></div>
         </div>
         <div class="mascot">
-          <div class="bubble" style="position: relative;">
-            <img src="./characters/charlie.png" alt="Charlie mascot" id="character-mascot" 
-                 style="width: 88px; height: 88px; border-radius: 16px; object-fit: cover; background: #fff; box-shadow: 0 2px 8px rgba(0,0,0,0.2); transition: transform 0.2s; margin: 4px; display: block;" 
-                 onerror="this.style.background='#ff0000'; this.alt='❌ Error loading image';" 
-                 onload="console.log('✅ Charlie loaded');" />
-            <a href="javascript:void(0)" onclick="showCharacterSelection(); return false;" 
-               style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; display: block; text-decoration: none; cursor: pointer; z-index: 10; border-radius: 20px;" 
-               title="Click to choose your character!"
-               onmouseover="document.getElementById('character-mascot').style.transform='scale(1.05)'"
-               onmouseout="document.getElementById('character-mascot').style.transform='scale(1)'">&nbsp;</a>
-          </div>
+          <a href="javascript:void(0)" onclick="showCharacterSelection(); return false;" 
+             style="display: block; text-decoration: none; cursor: pointer; border-radius: 20px;" 
+             title="Click to choose your character!"
+             onmouseover="document.getElementById('character-mascot').style.transform='scale(1.05)'"
+             onmouseout="document.getElementById('character-mascot').style.transform='scale(1)'">
+            <div class="bubble" style="position: relative;">
+              <img src="./characters/charlie.png" alt="Charlie mascot" id="character-mascot" 
+                   style="width: 88px; height: 88px; border-radius: 16px; object-fit: cover; background: #fff; box-shadow: 0 2px 8px rgba(0,0,0,0.2); transition: transform 0.2s; margin: 4px; display: block;" 
+                   onerror="this.style.background='#ff0000'; this.alt='❌ Error loading image';" 
+                   onload="console.log('✅ Charlie loaded');" />
+            </div>
+          </a>
           <div>
             <h2 data-translate="ready">Prontə, a far cadere le bottiglie?</h2>
             <p class="lead" data-translate="description">Schiva le verdi, prendi le artigianali e punta alla vetta della classifica per vincere premi e drink!</p>
