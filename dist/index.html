@@ -910,10 +910,10 @@
         
         if (authState.isAuthenticated) {
           // Try multiple sources for display name
-          const username = authState.profile?.username || 
-                         authState.user?.user_metadata?.name ||
-                         authState.user?.user_metadata?.full_name ||
-                         authState.user?.email?.split('@')[0] ||
+          const username = (authState.profile && authState.profile.username) || 
+                         (authState.user && authState.user.user_metadata && authState.user.user_metadata.name) ||
+                         (authState.user && authState.user.user_metadata && authState.user.user_metadata.full_name) ||
+                         (authState.user && authState.user.email && authState.user.email.split('@')[0]) ||
                          'Player';
           if (authStatusText) {
             authStatusText.textContent = username;
@@ -947,9 +947,10 @@
             
             if (!authState.isAuthenticated) {
               console.log('🔑 User not authenticated, showing auth modal');
-              const authModal = new window.AuthModal();./assets/main-D_xIYwUQ.ts   authModal.show();
+              const authModal = new window.AuthModal();
+              auth./assets/main-D_xIYwUQ.ts
             } else {
-              console.log('✅ User already authenticated:', authState.profile?.username);
+              console.log('✅ User already authenticated:', authState.profile && authState.profile.username);
               // User is already logged in - could show profile menu here
             }
           } else {
