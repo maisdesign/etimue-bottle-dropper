@@ -289,6 +289,13 @@
       from{ transform: translateY(20px); opacity:.0 }
       to{ transform: translateY(-120vh); opacity:.6 }
     }
+    
+    /* Pulse ring animation for Charlie interactivity hint */
+    @keyframes pulse-ring {
+      0% { transform: scale(1); opacity: 0.3; }
+      50% { transform: scale(1.05); opacity: 0.6; }
+      100% { transform: scale(1); opacity: 0.3; }
+    }
   </style>
   <script type="module" crossorigin src="./assets/index-mMF_rqDE.js"></script>
 <link rel="manifest" href="./manifest.webmanifest"><script id="vite-plugin-pwa:register-sw" src="./registerSW.js"></script></head>
@@ -338,15 +345,74 @@
         </div>
         <div class="mascot">
           <a href="javascript:void(0)" onclick="showCharacterSelection(); return false;" 
-             style="display: block; text-decoration: none; cursor: pointer; border-radius: 20px;" 
-             title="Click to choose your character!"
-             onmouseover="document.getElementById('character-mascot').style.transform='scale(1.05)'"
-             onmouseout="document.getElementById('character-mascot').style.transform='scale(1)'">
-            <div class="bubble" style="position: relative;">
+             style="display: block; text-decoration: none; cursor: pointer; border-radius: 20px; position: relative;" 
+             title="🎭 Clicca per cambiare personaggio | Click to change character"
+             onmouseover="
+               document.getElementById('character-mascot').style.transform='scale(1.05)';
+               document.getElementById('click-hint').style.opacity='1';
+               document.getElementById('bubble-container').style.background='conic-gradient(from 120deg at 70% 30%, #0ea5a355, transparent 40%), radial-gradient(120px 90px at 30% 20%, #8be7ff77, #22a3b53c)';
+             "
+             onmouseout="
+               document.getElementById('character-mascot').style.transform='scale(1)';
+               document.getElementById('click-hint').style.opacity='0';
+               document.getElementById('bubble-container').style.background='conic-gradient(from 120deg at 70% 30%, #0ea5a333, transparent 40%), radial-gradient(120px 90px at 30% 20%, #8be7ff55, #22a3b51c)';
+             ">
+            <div class="bubble" id="bubble-container" style="
+              position: relative; 
+              width: 110px; 
+              height: 110px; 
+              border-radius: 20px;
+              background: conic-gradient(from 120deg at 70% 30%, #0ea5a333, transparent 40%), radial-gradient(120px 90px at 30% 20%, #8be7ff55, #22a3b51c);
+              border: 1px solid var(--stroke);
+              display: grid; 
+              place-items: center;
+              box-shadow: var(--shadow);
+              overflow: hidden;
+              transition: all 0.3s ease;
+            ">
               <img src="./characters/charlie.png" alt="Charlie mascot" id="character-mascot" 
-                   style="width: 88px; height: 88px; border-radius: 16px; object-fit: cover; background: #fff; box-shadow: 0 2px 8px rgba(0,0,0,0.2); transition: transform 0.2s; margin: 4px; display: block;" 
+                   style="
+                     width: 84px; 
+                     height: 84px; 
+                     border-radius: 16px; 
+                     object-fit: cover; 
+                     background: #fff; 
+                     box-shadow: 0 2px 8px rgba(0,0,0,0.2); 
+                     transition: transform 0.2s; 
+                     display: block;
+                   " 
                    onerror="this.style.background='#ff0000'; this.alt='❌ Error loading image';" 
                    onload="console.log('✅ Charlie loaded');" />
+              
+              <!-- Click hint that appears on hover -->
+              <div id="click-hint" style="
+                position: absolute;
+                bottom: -8px;
+                left: 50%;
+                transform: translateX(-50%);
+                background: rgba(14, 165, 163, 0.95);
+                color: white;
+                padding: 4px 8px;
+                border-radius: 12px;
+                font-size: 10px;
+                font-weight: 600;
+                opacity: 0;
+                transition: opacity 0.2s;
+                white-space: nowrap;
+                z-index: 10;
+                pointer-events: none;
+                box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+              ">🎭 Cambia</div>
+              
+              <!-- Subtle pulsing ring to indicate interactivity -->
+              <div style="
+                position: absolute;
+                inset: -2px;
+                border: 2px solid rgba(14, 165, 163, 0.3);
+                border-radius: 22px;
+                animation: pulse-ring 2s ease-in-out infinite;
+                pointer-events: none;
+              "></div>
             </div>
           </a>
           <div>
@@ -386,7 +452,7 @@
           <div>
             <a href="#" data-translate="privacy">Privacy</a> · <a href="#" data-translate="terms">Termini</a>
           </div>
-          <div style="opacity:.7">v0.1009 CHARLIE DEPLOY FIX</div>
+          <div style="opacity:.7">v0.1010 CHARLIE UX ENHANCED</div>
         </div>
       </aside>
     </div>
@@ -465,6 +531,20 @@
       
       // Translate page
       translatePage();
+      
+      // Update click hint text based on language
+      const clickHint = document.getElementById('click-hint');
+      if (clickHint) {
+        clickHint.textContent = lang === 'it' ? '🎭 Cambia' : '🎭 Change';
+      }
+      
+      // Update Charlie tooltip
+      const charlieLink = document.querySelector('a[title*="Clicca per cambiare"]');
+      if (charlieLink) {
+        charlieLink.title = lang === 'it' ? 
+          '🎭 Clicca per cambiare personaggio' : 
+          '🎭 Click to change character';
+      }
       
       // 🔥 CRITICAL FIX: Update auth status after language change
       updateAuthStatus();

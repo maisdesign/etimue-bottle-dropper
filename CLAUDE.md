@@ -15,20 +15,24 @@ Use the Supabase CLI for database operations:
 - `supabase functions deploy submit-score` - Deploy score submission edge function
 - `supabase functions deploy mailchimp-subscribe` - Deploy newsletter subscription function
 
-## Project Status (as of September 6, 2025 - 00:45)
+## Project Status (as of September 7, 2025 - 02:45)
 
-**⚠️ NEEDS URGENT FIXES** - Homepage interactivity implemented but has critical bugs requiring immediate attention.
+**✅ CHARLIE IMPLEMENTATION COMPLETED** - Character selection system fully working and deployed.
 
 ### Recently Completed Features
 - ✅ **NUCLEAR WASD Fix**: Fully resolved double character insertion bug in input fields after gameplay
-- ✅ **Charlie Character Selection**: Clickable mascot with modal for character selection (Charlie, Scrocca, Irlandese)
+- ✅ **Charlie Character Selection**: Clickable mascot with modal for character selection (Charlie, Scrocca, Irlandese)  
 - ✅ **Homepage Auth Button**: Clickable profile/login button in header area
+- ✅ **Character Selection System**: Complete implementation with localStorage persistence and modal UI
+- ✅ **Build Deployment**: All dist/ files properly committed and deployed to Netlify
 
-### CRITICAL ISSUES REQUIRING IMMEDIATE FIX
-- 🔴 **Homepage Auth Button Bugs**:
-  1. **Nickname Change Broken**: Clicking OK to change nickname shows advanced logger modal instead of profile edit
-  2. **Language Switch Bug**: After login, changing language reverts button to "LOGIN" instead of showing username
-  3. **Auth Flow Confusion**: User gets authentication modal when trying to change nickname (should get profile modal)
+### MINOR UX IMPROVEMENTS NEEDED
+- 🟡 **Charlie Icon Cropping**: Image slightly cropped in homepage bubble - needs CSS adjustment
+- 🟡 **Clickability Indicator**: Users don't know Charlie is clickable - needs visual hint (hover effect, cursor, tooltip)
+
+### PREVIOUS CRITICAL ISSUES (RESOLVED)
+- ✅ **Homepage Auth Button Bugs**: Auth flow working correctly
+- ✅ **Build Corruption**: Vite build corruption of authModal.show() - workaround implemented
 
 ### Current Working State  
 - ✅ Google OAuth authentication working completely (production OAuth URLs configured)
