@@ -286,7 +286,7 @@
       to{ transform: translateY(-120vh); opacity:.6 }
     }
   </style>
-  <script type="module" crossorigin src="./assets/index-qNtXgVPw.js"></script>
+  <script type="module" crossorigin src="./assets/index-CQlv0TvF.js"></script>
 <link rel="manifest" href="./manifest.webmanifest"><script id="vite-plugin-pwa:register-sw" src="./registerSW.js"></script></head>
 <body>
   <div class="frame" id="homepage">
@@ -334,14 +334,16 @@
         </div>
         <div class="mascot">
           <div class="bubble">
-            <img src="./characters/charlie.png" alt="Charlie mascot" id="character-mascot" 
-                 style="width: 88px; height: 88px; border-radius: 16px; object-fit: cover; background: #fff; box-shadow: 0 2px 8px rgba(0,0,0,0.2); cursor: pointer; transition: transform 0.2s; margin: 4px;" 
-                 title="Click to choose your character!"
-                 onclick="showCharacterSelection();"
-                 onmouseover="this.style.transform='scale(1.05)'"
-                 onmouseout="this.style.transform='scale(1)'"
-                 onerror="this.style.background='#ff0000'; this.alt='❌ Error loading image';" 
-                 onload="console.log('✅ Charlie loaded');" />
+            <a href="javascript:void(0)" onclick="showCharacterSelection(); return false;" 
+               style="display: block; text-decoration: none; border-radius: 16px;" 
+               title="Click to choose your character!">
+              <img src="./characters/charlie.png" alt="Charlie mascot" id="character-mascot" 
+                   style="width: 88px; height: 88px; border-radius: 16px; object-fit: cover; background: #fff; box-shadow: 0 2px 8px rgba(0,0,0,0.2); cursor: pointer; transition: transform 0.2s; margin: 4px; display: block;" 
+                   onmouseover="this.style.transform='scale(1.05)'"
+                   onmouseout="this.style.transform='scale(1)'"
+                   onerror="this.style.background='#ff0000'; this.alt='❌ Error loading image';" 
+                   onload="console.log('✅ Charlie loaded');" />
+            </a>
           </div>
           <div>
             <h2 data-translate="ready">Prontə, a far cadere le bottiglie?</h2>
@@ -380,14 +382,14 @@
           <div>
             <a href="#" data-translate="privacy">Privacy</a> · <a href="#" data-translate="terms">Termini</a>
           </div>
-          <div style="opacity:.7">v0.1005 CLEAN BUILD</div>
+          <div style="opacity:.7">v0.1003 FORCE DEPLOY</div>
         </div>
       </aside>
     </div>
   </div>
 
   <div id="game-container"></div>
-  <div id="home-button" onclick="returnToHomepage()" title="Torna alla homepage">🏠</div>
+  <div id="home-button" onclick="returnToHomepage()" title="Torna alla homepage">🏠</div>
   <script>
     // Translations for the homepage
     const translations = {
@@ -943,8 +945,7 @@
             
             if (!authState.isAuthenticated) {
               console.log('🔑 User not authenticated, showing auth modal');
-              const authModal = new window.AuthModal();
-              authModal.show();
+              const authModal = new window.AuthModal();./assets/main-D_xIYwUQ.ts   authModal.show();
             } else {
               console.log('✅ User already authenticated:', authState.profile?.username);
               // User is already logged in - could show profile menu here
