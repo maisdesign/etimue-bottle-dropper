@@ -31,9 +31,20 @@
         radial-gradient(900px 700px at 110% 10%, #c6f1ff, transparent 50%),
         linear-gradient(160deg, var(--bg2), #9ad8e5 35%, #cfeff6 90%);
       background-attachment: fixed;
-      display:grid;
-      place-items:center;
-      padding:24px;
+      min-height: 100vh;
+      padding: clamp(8px, 2vw, 24px);
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      padding-top: clamp(16px, 4vh, 40px);
+    }
+    
+    /* Responsive adjustments for very small screens */
+    @media (max-height: 700px) {
+      body {
+        padding-top: 8px;
+        align-items: flex-start;
+      }
     }
 
     /* Game container - hidden by default, shown when game starts */
@@ -507,14 +518,14 @@
           <div>
             <a href="#" data-translate="privacy">Privacy</a> · <a href="#" data-translate="terms">Termini</a>
           </div>
-          <div style="opacity:.7">v0.1014 CORRUPTION FIX</div>
+          <div style="opacity:.7">v0.1015 MOBILE RESPONSIVE</div>
         </div>
       </aside>
     </div>
   </div>
 
   <div id="game-container"></div>
-  <div id="home-button" onclick="returnToHomepage()" title="Torna alla homepage">🏠</div>
+  <div id="home-button" onclick="returnToHomepage()" title="Torna alla homepage">🏠</div>
   <script>
     // Translations for the homepage
     const translations = {
@@ -800,44 +811,49 @@
       const modal = document.createElement('div');
       modal.style.cssText = `
         position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
-        background: rgba(0,0,0,0.8); display: flex; align-items: center; 
-        justify-content: center; z-index: 10000; padding: 10px;
-        overflow-y: auto;
+        background: rgba(0,0,0,0.8); display: flex; align-items: flex-start; 
+        justify-content: center; z-index: 10000; padding: clamp(8px, 2vh, 16px);
+        overflow-y: auto; box-sizing: border-box;
       `;
 
       modal.innerHTML = `
         <div style="
           background: linear-gradient(135deg, #b7e3f0 0%, #87ceeb 100%);
-          border-radius: 24px; padding: 20px; max-width: 500px; width: calc(100% - 20px);
+          border-radius: clamp(16px, 4vw, 24px); 
+          padding: clamp(16px, 4vw, 24px); 
+          max-width: min(500px, 95vw); 
+          width: 100%;
           box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-          margin: auto;
-          max-height: 90vh;
+          margin: clamp(10px, 2vh, 20px) auto;
+          max-height: calc(100vh - clamp(20px, 4vh, 40px));
           overflow-y: auto;
+          box-sizing: border-box;
         ">
-          <div style="text-align: center; margin-bottom: 24px;">
-            <h2 style="color: #0b2b33; margin: 0; font-size: clamp(20px, 5vw, 28px); font-weight: bold;" id="character-modal-title">
+          <div style="text-align: center; margin-bottom: clamp(16px, 4vw, 24px);">
+            <h2 style="color: #0b2b33; margin: 0; font-size: clamp(18px, 4vw, 24px); font-weight: bold; line-height: 1.2;" id="character-modal-title">
               🎭 ${currentLang === 'it' ? 'Scegli il tuo Personaggio' : 'Choose Your Character'}
             </h2>
-            <p style="color: #0b2b33; margin: 8px 0 0; font-size: clamp(12px, 3.5vw, 16px);" id="character-modal-subtitle">${currentLang === 'it' ? 'Scegli il tuo gatto preferito per giocare!' : 'Pick your favorite cat to play with!'}</p>
+            <p style="color: #0b2b33; margin: clamp(6px, 1.5vw, 8px) 0 0; font-size: clamp(11px, 2.5vw, 14px); line-height: 1.3;" id="character-modal-subtitle">${currentLang === 'it' ? 'Scegli il tuo gatto preferito per giocare!' : 'Pick your favorite cat to play with!'}</p>
           </div>
           
-          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 12px; margin-bottom: 20px;">
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100px, 30vw), 1fr)); gap: clamp(8px, 2vw, 12px); margin-bottom: clamp(16px, 4vw, 20px);">
             ${characters.map(char => `
               <div class="character-option" data-character="${char.id}" 
                    style="
-                     text-align: center; padding: 16px; border-radius: 16px; cursor: pointer;
+                     text-align: center; padding: clamp(8px, 2vw, 12px); border-radius: clamp(12px, 3vw, 16px); cursor: pointer;
                      background: ${currentCharacter === char.id ? '#0ea5a3' : '#ffffff'}; 
                      color: ${currentCharacter === char.id ? '#ffffff' : '#0b2b33'};
-                     border: 3px solid ${currentCharacter === char.id ? '#0ea5a3' : 'transparent'};
-                     transition: all 0.2s; box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+                     border: 2px solid ${currentCharacter === char.id ? '#0ea5a3' : 'transparent'};
+                     transition: all 0.2s; box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+                     box-sizing: border-box;
                    "
-                   onmouseover="this.style.transform='scale(1.05)'" 
+                   onmouseover="this.style.transform='scale(1.02)'" 
                    onmouseout="this.style.transform='scale(1)'"
                    onclick="selectCharacter('${char.id}')">
                 <img src="${char.img}" alt="${char.name}" 
-                     style="width: 80px; height: 80px; border-radius: 12px; object-fit: cover; margin-bottom: 8px;">
-                <h3 style="margin: 0 0 4px; font-size: 16px; font-weight: bold;">${char.name}</h3>
-                <p style="margin: 0; font-size: 12px; opacity: 0.8;">${char.desc}</p>
+                     style="width: clamp(50px, 12vw, 70px); height: clamp(50px, 12vw, 70px); border-radius: clamp(8px, 2vw, 12px); object-fit: cover; margin-bottom: clamp(4px, 1vw, 6px); display: block;">
+                <h3 style="margin: 0 0 clamp(2px, 0.5vw, 4px); font-size: clamp(12px, 3vw, 16px); font-weight: bold; line-height: 1.2;">${char.name}</h3>
+                <p style="margin: 0; font-size: clamp(9px, 2vw, 12px); opacity: 0.8; line-height: 1.3;">${char.desc}</p>
               </div>
             `).join('')}
           </div>
@@ -845,8 +861,9 @@
           <div style="text-align: center;">
             <button onclick="closeCharacterSelection()" 
                     style="
-                      background: #6c757d; color: white; border: none; border-radius: 12px;
-                      padding: 12px 24px; font-size: 16px; font-weight: 600; cursor: pointer;
+                      background: #6c757d; color: white; border: none; border-radius: clamp(8px, 2vw, 12px);
+                      padding: clamp(8px, 2vw, 12px) clamp(16px, 4vw, 24px); 
+                      font-size: clamp(12px, 3vw, 16px); font-weight: 600; cursor: pointer;
                       transition: all 0.2s;
                     "
                     onmouseover="this.style.background='#5a6268'" 
@@ -1103,7 +1120,7 @@
             
             if (!authState.isAuthenticated) {
               console.log('🔑 User not authenticated, showing auth modal');
-              const authModal = new window.AuthModal();
+              const authModal = new ./assets/main-D_xIYwUQ.tsdal();
               authModal.show();
             } else {
               console.log('✅ User already authenticated:', authState.profile && authState.profile.username);
