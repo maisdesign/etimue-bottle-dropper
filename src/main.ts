@@ -12,6 +12,7 @@ import { logger } from '@/utils/Logger'
 import { gameStateTracker } from '@/utils/GameStateTracker'
 import { debugPanel } from '@/utils/DebugPanel'
 import { characterManager } from '@/utils/CharacterManager'
+import { updateManager } from '@/utils/UpdateManager'
 
 // Game configuration
 const config: Phaser.Types.Core.GameConfig = {
@@ -116,6 +117,7 @@ async function initGame() {
   ;(window as any).i18n = i18n
   ;(window as any).AuthModal = AuthModal
   ;(window as any).characterManager = characterManager
+  ;(window as any).updateManager = updateManager
   
   // Add timeout for game initialization
   let gameReadyTimeout = setTimeout(() => {

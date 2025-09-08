@@ -97,5 +97,12 @@
     "authError": "Errore di autenticazione", 
     "scoreSubmissionFailed": "Invio punteggio fallito",
     "generic": "Si è verificato un errore"
+  },
+  "update": {
+    "available": "Aggiornamento Disponibile",
+    "description": "È disponibile una nuova versione del gioco con correzioni e miglioramenti.",
+    "updateNow": "Aggiorna Ora",
+    "later": "Più Tardi",
+    "updating": "Aggiornamento"
   }
 }

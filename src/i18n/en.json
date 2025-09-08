@@ -97,5 +97,12 @@
     "authError": "Authentication error",
     "scoreSubmissionFailed": "Score submission failed", 
     "generic": "An error occurred"
+  },
+  "update": {
+    "available": "Update Available",
+    "description": "A new version of the game is available with bug fixes and improvements.",
+    "updateNow": "Update Now",
+    "later": "Later",
+    "updating": "Updating"
   }
 }

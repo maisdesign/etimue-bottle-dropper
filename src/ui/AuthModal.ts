@@ -378,6 +378,7 @@ export class AuthModal {
       console.log(`🔐 Starting ${provider} OAuth...`)
       console.log('📍 Redirect URL:', redirectUrl)
       
+      // First attempt: Try popup/redirect (Supabase auto-detects best method)
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider,
         options: {
@@ -385,13 +386,32 @@ export class AuthModal {
         }
       })
 
-      if (error) throw error
+      if (error) {
+        // Check for popup blocked errors
+        if (error.message.includes('popup') || error.message.includes('blocked')) {
+          console.warn('⚠️ Popup blocked, user will be redirected instead')
+          this.showError('Pop-up blocked. You will be redirected to complete sign-in.')
+          // Supabase will handle the redirect automatically
+          return
+        }
+        throw error
+      }
 
       console.log('✅ OAuth request sent, redirect will happen automatically')
       
     } catch (error: any) {
       console.error('❌ OAuth error:', error)
-      this.showError(error.message || t('errors.authError'))
+      
+      // Enhanced error messaging for common issues
+      let errorMessage = error.message || t('errors.authError')
+      
+      if (error.message?.includes('popup')) {
+        errorMessage = 'Please disable popup blockers and try again.'
+      } else if (error.message?.includes('network') || error.message?.includes('fetch')) {
+        errorMessage = 'Network error. Please check your connection and try again.'
+      }
+      
+      this.showError(errorMessage)
       this.showLoading(false)
     }
   }

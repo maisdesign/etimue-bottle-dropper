@@ -660,9 +660,38 @@ export class MenuScene extends Phaser.Scene {
   }
 
   private async showAuthModal() {
-    const { AuthModal } = await import('@/ui/AuthModal')
-    const authModal = new AuthModal(this)
-    authModal.show()
+    try {
+      const { AuthModal } = await import('@/ui/AuthModal')
+      const authModal = new AuthModal(this)
+      authModal.show()
+    } catch (error) {
+      console.error('❌ Failed to load AuthModal:', error)
+      // Fallback: redirect to a full-page login
+      this.showFallbackLogin()
+    }
+  }
+
+  private showFallbackLogin() {
+    // Show error message and provide fallback options
+    alert('Authentication module failed to load. Please refresh the page or try again.')
+    
+    // Option 1: Force page refresh
+    if (confirm('Would you like to refresh the page to retry?')) {
+      window.location.reload()
+      return
+    }
+    
+    // Option 2: Clear cache and retry
+    if (confirm('Would you like to clear the cache and try again?')) {
+      if ('caches' in window) {
+        caches.keys().then(names => {
+          names.forEach(name => caches.delete(name))
+          window.location.reload()
+        })
+      } else {
+        window.location.reload()
+      }
+    }
   }
 
   private updateAuthStatus() {

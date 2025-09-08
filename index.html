@@ -526,7 +526,7 @@
           <div>
             <a href="#" data-translate="privacy">Privacy</a> · <a href="#" data-translate="terms">Termini</a>
           </div>
-          <div style="opacity:.7">v0.1018 BUGS FIXED</div>
+          <div style="opacity:.7">v0.1019 CACHE FIXES</div>
         </div>
       </aside>
     </div>
@@ -645,31 +645,47 @@
         // Set pending action and show auth modal
         pendingAction = 'startGame';
         
-        if (window.AuthModal && !window.homepageAuthModal) {
-          window.homepageAuthModal = new window.AuthModal();
-          // Set callback to handle any pending action after successful auth
-          window.homepageAuthModal.onAuth((user) => {
-            console.log('✅ Auth successful from homepage, executing pending action:', pendingAction);
-            updateAuthStatus(); // Update homepage status
-            
-            if (pendingAction === 'startGame') {
-              startGame(); // Retry starting the game
-            } else if (pendingAction === 'showLeaderboard') {
-              showLeaderboard(); // Retry showing leaderboard
+        try {
+          if (window.AuthModal && !window.homepageAuthModal) {
+            window.homepageAuthModal = new window.AuthModal();
+            // Set callback to handle any pending action after successful auth
+            window.homepageAuthModal.onAuth((user) => {
+              console.log('✅ Auth successful from homepage, executing pending action:', pendingAction);
+              updateAuthStatus(); // Update homepage status
+              
+              if (pendingAction === 'startGame') {
+                startGame(); // Retry starting the game
+              } else if (pendingAction === 'showLeaderboard') {
+                showLeaderboard(); // Retry showing leaderboard
+              }
+              
+              pendingAction = null; // Reset pending action
+            });
+          }
+          
+          if (window.homepageAuthModal) {
+            window.homepageAuthModal.show();
+          } else {
+            throw new Error('AuthModal not available');
+          }
+        } catch (error) {
+          console.error('❌ AuthModal creation failed:', error);
+          // Enhanced fallback with cache clearing option
+          const message = currentLang === 'it' ? 
+            'Errore nel caricamento del sistema di autenticazione. Vuoi ricaricare la pagina?' : 
+            'Authentication system failed to load. Would you like to reload the page?';
+          
+          if (confirm(message)) {
+            // Clear cache and reload
+            if ('caches' in window) {
+              caches.keys().then(names => {
+                names.forEach(name => caches.delete(name));
+                window.location.reload();
+              });
+            } else {
+              window.location.reload();
             }
-            
-            pendingAction = null; // Reset pending action
-          });
-        }
-        
-        if (window.homepageAuthModal) {
-          window.homepageAuthModal.show();
-        } else {
-          // Fallback to alert and redirect
-          alert(currentLang === 'it' ? 
-            'Devi effettuare il login per giocare!' : 
-            'You must log in to play!'
-          );
+          }
         }
         return;
       }
