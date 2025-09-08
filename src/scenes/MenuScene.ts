@@ -232,7 +232,7 @@ export class MenuScene extends Phaser.Scene {
   }
 
   private showLeaderboard() {
-    this.scene.launch('LeaderboardScene')
+    this.scene.start('LeaderboardScene')
   }
 
   private showHowToPlay() {

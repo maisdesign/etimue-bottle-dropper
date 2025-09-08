@@ -240,9 +240,13 @@ export class AuthManager {
 
   public async showAuthModal(): Promise<User | null> {
     return new Promise((resolve) => {
-      if (!this.authModal) {
-        this.authModal = new AuthModal()
+      // Always create a fresh modal instance to avoid callback conflicts
+      // This prevents homepage callbacks from interfering with game modals
+      if (this.authModal) {
+        this.authModal.destroy()
       }
+      
+      this.authModal = new AuthModal()
 
       this.authModal.onAuth((user) => {
         resolve(user)

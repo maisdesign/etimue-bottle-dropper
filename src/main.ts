@@ -97,6 +97,11 @@ async function initGame() {
   } catch (error) {
     console.error('❌ Auth initialization error:', error)
     logger.error('AUTH_INIT', 'Auth initialization failed', error)
+    // Show error to user and hide game container
+    if (typeof window !== 'undefined' && (window as any).returnToHomepage) {
+      console.log('🏠 Auth failed, returning to homepage')
+      ;(window as any).returnToHomepage()
+    }
     // Continue anyway to not block the game completely
   }
 
@@ -112,8 +117,20 @@ async function initGame() {
   ;(window as any).AuthModal = AuthModal
   ;(window as any).characterManager = characterManager
   
+  // Add timeout for game initialization
+  let gameReadyTimeout = setTimeout(() => {
+    console.error('❌ Game initialization timeout - returning to homepage')
+    logger.error('GAME_INIT', 'Game initialization timeout')
+    if (typeof window !== 'undefined' && (window as any).returnToHomepage) {
+      ;(window as any).returnToHomepage()
+      alert('Game loading failed. Please try again or refresh the page.')
+    }
+  }, 15000) // 15 second timeout
+  
   // Handle direct navigation from homepage
   game.events.on('ready', () => {
+    clearTimeout(gameReadyTimeout) // Cancel timeout since game is ready
+    
     logger.info('GAME_INIT', 'Phaser game ready', {
       scenes: game.scene.getScenes().map(s => s.scene.key),
       skipToGame: !!(window as any).skipToGame,

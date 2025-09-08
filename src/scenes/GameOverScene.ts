@@ -234,44 +234,23 @@ export class GameOverScene extends Phaser.Scene {
       return
     }
 
-    const authState = authManager.getState()
-    console.log('🔍 Auth state:', {
-      isAuthenticated: authState.isAuthenticated,
-      hasUser: !!authState.user,
-      hasMarketingConsent: authState.hasMarketingConsent,
-      userEmail: authState.user?.email
-    })
+    // Use the same requireAuth logic as the game start to avoid double login
+    const { requireAuth } = await import('@/net/authManager')
+    const canPlay = await requireAuth()
     
-    // Check authentication
-    if (!authState.isAuthenticated || !authState.user) {
-      console.log('❌ User not authenticated, showing auth modal')
-      // Show auth modal
-      try {
-        await authManager.showAuthModal()
-        // After auth, retry submission
-        console.log('🔄 Retrying submission after auth')
-        this.submitScore()
-      } catch (error) {
-        console.error('❌ Authentication failed:', error)
-        this.submitStatus.setText('Authentication failed')
-      }
+    if (!canPlay) {
+      console.log('❌ User authentication/consent failed')
+      this.submitStatus.setText(t('auth.signInToSubmit'))
       return
     }
 
-    if (!authState.hasMarketingConsent) {
-      console.log('❌ No marketing consent, showing auth modal for consent')
-      // Show auth modal for consent
-      try {
-        await authManager.showAuthModal()
-        // After consent, retry submission
-        console.log('🔄 Retrying submission after consent')
-        this.submitScore()
-      } catch (error) {
-        console.error('❌ Consent failed:', error)
-        this.submitStatus.setText(t('auth.newsletterRequired'))
-      }
-      return
-    }
+    // Get fresh auth state after requireAuth
+    const authState = authManager.getState()
+    console.log('✅ Auth check passed:', {
+      isAuthenticated: authState.isAuthenticated,
+      hasMarketingConsent: authState.hasMarketingConsent,
+      userEmail: authState.user?.email
+    })
 
     console.log('✅ All checks passed, submitting score:', this.gameData.score)
 
@@ -353,7 +332,7 @@ export class GameOverScene extends Phaser.Scene {
   }
 
   private showLeaderboard() {
-    this.scene.launch('LeaderboardScene')
+    this.scene.start('LeaderboardScene')
   }
 
   private goToMenu() {

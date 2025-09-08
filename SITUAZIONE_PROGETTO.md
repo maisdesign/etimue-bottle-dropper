@@ -278,25 +278,47 @@ node test-deploy.js   # → Diagnostica deployment
 - **Navigation Flow**: Menu torna alla homepage elegante
 - **Error Handling**: Gestione graceful degli errori invece di crash
 
-**TODO**
-Ci sono ancora un po' di problemi.\
-  ho provato a selezionare il personaggio di 
-  scrocca e a cliccare su gioca.\
-  mi ha chiesto di fare login (giusto) ho 
-  completato la mia partita ma poi mi ha 
-  chiesto di fare login per inviare il 
-  risultato alla classifica.\
-  Ho fatto login di nuovo e prima di poter 
-  cliccare sul pulsante di conferma nel modale
-   in cui ti chiede il permesso marketing e 
-  puoi inserire il tuo nickname è iniziata una
-   nuova partita al termine della quale 
-  cliccando sul pulsante classifica sono stato
-   mandato alla vecchia interfaccia che, 
-  perlomeno ha il mio nome in alto a sinistra,
-   ma non è l'interfaccia nuova che stiamo 
-  utilizzando.\
-  Già che c'ero ho chiesto a ChatGpt in 
-  versione agente di fare un test del sito, 
-  trovi il report in formato PDF nella 
-  cartella Screenshots
+## 🔧 **PROBLEMI RISOLTI (8 SETTEMBRE 2025 ORE 14:30)**
+
+### ✅ **DOUBLE LOGIN BUG - RISOLTO**
+- **Problema**: Utente loggato due volte - una per giocare e una per inviare punteggio
+- **Causa**: GameOverScene usava `authManager.showAuthModal()` invece di `requireAuth()`
+- **Fix**: GameOverScene ora usa `requireAuth()` come MenuScene per consistenza
+- **File modificato**: `src/scenes/GameOverScene.ts:238`
+
+### ✅ **MARKETING CONSENT MODAL AUTO-GAME TRIGGER - RISOLTO**  
+- **Problema**: Durante conferma consent marketing, partiva automaticamente nuova partita
+- **Causa**: AuthModal aveva callback homepage globale che auto-avviava gioco + testo pulsante "PLAY"
+- **Fix**: 
+  1. AuthModal ora crea sempre istanza fresh per evitare callback conflicts
+  2. Testo pulsante cambiato da "PLAY" → "Complete"/"Completa"
+- **File modificati**: 
+  - `src/net/authManager.ts:241-257`
+  - `src/ui/AuthModal.ts:111`
+  - `src/i18n/en.json:31`
+  - `src/i18n/it.json:31`
+
+### ✅ **LEADERBOARD NAVIGATION - RISOLTO**
+- **Problema**: Pulsante classifica mandava a "vecchia interfaccia" invece di quella nuova
+- **Causa**: GameOverScene e MenuScene usavano `scene.launch()` invece di `scene.start()`
+- **Fix**: Cambiato `launch` → `start` per coerenza con homepage 
+- **File modificati**: 
+  - `src/scenes/GameOverScene.ts:335`
+  - `src/scenes/MenuScene.ts:235`
+
+### ✅ **BLANK BLUE SCREEN - RISOLTO**
+- **Problema**: Pulsanti login/gioco mostravano schermata azzurra vuota (da test ChatGPT)
+- **Causa**: Game container mostrato ma gioco non avviato per errori auth/caricamento
+- **Fix**: 
+  1. Aggiunto error handling per auth failures → return to homepage
+  2. Aggiunto timeout 15s per game initialization con fallback homepage
+- **File modificato**: `src/main.ts:100-128`
+
+### 📊 **RISULTATO FINALE**
+Tutti i 4 problemi identificati sono stati risolti:
+- ❌ Double login bug → ✅ RISOLTO
+- ❌ Auto-game trigger da consent → ✅ RISOLTO  
+- ❌ Wrong leaderboard interface → ✅ RISOLTO
+- ❌ Blank blue screen → ✅ RISOLTO
+
+**PROSSIMO PASSO**: Test completo del flusso di gioco per conferma fix

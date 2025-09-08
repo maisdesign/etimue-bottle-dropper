@@ -108,7 +108,7 @@ export class AuthModal {
               </p>
               
               <button id="auth-complete" class="auth-button auth-button-primary" disabled>
-                ${t('game.play')}
+                ${t('auth.complete')}
               </button>
             </div>
           </div>
