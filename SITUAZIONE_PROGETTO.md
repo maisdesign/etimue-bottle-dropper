@@ -349,3 +349,28 @@ Tutti i 4 problemi identificati sono stati risolti:
 
 **PROSSIMO PASSO**: Test completo del flusso di gioco per conferma fix
 Lettura Pdf in cartella screenshot per sistemare codice ulteriormente
+
+---
+
+## 🚨 EMERGENZA RISOLTA - FIX CRITICO PAGE RELOAD (9 Settembre 2025 - 02:30)
+
+### ✅ CRITICAL PAGE RELOAD ISSUE FIXED
+**PROBLEMA**: Click su nickname input durante login causava page reload completo e ritorno homepage
+**CAUSA IDENTIFICATA**: keyEventHandler in AuthModal.ts causava VM reset 
+**FIX APPLICATO**: Disabilitato preventGameKeys() temporaneamente in AuthModal.ts riga 798
+**STATUS**: Fix d'emergenza deployato in produzione v0.1020
+
+### 🔍 ROOT CAUSE ANALYSIS
+- Console log mostrava page reload completo (VM176 → VM9)
+- keyEventHandler globale interferiva con focus su input field
+- window.location.reload() triggerato da event handler WASD
+- Soluzione: commentato this.preventGameKeys() in show() method
+
+### 🚨 TEMPORARY WORKAROUND STATUS
+- ⚠️ WASD prevention disabilitato durante auth modal
+- ✅ Login flow ora funziona normalmente senza page reload
+- ⚠️ Possibili double-character issues in nickname input (da verificare)
+- 🎯 Serve implementare fix definitivo per WASD handling
+
+### 🎯 NEXT PRIORITY
+Testare il fix d'emergenza e sviluppare soluzione permanente per WASD handling
