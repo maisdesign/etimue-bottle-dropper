@@ -28,7 +28,9 @@
     "signInToSubmit": "Accedi per inviare il tuo punteggio alla classifica",
     "signInAndSubmit": "Accedi e Invia",
     "newsletterRequired": "Iscrizione newsletter richiesta",
-    "complete": "Completa"
+    "complete": "Completa",
+    "loading": "Caricamento...",
+    "checkingStatus": "Verifica dello stato di autenticazione in corso..."
   },
   "mailchimp": {
     "consent": "Acconsento a iscrivermi alla mailing list di Etimuè per ricevere aggiornamenti e offerte esclusive",

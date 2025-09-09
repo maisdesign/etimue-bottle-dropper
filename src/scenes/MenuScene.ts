@@ -222,13 +222,62 @@ export class MenuScene extends Phaser.Scene {
   }
 
   private async startGame() {
-    // Check authentication and consent
-    const canPlay = await requireAuth()
+    console.log('🎮 GIOCA button clicked')
+    const authState = authManager.getState()
     
-    if (canPlay) {
-      // Start the game
-      this.scene.start('GameScene')
+    // Normalizza il comportamento basato sullo stato auth
+    if (authState.isLoading) {
+      console.log('⏳ Auth still loading, showing loader...')
+      this.showAuthLoadingMessage()
+      return
     }
+    
+    if (!authState.isAuthenticated) {
+      console.log('❌ User not authenticated, showing login...')
+      this.showAuthModal()
+      return
+    }
+    
+    if (!authState.hasMarketingConsent) {
+      console.log('⚠️ User authenticated but needs consent, showing consent modal...')
+      const canPlay = await requireAuth()
+      if (canPlay) {
+        this.scene.start('GameScene')
+      }
+      return
+    }
+    
+    console.log('✅ User authenticated and has consent, starting game!')
+    this.scene.start('GameScene')
+  }
+  
+  private showAuthLoadingMessage() {
+    // Mostra un messaggio temporaneo
+    const existingMessage = document.getElementById('auth-loading-message')
+    if (existingMessage) return
+    
+    const message = document.createElement('div')
+    message.id = 'auth-loading-message'
+    message.style.cssText = `
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: rgba(0, 0, 0, 0.8);
+      color: white;
+      padding: 20px;
+      border-radius: 8px;
+      z-index: 9999;
+      text-align: center;
+    `
+    message.innerHTML = 'Authentication in progress...<br><small>Please wait a moment</small>'
+    
+    document.body.appendChild(message)
+    
+    // Rimuovi dopo 3 secondi
+    setTimeout(() => {
+      message.remove()
+    }, 3000)
   }
 
   private showLeaderboard() {

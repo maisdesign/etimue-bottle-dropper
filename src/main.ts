@@ -13,6 +13,7 @@ import { gameStateTracker } from '@/utils/GameStateTracker'
 import { debugPanel } from '@/utils/DebugPanel'
 import { characterManager } from '@/utils/CharacterManager'
 import { updateManager } from '@/utils/UpdateManager'
+import { AuthGate } from '@/components/AuthGate'
 
 // Game configuration
 const config: Phaser.Types.Core.GameConfig = {
@@ -118,6 +119,10 @@ async function initGame() {
   ;(window as any).AuthModal = AuthModal
   ;(window as any).characterManager = characterManager
   ;(window as any).updateManager = updateManager
+  ;(window as any).AuthGate = AuthGate
+  
+  // Crea il pulsante di accesso sempre visibile
+  AuthGate.createAlwaysVisibleLoginButton()
   
   // Add timeout for game initialization
   let gameReadyTimeout = setTimeout(() => {
