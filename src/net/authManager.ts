@@ -236,8 +236,16 @@ export class AuthManager {
   }
 
   public canPlayGame(): boolean {
+    // Now allows playing even without marketing consent (just needs authentication)
+    const result = this.state.isAuthenticated
+    console.log(`🎯 canPlayGame() check: authenticated=${this.state.isAuthenticated} → ${result}`)
+    return result
+  }
+
+  public canCompeteForPrizes(): boolean {
+    // Requires both authentication AND marketing consent to compete for prizes
     const result = this.state.isAuthenticated && this.state.hasMarketingConsent
-    console.log(`🎯 canPlayGame() check: authenticated=${this.state.isAuthenticated}, consent=${this.state.hasMarketingConsent} → ${result}`)
+    console.log(`🏆 canCompeteForPrizes() check: authenticated=${this.state.isAuthenticated}, consent=${this.state.hasMarketingConsent} → ${result}`)
     return result
   }
 

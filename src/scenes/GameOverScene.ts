@@ -18,6 +18,7 @@ export class GameOverScene extends Phaser.Scene {
   private submitButton!: Phaser.GameObjects.Text
   private submitStatus!: Phaser.GameObjects.Text
   private leaderboardButton!: Phaser.GameObjects.Text
+  private competitionStatusText!: Phaser.GameObjects.Text
   private scoreSubmitted: boolean = false
 
   constructor() {
@@ -109,7 +110,7 @@ export class GameOverScene extends Phaser.Scene {
   private createButtons(width: number, height: number) {
     const buttonY = height / 2 + 40
 
-    // Submit Score button
+    // Submit Score button - will be updated with competition status
     this.submitButton = this.add.text(width / 2, buttonY, t('game.submitScore'), {
       fontSize: '18px',
       fontFamily: 'Inter, sans-serif',
@@ -123,6 +124,16 @@ export class GameOverScene extends Phaser.Scene {
     .on('pointerdown', () => this.submitScore())
     .on('pointerover', () => this.submitButton.setScale(1.05))
     .on('pointerout', () => this.submitButton.setScale(1))
+
+    // Competition status info (will be updated after auth check)
+    this.competitionStatusText = this.add.text(width / 2, buttonY - 50, '', {
+      fontSize: '14px',
+      fontFamily: 'Inter, sans-serif',
+      fontWeight: '500',
+      color: '#ffffff',
+      align: 'center'
+    })
+    .setOrigin(0.5)
 
     // Play Again button
     const playAgainButton = this.add.text(width / 2 - 80, buttonY + 60, t('game.playAgain'), {
@@ -210,18 +221,19 @@ export class GameOverScene extends Phaser.Scene {
       return
     }
     
+    // Now check if user can compete for prizes and update UI accordingly
+    const canCompete = authManager.canCompeteForPrizes()
+    this.updateCompetitionUI(canCompete)
+
     if (!authState.hasMarketingConsent) {
-      logger.warn('AUTH_FLOW', 'Marketing consent missing - user needs to manually retry from menu')
-      this.submitStatus.setText(t('auth.newsletterRequired'))
-      this.submitButton.setText(t('auth.signInAndSubmit'))
-      
-      // Don't auto-open modal in GameOverScene to avoid repeated consent requests
-      // User can retry from menu if needed
+      logger.warn('AUTH_FLOW', 'Marketing consent missing - user can play but not compete for prizes')
+      this.submitStatus.setText(t('game.notCompetingInfo'))
+      // Don't auto-submit for users without consent - let them manually choose
       return
     }
 
     logger.info('AUTH_FLOW', 'All checks passed, auto-submitting score')
-    // Auto-submit if user is authenticated
+    // Auto-submit if user is authenticated and has consent
     this.submitScore()
   }
 
@@ -245,21 +257,21 @@ export class GameOverScene extends Phaser.Scene {
       profileUsername: initialAuthState.profile?.username
     })
 
-    // If already authenticated and has consent, skip auth flow
-    if (initialAuthState.isAuthenticated && initialAuthState.hasMarketingConsent) {
-      console.log('✅ User already fully authenticated, proceeding with score submission')
-    } else {
-      console.log('⚠️ User needs authentication or consent, starting auth flow...')
+    // If not authenticated at all, require authentication
+    if (!initialAuthState.isAuthenticated) {
+      console.log('⚠️ User not authenticated, requiring authentication...')
       
       // Use the same requireAuth logic as the game start to avoid double login
       const { requireAuth } = await import('@/net/authManager')
       const canPlay = await requireAuth()
       
       if (!canPlay) {
-        console.log('❌ User authentication/consent failed')
+        console.log('❌ User authentication failed')
         this.submitStatus.setText(t('auth.signInToSubmit'))
         return
       }
+    } else {
+      console.log('✅ User authenticated, checking competition eligibility...')
     }
 
     // Get fresh auth state after any auth flow
@@ -270,10 +282,20 @@ export class GameOverScene extends Phaser.Scene {
       userEmail: authState.user?.email
     })
 
+    // Determine if user can compete for prizes and update UI
+    const canCompete = authManager.canCompeteForPrizes()
+    const competitionStatus = canCompete ? 'IN GARA' : 'FUORI GARA'
+    console.log(`🏆 Competition status: ${competitionStatus} (canCompete: ${canCompete})`)
+    
+    this.updateCompetitionUI(canCompete)
+
     console.log('✅ All checks passed, submitting score:', this.gameData.score)
 
     try {
-      this.submitStatus.setText('Submitting score...')
+      const submitMessage = canCompete ? 
+        'Invio punteggio in classifica...' : 
+        'Salvataggio punteggio (fuori gara)...'
+      this.submitStatus.setText(submitMessage)
       this.submitButton.setAlpha(0.5)
 
       // Validate score before submission
@@ -296,7 +318,13 @@ export class GameOverScene extends Phaser.Scene {
 
       if (result) {
         this.scoreSubmitted = true
-        this.submitStatus.setText('Score submitted successfully!')
+        
+        // Show different success message based on competition status
+        const successMessage = canCompete ? 
+          t('game.scoreSubmittedInCompetition') : 
+          t('game.scoreSubmittedOutOfCompetition')
+        this.submitStatus.setText(successMessage)
+        
         this.submitButton.setText(t('leaderboard.title'))
         this.submitButton.setAlpha(1)
         
@@ -347,6 +375,22 @@ export class GameOverScene extends Phaser.Scene {
 
   private playAgain() {
     this.scene.start('GameScene')
+  }
+
+  private updateCompetitionUI(canCompete: boolean) {
+    if (canCompete) {
+      // User can compete for prizes
+      this.submitButton.setText(t('game.submitScore'))
+      this.submitButton.setStyle({ backgroundColor: '#28a745' }) // Green
+      this.competitionStatusText.setText(t('game.competingForPrizes'))
+      this.competitionStatusText.setStyle({ color: '#90ee90' }) // Light green
+    } else {
+      // User is out of competition
+      this.submitButton.setText(t('game.submitScoreOutOfCompetition'))
+      this.submitButton.setStyle({ backgroundColor: '#6c757d' }) // Gray
+      this.competitionStatusText.setText(t('game.notCompetingInfo'))
+      this.competitionStatusText.setStyle({ color: '#ffc107' }) // Warning yellow
+    }
   }
 
   private showLeaderboard() {

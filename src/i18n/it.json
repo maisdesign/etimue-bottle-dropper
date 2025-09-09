@@ -11,7 +11,12 @@
     "score": "Punteggio: {{score}}",
     "lives": "Vite:",
     "time": "Tempo: {{time}}",
-    "submitScore": "INVIA PUNTEGGIO"
+    "submitScore": "INVIA PUNTEGGIO",
+    "submitScoreOutOfCompetition": "SALVA PUNTEGGIO (fuori gara)",
+    "scoreSubmittedInCompetition": "Punteggio inviato in classifica!",
+    "scoreSubmittedOutOfCompetition": "Punteggio salvato (fuori gara)",
+    "competingForPrizes": "🏆 In gara per i premi!",
+    "notCompetingInfo": "⚠️ Per partecipare ai premi serve consenso marketing"
   },
   "auth": {
     "welcome": "Benvenuto",

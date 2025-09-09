@@ -11,7 +11,12 @@
     "score": "Score: {{score}}",
     "lives": "Lives:",
     "time": "Time: {{time}}",
-    "submitScore": "SUBMIT SCORE"
+    "submitScore": "SUBMIT SCORE",
+    "submitScoreOutOfCompetition": "SAVE SCORE (out of competition)",
+    "scoreSubmittedInCompetition": "Score submitted to leaderboard!",
+    "scoreSubmittedOutOfCompetition": "Score saved (out of competition)",
+    "competingForPrizes": "🏆 Competing for prizes!",
+    "notCompetingInfo": "⚠️ Marketing consent required to compete for prizes"
   },
   "auth": {
     "welcome": "Welcome",
