@@ -121,8 +121,8 @@ async function initGame() {
   ;(window as any).updateManager = updateManager
   ;(window as any).AuthGate = AuthGate
   
-  // Crea il pulsante di accesso sempre visibile
-  AuthGate.createAlwaysVisibleLoginButton()
+  // AuthGate available but not creating always-visible button (conflicts with homepage)
+  // AuthGate.createAlwaysVisibleLoginButton()
   
   // Add timeout for game initialization
   let gameReadyTimeout = setTimeout(() => {
