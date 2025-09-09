@@ -794,8 +794,8 @@ export class AuthModal {
       logger.error('PHASER_KEYBOARD', 'managePhaserKeyboard not available on window object!')
     }
 
-    // Add global keyboard event prevention for game keys while modal is open
-    this.preventGameKeys()
+    // TEMPORARILY DISABLED: Add global keyboard event prevention for game keys while modal is open
+    // this.preventGameKeys() // DISABLED FOR DEBUG - MAY CAUSE PAGE RELOAD
 
     // Focus first input when modal opens (after a brief delay to ensure DOM is ready)
     setTimeout(() => {
@@ -859,8 +859,8 @@ export class AuthModal {
     this.isVisible = false
     this.element.classList.add('hidden')
     
-    // Remove global key event prevention
-    this.removeGameKeyPrevention()
+    // Remove global key event prevention (DISABLED FOR DEBUG)
+    // this.removeGameKeyPrevention() // DISABLED FOR DEBUG
     
     // Re-enable Phaser keyboard when modal closes
     if (typeof window !== 'undefined' && (window as any).managePhaserKeyboard) {
