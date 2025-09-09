@@ -696,6 +696,16 @@ export class AuthModal {
       const gameKeys = ['KeyW', 'KeyA', 'KeyS', 'KeyD', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Space']
       
       if (gameKeys.includes(event.code)) {
+        // Allow normal browser shortcuts like Ctrl+A, Ctrl+C, Ctrl+V, etc.
+        if (event.ctrlKey || event.metaKey) {
+          logger.debug('WASD_CTRL_SHORTCUT', `Allowing ${event.code} with Ctrl/Cmd for browser shortcuts`, {
+            type: event.type,
+            ctrlKey: event.ctrlKey,
+            metaKey: event.metaKey
+          })
+          return // Let the browser handle the shortcut normally
+        }
+        
         const target = event.target as HTMLInputElement
         
         logger.debug('WASD_KEY_INTERCEPTED', `Intercepted ${event.code}`, {

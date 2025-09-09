@@ -1116,7 +1116,7 @@
           if (authStatusText) {
             authStatusText.textContent = username;
           }
-          authStatusContainer.title = currentLang === 'it' ? 'Clicca per giocare' : 'Click to play';
+          authStatusContainer.title = currentLang === 'it' ? 'Clicca per opzioni profilo' : 'Click for profile options';
         } else {
           if (authStatusText) {
             authStatusText.textContent = currentLang === 'it' ? 'Accedi' : 'Login';
@@ -1126,11 +1126,190 @@
       }
     }
 
+    // Show profile menu for authenticated users
+    function showUserProfileMenu(authState) {
+      const username = authState.profile?.username || 'Player';
+      console.log('👤 Showing profile menu for user:', username);
+      
+      // Create a simple profile menu modal
+      const modal = document.createElement('div');
+      modal.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.8);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 10000;
+      `;
+      
+      modal.innerHTML = `
+        <div style="
+          background: white;
+          border-radius: 12px;
+          padding: 30px;
+          max-width: 400px;
+          text-align: center;
+          box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        ">
+          <h2 style="margin: 0 0 20px 0; color: #2c3e50;">Welcome back, ${username}!</h2>
+          <p style="margin: 0 0 30px 0; color: #666;">What would you like to do?</p>
+          
+          <button onclick="startGameDirectly()" style="
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            margin: 0 10px 15px 0;
+            min-width: 120px;
+          ">🎮 Play Game</button>
+          
+          <button onclick="showLeaderboard()" style="
+            background: #ffc107;
+            color: #333;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            margin: 0 10px 15px 0;
+            min-width: 120px;
+          ">🏆 Leaderboard</button>
+          
+          <br>
+          
+          <button onclick="editProfile()" style="
+            background: #17a2b8;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            font-size: 14px;
+            cursor: pointer;
+            margin: 0 10px 10px 0;
+          ">✏️ Edit Profile</button>
+          
+          <button onclick="logout()" style="
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            font-size: 14px;
+            cursor: pointer;
+            margin: 0 10px 10px 0;
+          ">🚪 Logout</button>
+          
+          <br><br>
+          
+          <button onclick="closeProfileMenu()" style="
+            background: #6c757d;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            font-size: 14px;
+            cursor: pointer;
+          ">✖️ Close</button>
+        </div>
+      `;
+      
+      // Add click outside to close
+      modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+          closeProfileMenu();
+        }
+      });
+      
+      document.body.appendChild(modal);
+      window.currentProfileModal = modal;
+    }
+    
+    function closeProfileMenu() {
+      if (window.currentProfileModal) {
+        window.currentProfileModal.remove();
+        window.currentProfileModal = null;
+      }
+    }
+    
+    function startGameDirectly() {
+      closeProfileMenu();
+      if (typeof window.startGame === 'function') {
+        window.startGame();
+      }
+    }
+    
+    function showLeaderboard() {
+      closeProfileMenu();
+      // Start Phaser and navigate to leaderboard
+      if (typeof window.startGame === 'function') {
+        window.startGame();
+        // Wait for game to load, then navigate to leaderboard
+        setTimeout(() => {
+          if (window.game?.scene) {
+            window.game.scene.start('LeaderboardScene');
+          }
+        }, 3000);
+      }
+    }
+    
+    function editProfile() {
+      closeProfileMenu();
+      // Show auth modal for profile editing
+      if (window.AuthModal) {
+        const modal = new window.AuthModal();
+        modal.show();
+      } else {
+        alert('Profile editing not available. Please refresh the page.');
+      }
+    }
+    
+    function logout() {
+      if (confirm('Are you sure you want to logout?')) {
+        closeProfileMenu();
+        if (window.authManager) {
+          window.authManager.signOut();
+        }
+        // Update UI
+        setTimeout(() => {
+          updateAuthButtonText();
+        }, 1000);
+      }
+    }
+
     // Handle auth - starts Phaser to load AuthModal system
     function startGameForAuth() {
       console.log('🔐 Auth button clicked from homepage');
       
-      // Initialize Phaser system to get AuthModal available
+      // First check if auth system is already loaded
+      if (window.authManager) {
+        const authState = window.authManager.getState();
+        console.log('🔍 Auth system already loaded, checking state:', authState.isAuthenticated);
+        
+        if (authState.isAuthenticated) {
+          console.log('✅ User already authenticated:', authState.profile?.username);
+          // Show profile options instead of starting game
+          showUserProfileMenu(authState);
+          return;
+        } else {
+          console.log('🔑 User not authenticated, showing auth modal');
+          if (window.AuthModal) {
+            const authModal = new window.AuthModal();
+            authModal.show();
+            return;
+          }
+        }
+      }
+      
+      // Initialize Phaser system to get AuthModal available (only if auth not ready)
       if (typeof window.startGame === 'function') {
         console.log('🎮 Starting Phaser to load auth system...');
         
@@ -1149,7 +1328,8 @@
               authModal.show();
             } else {
               console.log('✅ User already authenticated:', authState.profile && authState.profile.username);
-              // User is already logged in - could show profile menu here
+              // User logged in during Phaser load, show profile menu
+              showUserProfileMenu(authState);
             }
           } else {
             console.log('❌ AuthModal still not available after Phaser load');
