@@ -234,19 +234,37 @@ export class GameOverScene extends Phaser.Scene {
       return
     }
 
-    // Use the same requireAuth logic as the game start to avoid double login
-    const { requireAuth } = await import('@/net/authManager')
-    const canPlay = await requireAuth()
-    
-    if (!canPlay) {
-      console.log('❌ User authentication/consent failed')
-      this.submitStatus.setText(t('auth.signInToSubmit'))
-      return
+    // Check auth state immediately first
+    console.log('🔍 GameOverScene: Checking initial auth state...')
+    const initialAuthState = authManager.getState()
+    console.log('📋 Initial auth state:', {
+      isAuthenticated: initialAuthState.isAuthenticated,
+      isLoading: initialAuthState.isLoading,
+      hasMarketingConsent: initialAuthState.hasMarketingConsent,
+      userEmail: initialAuthState.user?.email,
+      profileUsername: initialAuthState.profile?.username
+    })
+
+    // If already authenticated and has consent, skip auth flow
+    if (initialAuthState.isAuthenticated && initialAuthState.hasMarketingConsent) {
+      console.log('✅ User already fully authenticated, proceeding with score submission')
+    } else {
+      console.log('⚠️ User needs authentication or consent, starting auth flow...')
+      
+      // Use the same requireAuth logic as the game start to avoid double login
+      const { requireAuth } = await import('@/net/authManager')
+      const canPlay = await requireAuth()
+      
+      if (!canPlay) {
+        console.log('❌ User authentication/consent failed')
+        this.submitStatus.setText(t('auth.signInToSubmit'))
+        return
+      }
     }
 
-    // Get fresh auth state after requireAuth
+    // Get fresh auth state after any auth flow
     const authState = authManager.getState()
-    console.log('✅ Auth check passed:', {
+    console.log('✅ Final auth check passed:', {
       isAuthenticated: authState.isAuthenticated,
       hasMarketingConsent: authState.hasMarketingConsent,
       userEmail: authState.user?.email
