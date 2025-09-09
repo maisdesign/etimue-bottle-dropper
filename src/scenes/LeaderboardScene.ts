@@ -397,7 +397,15 @@ export class LeaderboardScene extends Phaser.Scene {
   }
 
   private close() {
-    this.scene.stop()
+    // Return to homepage instead of MenuScene
+    if (typeof window !== 'undefined' && (window as any).returnToHomepage) {
+      console.log('🏠 LeaderboardScene: Using returnToHomepage function')
+      ;(window as any).returnToHomepage()
+    } else {
+      // Fallback to MenuScene if homepage function not available
+      console.warn('⚠️ LeaderboardScene: returnToHomepage not available, falling back to MenuScene')
+      this.scene.start('MenuScene')
+    }
   }
 
   // Handle ESC key to close
