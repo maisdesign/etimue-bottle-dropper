@@ -610,7 +610,8 @@ export class AuthModal {
       )
 
       const updatedProfile = await Promise.race([updatePromise, timeoutPromise])
-      console.log('✅ Profile updated successfully')
+      console.log('✅ Profile updated successfully:', updatedProfile)
+      console.log('🔍 Updated profile consent_marketing:', updatedProfile?.consent_marketing)
       
       // Immediately update AuthManager state
       const { authManager } = await import('@/net/authManager')
@@ -686,6 +687,73 @@ export class AuthModal {
     // Re-render modal with new translations
     this.element.innerHTML = this.getModalHTML()
     this.setupEventListeners()
+  }
+
+  private smartPreventGameKeys(): void {
+    logger.debug('WASD_SMART_FIX', 'Starting SMART game key prevention system (no page reload)')
+    
+    // SMART PREVENTION - Only block keys on input elements, avoid global interference
+    this.keyEventHandler = (event: KeyboardEvent) => {
+      const gameKeys = ['KeyW', 'KeyA', 'KeyS', 'KeyD', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Space']
+      
+      if (gameKeys.includes(event.code)) {
+        // Allow normal browser shortcuts like Ctrl+A, Ctrl+C, Ctrl+V, etc.
+        if (event.ctrlKey || event.metaKey) {
+          logger.debug('WASD_CTRL_SHORTCUT', `Allowing ${event.code} with Ctrl/Cmd for browser shortcuts`)
+          return // Let the browser handle the shortcut normally
+        }
+        
+        const target = event.target as HTMLInputElement
+        
+        // ONLY handle events on input elements within our modal
+        if (target && (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA')) {
+          // Check if target is within our modal
+          const isInModal = this.element.contains(target)
+          if (!isInModal) {
+            return // Don't interfere with inputs outside our modal
+          }
+          
+          logger.debug('WASD_SMART_HANDLED', `Smart handling ${event.code} on modal input`, {
+            inputId: target.id,
+            inputValue: target.value
+          })
+
+          // ALWAYS prevent default to stop Phaser interference
+          event.preventDefault()
+          event.stopPropagation()
+          
+          // For WASD keys, manually insert the character ONLY on keydown
+          if (event.type === 'keydown' && ['KeyW', 'KeyA', 'KeyS', 'KeyD'].includes(event.code)) {
+            const char = event.code.replace('Key', '').toLowerCase()
+            const originalValue = target.value
+            const start = target.selectionStart || 0
+            const end = target.selectionEnd || 0
+            
+            // Manually insert the character at cursor position
+            target.value = originalValue.substring(0, start) + char + originalValue.substring(end)
+            target.setSelectionRange(start + 1, start + 1)
+            
+            // Trigger input event
+            target.dispatchEvent(new Event('input', { bubbles: true }))
+            
+            logger.debug('WASD_SMART_INSERT', `Smart inserted '${char}'`, {
+              oldValue: originalValue,
+              newValue: target.value
+            })
+          }
+        } else {
+          // For non-input elements, just prevent the event (no page reload risk)
+          event.preventDefault()
+          event.stopPropagation()
+        }
+      }
+    }
+
+    // Add listeners only on keydown and keypress (avoid keyup to prevent double handling)
+    document.addEventListener('keydown', this.keyEventHandler, { capture: true, passive: false })
+    document.addEventListener('keypress', this.keyEventHandler, { capture: true, passive: false })
+    
+    logger.debug('WASD_SMART_LISTENERS', 'Added SMART key event listeners (keydown + keypress only)')
   }
 
   private preventGameKeys(): void {
@@ -770,6 +838,15 @@ export class AuthModal {
     })
   }
 
+  private removeSmartKeyPrevention(): void {
+    if (this.keyEventHandler) {
+      document.removeEventListener('keydown', this.keyEventHandler, { capture: true })
+      document.removeEventListener('keypress', this.keyEventHandler, { capture: true })
+      this.keyEventHandler = undefined
+      logger.debug('WASD_SMART_CLEANUP', 'Removed SMART key event prevention')
+    }
+  }
+
   private removeGameKeyPrevention(): void {
     if (this.keyEventHandler) {
       document.removeEventListener('keydown', this.keyEventHandler, { capture: true })
@@ -794,8 +871,8 @@ export class AuthModal {
       logger.error('PHASER_KEYBOARD', 'managePhaserKeyboard not available on window object!')
     }
 
-    // TEMPORARILY DISABLED: Add global keyboard event prevention for game keys while modal is open
-    // this.preventGameKeys() // DISABLED FOR DEBUG - MAY CAUSE PAGE RELOAD
+    // SMART WASD FIX: Add keyboard prevention without causing page reload
+    this.smartPreventGameKeys()
 
     // Focus first input when modal opens (after a brief delay to ensure DOM is ready)
     setTimeout(() => {
@@ -859,8 +936,8 @@ export class AuthModal {
     this.isVisible = false
     this.element.classList.add('hidden')
     
-    // Remove global key event prevention (DISABLED FOR DEBUG)
-    // this.removeGameKeyPrevention() // DISABLED FOR DEBUG
+    // Remove smart key event prevention
+    this.removeSmartKeyPrevention()
     
     // Re-enable Phaser keyboard when modal closes
     if (typeof window !== 'undefined' && (window as any).managePhaserKeyboard) {
@@ -882,8 +959,8 @@ export class AuthModal {
   public destroy(): void {
     this.hasCompletedConsent = false
     
-    // Remove global key event prevention
-    this.removeGameKeyPrevention()
+    // Remove smart key event prevention
+    this.removeSmartKeyPrevention()
     
     // Clear countdown timer when destroying
     if (this.countdownInterval) {

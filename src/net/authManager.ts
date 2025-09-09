@@ -221,11 +221,14 @@ export class AuthManager {
 
   public updateMarketingConsent(hasConsent: boolean, profile?: Profile): void {
     console.log('🔄 Updating marketing consent:', hasConsent)
+    console.log('🔍 Profile consent_marketing from DB:', profile?.consent_marketing)
+    console.log('🔍 Setting hasMarketingConsent to:', hasConsent)
     this.state.hasMarketingConsent = hasConsent
     if (profile) {
       this.state.profile = profile
     }
     this.notifyListeners()
+    console.log('✅ Marketing consent updated - new state:', this.state.hasMarketingConsent)
   }
 
   public isReady(): boolean {
