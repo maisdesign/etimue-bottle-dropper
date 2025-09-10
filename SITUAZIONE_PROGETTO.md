@@ -372,5 +372,55 @@ Lettura Pdf in cartella screenshot per sistemare codice ulteriormente
 - ⚠️ Possibili double-character issues in nickname input (da verificare)
 - 🎯 Serve implementare fix definitivo per WASD handling
 
+---
+
+## 🏆 MODALITÀ "FUORI GARA" IMPLEMENTATA (9 Settembre 2025 - 04:00)
+
+### ✅ FEATURE MAGGIORE COMPLETATA - OUT-OF-COMPETITION MODE v0.1022
+**PROBLEMA RISOLTO**: Utenti bloccati senza consent marketing, non potevano giocare
+**SOLUZIONE IMPLEMENTATA**: Modalità "fuori gara" che permette gioco senza consent
+**BENEFICI**: Tutti possono giocare, solo chi ha consent compete per premi
+
+### 🎯 SISTEMA DUAL-MODE IMPLEMENTATO
+**🏆 MODALITÀ "IN GARA"** (con marketing consent):
+- Pulsante verde "INVIA PUNTEGGIO"
+- Messaggio "🏆 In gara per i premi!"
+- Punteggio va in classifica ufficiale
+- Eligible per vincere premi settimanali/mensili
+
+**⚠️ MODALITÀ "FUORI GARA"** (senza consent):
+- Pulsante grigio "SALVA PUNTEGGIO (fuori gara)" 
+- Messaggio "⚠️ Per partecipare ai premi serve consenso marketing"
+- Punteggio salvato ma non compete per premi
+- Può giocare normalmente senza limitazioni
+
+### 🔧 CAMBIAMENTI TECNICI APPLICATI
+**AuthManager.ts**:
+- `canPlayGame()` → Solo richiede autenticazione (permette gioco)
+- `canCompeteForPrizes()` → Richiede auth + consent (per premi)
+- Separazione logica tra "can play" vs "can compete"
+
+**GameOverScene.ts**:
+- `updateCompetitionUI()` → Aggiorna UI in base a status competizione
+- UI differenziata: verde=competing, grigio=out-of-competition 
+- Messaggi di successo diversi per le due modalità
+- Auto-submit solo per utenti con consent completo
+
+**Traduzioni complete IT/EN**:
+- `submitScoreOutOfCompetition`, `competingForPrizes`, `notCompetingInfo`
+- Messaggi chiari per distinguere le modalità
+
+### ✅ PROBLEMI CRITICI RISOLTI OGGI
+1. **✅ PAGE RELOAD CRITICO v0.1020**: Disabled keyEventHandler che causava refresh pagina
+2. **✅ SMART WASD PREVENTION v0.1021**: Nuovo sistema che non causa page reload
+3. **✅ MODALITÀ FUORI GARA v0.1022**: Gioco disponibile anche senza marketing consent
+4. **✅ UI COMPETITION STATUS**: Feedback visuale chiaro per stato competizione
+
+### 🚨 TASK RIMANENTI (PRIORITÀ MEDIA)
+1. **BUG LINGUA**: Modale profilo in inglese invece di italiano
+2. **BUG DOUBLE LOGIN**: Incognito chiede login due volte 
+3. **TEST SYSTEM**: Testare modalità fuori gara in produzione
+4. **WASD OPTIMIZATION**: Verificare che smart prevention funzioni perfettamente
+
 ### 🎯 NEXT PRIORITY
-Testare il fix d'emergenza e sviluppare soluzione permanente per WASD handling
+Testare il sistema dual-mode e completare i fix rimanenti per lingua e double login
