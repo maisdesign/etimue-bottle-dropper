@@ -156,43 +156,81 @@ export const profileService = {
 
 // Score operations
 export const scoreService = {
-  async submitScore(userId: string, score: number, runSeconds: number = 60): Promise<Score | null> {
-    console.log('📊 ScoreService.submitScore called:', { userId, score, runSeconds })
+  async submitScore(userId: string, score: number, runSeconds: number = 60, gameEndTimestamp?: number): Promise<Score | null> {
+    try {
+      // Get current session for authorization
+      const { data: { session }, error: sessionError } = await supabase.auth.getSession()
+      
+      if (sessionError || !session) {
+        console.error('❌ No valid session for score submission')
+        return null
+      }
+
+      // Prepare submission data
+      const submissionData = {
+        score,
+        runSeconds,
+        gameEndTimestamp: gameEndTimestamp || Date.now()
+      }
+
+      // Call Supabase Edge Function for server-side validation
+      const { data, error } = await supabase.functions.invoke('submit-score', {
+        body: submissionData,
+        headers: {
+          Authorization: `Bearer ${session.access_token}`
+        }
+      })
+
+      if (error) {
+        console.error('❌ Edge Function error:', error)
+        return null
+      }
+
+      if (!data.success) {
+        console.error('❌ Score submission failed:', data.error, data.details)
+        return null
+      }
+
+      console.log('✅ Score submitted successfully:', data.storedScore)
+      
+      // Return the stored score in the expected format
+      return {
+        id: data.storedScore.id,
+        user_id: userId,
+        score: data.storedScore.score,
+        run_seconds: data.storedScore.runSeconds,
+        created_at: new Date().toISOString(),
+        tz: 'Europe/Rome'
+      }
+
+    } catch (error) {
+      console.error('❌ Score submission error:', error)
+      return null
+    }
+  },
+
+  // Legacy direct database method for emergencies (with client validation)
+  async _submitScoreDirect(userId: string, score: number, runSeconds: number = 60): Promise<Score | null> {
+    console.warn('⚠️ Using legacy direct database submission')
     
-    // Anti-cheat validation
+    // Client-side validation (less secure)
     if (score < 0 || score > 600) {
       console.error('❌ Invalid score range:', score)
       return null
     }
 
-    // Anti-cheat: Only reject unreasonably short games (< 5s = likely bot/crash)
-    // No upper limit - skilled players with power-ups can play longer!
     if (runSeconds < 5) {
       console.error('❌ Game too short, likely invalid:', runSeconds)
       return null
     }
     
-    // Soft warning for very long games (but still allow them)
-    if (runSeconds > 300) { // 5 minutes
-      console.warn('⚠️ Very long game duration:', runSeconds, 'seconds - checking for potential issues')
-    }
-
-    console.log('✅ Score validation passed, inserting into database...')
-    
-    // TEMPORARY FIX: Database constraint requires exactly 60 seconds
-    // TODO: Update database schema to allow variable durations
     const insertData = {
       user_id: userId,
       score,
-      run_seconds: 60, // Force to 60 for database constraint
+      run_seconds: runSeconds, // Now supports variable duration
       tz: 'Europe/Rome'
     }
     
-    console.log(`⚠️ TEMPORARY: Forcing run_seconds to 60 instead of ${runSeconds} due to DB constraint`)
-    
-    console.log('📝 Insert data:', insertData)
-    
-    console.log('🚀 Starting database insert...')
     const insertPromise = supabase
       .from('scores')
       .insert(insertData)

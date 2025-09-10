@@ -307,7 +307,8 @@ export class GameOverScene extends Phaser.Scene {
       const submitPromise = scoreService.submitScore(
         authState.user.id,
         this.gameData.score,
-        this.gameData.actualDuration
+        this.gameData.actualDuration,
+        this.gameData.gameEndTimestamp
       )
       
       const timeoutPromise = new Promise<null>((_, reject) => {
