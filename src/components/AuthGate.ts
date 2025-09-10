@@ -29,51 +29,43 @@ export class AuthGate {
 
   async check(): Promise<'authenticated' | 'needs_login' | 'timeout'> {
     return new Promise((resolve) => {
-      console.log('🔒 AuthGate: Starting authentication check...')
-      
-      // Mostra il loader se richiesto
+      // Show loader if requested
       if (this.showLoader) {
         this.showAuthLoader()
       }
 
-      // Controlla se l'auth è già pronto
+      // Check if auth is already ready
       const currentState = authManager.getState()
       if (!currentState.isLoading) {
         this.cleanup()
         
         if (currentState.isAuthenticated) {
-          console.log('✅ AuthGate: Already authenticated')
           this.onAuthenticated?.()
           resolve('authenticated')
           return
         } else {
-          console.log('❌ AuthGate: Not authenticated')
           this.onNeedsLogin?.()
           resolve('needs_login')
           return
         }
       }
 
-      // Imposta il timeout
+      // Set timeout
       this.timeoutId = setTimeout(() => {
-        console.log('⏰ AuthGate: Timeout reached after', this.timeout, 'ms')
         this.cleanup()
         this.onTimeout?.()
         resolve('timeout')
       }, this.timeout)
 
-      // Ascolta i cambiamenti dello stato auth
+      // Listen for auth state changes
       this.unsubscribe = authManager.subscribe((state) => {
         if (!state.isLoading) {
-          console.log('🔄 AuthGate: Auth state resolved')
           this.cleanup()
           
           if (state.isAuthenticated) {
-            console.log('✅ AuthGate: User authenticated')
             this.onAuthenticated?.()
             resolve('authenticated')
           } else {
-            console.log('❌ AuthGate: User not authenticated')
             this.onNeedsLogin?.()
             resolve('needs_login')
           }

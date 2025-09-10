@@ -5,6 +5,7 @@ import { t } from '@/i18n'
 import { logger } from '@/utils/Logger'
 import { gameStateTracker } from '@/utils/GameStateTracker'
 import { characterManager } from '@/utils/CharacterManager'
+import { BottlePool, PowerupPool } from '@/utils/ObjectPool'
 
 interface MobileControls {
   leftPressed: boolean
@@ -59,6 +60,10 @@ export class GameScene extends Phaser.Scene {
   
   // Game start time for anti-cheat
   private gameStartTimestamp: number = 0
+  
+  // Object pools for performance optimization
+  private bottlePool!: BottlePool
+  private powerupPool!: PowerupPool
 
   constructor() {
     super({ key: 'GameScene' })
@@ -190,6 +195,10 @@ export class GameScene extends Phaser.Scene {
   private createGroups() {
     this.bottles = this.physics.add.group()
     this.powerups = this.physics.add.group()
+    
+    // Initialize object pools for performance optimization
+    this.bottlePool = new BottlePool(this, this.bottles, 'bottle_craft', 15)
+    this.powerupPool = new PowerupPool(this, this.powerups, 'powerup_all_good', 5)
   }
 
   private createControls() {
@@ -443,7 +452,10 @@ export class GameScene extends Phaser.Scene {
     const isGood = Math.random() > 0.3 // 70% chance of good bottle
 
     const textureKey = isGood ? 'bottle_craft' : 'bottle_industrial_green'
-    const bottle = this.bottles.create(x, -30, textureKey) as Phaser.Physics.Arcade.Sprite
+    const bottle = this.bottlePool.getBottle(textureKey)
+    
+    // Position and configure bottle
+    bottle.setPosition(x, -30)
     
     // Calculate speed based on time elapsed (difficulty increase)
     const timeElapsed = 60 - this.gameTime
@@ -454,19 +466,19 @@ export class GameScene extends Phaser.Scene {
     bottle.setVelocityY(speed + Math.random() * 30)
     bottle.setData('isGood', isGood)
     
-    // Auto-destroy when off screen
-    const destroyTimer = this.time.delayedCall(8000, () => {
+    // Auto-release when off screen (using object pool instead of destroy)
+    const releaseTimer = this.time.delayedCall(8000, () => {
       if (bottle.active) {
-        bottle.destroy()
+        this.bottlePool.release(bottle)
       }
       // Remove from active timers list
-      const index = this.activeTimers.indexOf(destroyTimer)
+      const index = this.activeTimers.indexOf(releaseTimer)
       if (index > -1) {
         this.activeTimers.splice(index, 1)
       }
     })
-    bottle.setData('autoDestroy', destroyTimer)
-    this.activeTimers.push(destroyTimer)
+    bottle.setData('autoDestroy', releaseTimer)
+    this.activeTimers.push(releaseTimer)
   }
 
   private spawnPowerup() {
@@ -475,22 +487,24 @@ export class GameScene extends Phaser.Scene {
     const width = this.cameras.main.width
     const x = Phaser.Math.Between(50, width - 50)
     
-    const powerup = this.powerups.create(x, -30, 'powerup_star') as Phaser.Physics.Arcade.Sprite
+    const powerup = this.powerupPool.get()
+    powerup.setPosition(x, -30)
+    powerup.setTexture('powerup_star')
     powerup.setVelocityY(120)
     
-    // Auto-destroy when off screen
-    const destroyTimer = this.time.delayedCall(10000, () => {
+    // Auto-release when off screen
+    const releaseTimer = this.time.delayedCall(10000, () => {
       if (powerup.active) {
-        powerup.destroy()
+        this.powerupPool.release(powerup)
       }
       // Remove from active timers list
-      const index = this.activeTimers.indexOf(destroyTimer)
+      const index = this.activeTimers.indexOf(releaseTimer)
       if (index > -1) {
         this.activeTimers.splice(index, 1)
       }
     })
-    powerup.setData('autoDestroy', destroyTimer)
-    this.activeTimers.push(destroyTimer)
+    powerup.setData('autoDestroy', releaseTimer)
+    this.activeTimers.push(releaseTimer)
   }
 
   private collectBottle(bottle: Phaser.Physics.Arcade.Sprite) {
@@ -500,9 +514,15 @@ export class GameScene extends Phaser.Scene {
     const autoDestroy = bottle.getData('autoDestroy')
     if (autoDestroy) {
       autoDestroy.destroy()
+      // Remove from active timers list
+      const index = this.activeTimers.indexOf(autoDestroy)
+      if (index > -1) {
+        this.activeTimers.splice(index, 1)
+      }
     }
     
-    bottle.destroy()
+    // Release bottle back to pool instead of destroying
+    this.bottlePool.release(bottle)
 
     if (isGood || this.allGoodPowerupActive) {
       this.score += 1
@@ -533,9 +553,15 @@ export class GameScene extends Phaser.Scene {
     const autoDestroy = powerup.getData('autoDestroy')
     if (autoDestroy) {
       autoDestroy.destroy()
+      // Remove from active timers list
+      const index = this.activeTimers.indexOf(autoDestroy)
+      if (index > -1) {
+        this.activeTimers.splice(index, 1)
+      }
     }
     
-    powerup.destroy()
+    // Release powerup back to pool instead of destroying
+    this.powerupPool.release(powerup)
     
     this.score += 5
     this.gameTime += 5 // Add 5 seconds
@@ -602,9 +628,17 @@ export class GameScene extends Phaser.Scene {
       this.powerupTimer.destroy()
     }
 
-    // Clear all objects
-    this.bottles.clear(true, true)
-    this.powerups.clear(true, true)
+    // Clear all objects using object pools
+    this.bottles.children.entries.forEach((sprite) => {
+      if (sprite instanceof Phaser.Physics.Arcade.Sprite) {
+        this.bottlePool.release(sprite)
+      }
+    })
+    this.powerups.children.entries.forEach((sprite) => {
+      if (sprite instanceof Phaser.Physics.Arcade.Sprite) {
+        this.powerupPool.release(sprite)
+      }
+    })
 
     // Stop background music
     if (this.bgMusic) {
@@ -729,18 +763,18 @@ export class GameScene extends Phaser.Scene {
         this.player.setVelocityX(0)
       }
 
-      // Clean up off-screen objects (mobile optimization)
+      // Clean up off-screen objects using object pools (mobile optimization)
       this.bottles.children.entries.forEach(bottle => {
         const sprite = bottle as Phaser.Physics.Arcade.Sprite
         if (sprite.y > this.cameras.main.height + 50) {
-          sprite.destroy()
+          this.bottlePool.release(sprite)
         }
       })
 
       this.powerups.children.entries.forEach(powerup => {
         const sprite = powerup as Phaser.Physics.Arcade.Sprite
         if (sprite.y > this.cameras.main.height + 50) {
-          sprite.destroy()
+          this.powerupPool.release(sprite)
         }
       })
 
@@ -765,6 +799,22 @@ export class GameScene extends Phaser.Scene {
       this.input.keyboard.removeAllListeners()
     }
     
-    console.log('🧹 GameScene keyboard listeners cleaned up')
+    // Clean up object pools
+    if (this.bottlePool) {
+      this.bottlePool.clear()
+    }
+    if (this.powerupPool) {
+      this.powerupPool.clear()
+    }
+    
+    // Clean up active timers
+    this.activeTimers.forEach(timer => {
+      if (timer) {
+        timer.destroy()
+      }
+    })
+    this.activeTimers = []
+    
+    logger.debug('GAME_CLEANUP', 'GameScene cleanup completed')
   }
 }

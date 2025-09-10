@@ -53,29 +53,18 @@ const config: Phaser.Types.Core.GameConfig = {
 
 // Initialize game after auth is ready
 async function initGame() {
-  console.log('🎮 Starting game initialization...')
   logger.info('GAME_INIT', 'Starting game initialization')
   
   try {
-    console.log('📋 Auth ready status:', authManager.isReady())
-    console.log('📊 Current auth state:', authManager.getState())
-    
     // Wait for auth to be ready with timeout
     if (!authManager.isReady()) {
-      console.log('⏳ Waiting for auth to be ready...')
       logger.info('AUTH_INIT', 'Auth not ready, waiting...')
       
       const authReadyPromise = new Promise<void>(resolve => {
         const unsubscribe = authManager.subscribe(state => {
-          console.log('🔄 Auth state update in initGame:', {
-            isLoading: state.isLoading,
-            isAuthenticated: state.isAuthenticated,
-            email: state.user?.email
-          })
           logger.debug('AUTH_INIT', 'Auth state update', state)
           
           if (!state.isLoading) {
-            console.log('✅ Auth is ready, starting Phaser game!')
             logger.info('AUTH_INIT', 'Auth ready, proceeding with game')
             unsubscribe()
             resolve()
@@ -85,30 +74,25 @@ async function initGame() {
       
       const timeoutPromise = new Promise<void>(resolve => {
         setTimeout(() => {
-          console.log('⚠️ Auth timeout reached, starting game anyway...')
           logger.warn('AUTH_INIT', 'Auth initialization timeout, proceeding anyway')
           resolve()
-        }, 8000) // Increased timeout for slower connections
+        }, 8000)
       })
       
       await Promise.race([authReadyPromise, timeoutPromise])
     } else {
-      console.log('✅ Auth already ready, starting Phaser game!')
       logger.info('AUTH_INIT', 'Auth already ready')
     }
   } catch (error) {
-    console.error('❌ Auth initialization error:', error)
     logger.error('AUTH_INIT', 'Auth initialization failed', error)
     // Show error to user and hide game container
     if (typeof window !== 'undefined' && (window as any).returnToHomepage) {
-      console.log('🏠 Auth failed, returning to homepage')
       ;(window as any).returnToHomepage()
     }
     // Continue anyway to not block the game completely
   }
 
   // Create Phaser game
-  console.log('🚀 Creating Phaser game...')
   const game = new Phaser.Game(config)
   
   // Make game globally accessible for debugging and homepage integration
@@ -126,17 +110,16 @@ async function initGame() {
   
   // Add timeout for game initialization
   let gameReadyTimeout = setTimeout(() => {
-    console.error('❌ Game initialization timeout - returning to homepage')
     logger.error('GAME_INIT', 'Game initialization timeout')
     if (typeof window !== 'undefined' && (window as any).returnToHomepage) {
       ;(window as any).returnToHomepage()
       alert('Game loading failed. Please try again or refresh the page.')
     }
-  }, 15000) // 15 second timeout
+  }, 15000)
   
   // Handle direct navigation from homepage
   game.events.on('ready', () => {
-    clearTimeout(gameReadyTimeout) // Cancel timeout since game is ready
+    clearTimeout(gameReadyTimeout)
     
     logger.info('GAME_INIT', 'Phaser game ready', {
       scenes: game.scene.getScenes().map(s => s.scene.key),
@@ -156,7 +139,7 @@ async function initGame() {
   // Global function to manage Phaser keyboard conflicts with HTML inputs
   ;(window as any).managePhaserKeyboard = {
     disable: () => {
-      console.log('🎹 Globally disabling Phaser keyboard')
+      logger.debug('INPUT', 'Globally disabling Phaser keyboard')
       const scenes = game.scene.getScenes()
       scenes.forEach(scene => {
         if (scene.input && scene.input.keyboard) {
@@ -165,7 +148,7 @@ async function initGame() {
       })
     },
     enable: () => {
-      console.log('🎹 Globally enabling Phaser keyboard') 
+      logger.debug('INPUT', 'Globally enabling Phaser keyboard')
       const scenes = game.scene.getScenes()
       scenes.forEach(scene => {
         if (scene.input && scene.input.keyboard) {

@@ -9,6 +9,8 @@ export interface LogEntry {
 class Logger {
   private logs: LogEntry[] = []
   private maxLogs = 1000
+  private isDevelopment = import.meta.env.MODE === 'development'
+  private consoleEnabled = this.isDevelopment || import.meta.env.VITE_ENABLE_CONSOLE === 'true'
   
   private createEntry(level: LogEntry['level'], category: string, message: string, data?: any): LogEntry {
     return {
@@ -23,27 +25,34 @@ class Logger {
   debug(category: string, message: string, data?: any) {
     const entry = this.createEntry('DEBUG', category, message, data)
     this.logs.push(entry)
-    console.log(`🔍 [${category}] ${message}`, data || '')
+    if (this.consoleEnabled) {
+      console.log(`🔍 [${category}] ${message}`, data || '')
+    }
     this.trimLogs()
   }
 
   info(category: string, message: string, data?: any) {
     const entry = this.createEntry('INFO', category, message, data)
     this.logs.push(entry)
-    console.log(`ℹ️ [${category}] ${message}`, data || '')
+    if (this.consoleEnabled) {
+      console.log(`ℹ️ [${category}] ${message}`, data || '')
+    }
     this.trimLogs()
   }
 
   warn(category: string, message: string, data?: any) {
     const entry = this.createEntry('WARN', category, message, data)
     this.logs.push(entry)
-    console.warn(`⚠️ [${category}] ${message}`, data || '')
+    if (this.consoleEnabled || this.isDevelopment) {
+      console.warn(`⚠️ [${category}] ${message}`, data || '')
+    }
     this.trimLogs()
   }
 
   error(category: string, message: string, data?: any) {
     const entry = this.createEntry('ERROR', category, message, data)
     this.logs.push(entry)
+    // Always log errors to console regardless of environment
     console.error(`❌ [${category}] ${message}`, data || '')
     this.trimLogs()
   }
