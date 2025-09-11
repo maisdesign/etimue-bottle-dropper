@@ -7,7 +7,6 @@ export class BootScene extends Phaser.Scene {
   }
 
   preload() {
-    console.log('🥾 BootScene preload started')
     // Create loading bar
     const width = this.cameras.main.width
     const height = this.cameras.main.height
@@ -58,12 +57,11 @@ export class BootScene extends Phaser.Scene {
     // Try to load Charlie image for boot screen
     this.load.image('boot_charlie', '/characters/charlie.png')
     this.load.on('filecomplete-image-boot_charlie', () => {
-      console.log('✅ Loaded Charlie for boot screen')
     })
     
     this.load.on('loaderror', (fileObj: any) => {
       if (fileObj.key === 'boot_charlie') {
-        console.warn('❌ Failed to load charlie.png for boot, using SVG logo fallback')
+        // Failed to load charlie.png for boot, using SVG logo fallback
         // Create fallback logo as before
         this.load.image('logo', 'data:image/svg+xml;base64,' + btoa(`
           <svg width="200" height="100" xmlns="http://www.w3.org/2000/svg">
@@ -86,24 +84,24 @@ export class BootScene extends Phaser.Scene {
   private checkPWAInstallability() {
     // Check if app is already installed
     if (window.matchMedia('(display-mode: standalone)').matches) {
-      console.log('App is running in standalone mode (PWA)')
+      // App is running in standalone mode (PWA)
     }
 
     // Listen for beforeinstallprompt event
     window.addEventListener('beforeinstallprompt', (e) => {
-      console.log('PWA installable')
+      // PWA installable
       // Store the event so it can be triggered later
       ;(window as any).deferredPrompt = e
     })
 
     // Check if service worker is supported
     if ('serviceWorker' in navigator) {
-      console.log('Service worker supported')
+      // Service worker supported
     }
   }
 
   create() {
-    console.log('🥾 BootScene create started')
+    // BootScene create started
     // Set up initial game state
     this.registry.set('gameSettings', {
       audioEnabled: localStorage.getItem('audio-enabled') === 'true',
@@ -134,7 +132,7 @@ export class BootScene extends Phaser.Scene {
 
     // Transition to PreloadScene after a brief delay
     this.time.delayedCall(1500, () => {
-      console.log('🥾 BootScene transitioning to PreloadScene')
+      // BootScene transitioning to PreloadScene
       this.scene.start('PreloadScene')
     })
   }
