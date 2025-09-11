@@ -69,7 +69,6 @@ export class AuthManager {
   private setupAuthListeners(): void {
     supabase.auth.onAuthStateChange(async (event, session) => {
       console.log('Auth state changed:', event, session?.user?.email)
-      console.log('🚨 NUOVO LOG DI TEST - SE VEDI QUESTO IL CODICE È AGGIORNATO')
       
       switch (event) {
         case 'SIGNED_IN':

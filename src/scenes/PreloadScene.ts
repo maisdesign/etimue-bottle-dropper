@@ -110,7 +110,6 @@ export class PreloadScene extends Phaser.Scene {
   }
 
   private generateUISprites() {
-    console.log('🎮 generateUISprites called')
     // Mobile control buttons
     const leftBtnGraphics = this.add.graphics()
     leftBtnGraphics.fillStyle(0x000000, 0.6)
@@ -120,7 +119,6 @@ export class PreloadScene extends Phaser.Scene {
     leftBtnGraphics.fillTriangle(20, 40, 50, 25, 50, 55)
     leftBtnGraphics.generateTexture('btn_left', 80, 80)
     leftBtnGraphics.destroy()
-    console.log('✅ Generated btn_left sprite')
 
     const rightBtnGraphics = this.add.graphics()
     rightBtnGraphics.fillStyle(0x000000, 0.6)
@@ -130,7 +128,6 @@ export class PreloadScene extends Phaser.Scene {
     rightBtnGraphics.fillTriangle(60, 40, 30, 25, 30, 55)
     rightBtnGraphics.generateTexture('btn_right', 80, 80)
     rightBtnGraphics.destroy()
-    console.log('✅ Generated btn_right sprite')
 
     // Pause button
     const pauseBtnGraphics = this.add.graphics()
@@ -141,7 +138,6 @@ export class PreloadScene extends Phaser.Scene {
     pauseBtnGraphics.fillRect(34, 15, 6, 30)
     pauseBtnGraphics.generateTexture('btn_pause', 60, 60)
     pauseBtnGraphics.destroy()
-    console.log('✅ Generated btn_pause sprite')
 
     // Heart icon for lives
     const heartGraphics = this.add.graphics()
@@ -218,7 +214,6 @@ export class PreloadScene extends Phaser.Scene {
     characters.forEach(character => {
       this.load.image(character, `/characters/${character}.png`)
       this.load.on(`filecomplete-image-${character}`, () => {
-        console.log(`✅ Loaded real character sprite (${character})`)
         characterLoadStatus[character] = true
       })
     })
@@ -233,7 +228,6 @@ export class PreloadScene extends Phaser.Scene {
         this.load.on('complete', () => {
           if (!this.textures.exists(characterKey) && this.textures.exists('player')) {
             this.textures.addImage(characterKey, this.textures.get('player').source[0].image)
-            console.log(`✅ Created ${characterKey} fallback from player texture`)
           }
         })
       }
@@ -244,13 +238,11 @@ export class PreloadScene extends Phaser.Scene {
     this.load.image('bottle_industrial_real', '/assets/bottle_industrial_green.png')
     
     this.load.on('filecomplete-image-bottle_craft_real', () => {
-      console.log('✅ Loaded real craft bottle sprite')
       this.textures.remove('bottle_craft')
       this.textures.addImage('bottle_craft', this.textures.get('bottle_craft_real').source[0].image)
     })
     
     this.load.on('filecomplete-image-bottle_industrial_real', () => {
-      console.log('✅ Loaded real industrial bottle sprite')
       this.textures.remove('bottle_industrial_green')
       this.textures.addImage('bottle_industrial_green', this.textures.get('bottle_industrial_real').source[0].image)
     })
@@ -258,7 +250,6 @@ export class PreloadScene extends Phaser.Scene {
     // Power-up
     this.load.image('powerup_real', '/assets/powerup_star.png')
     this.load.on('filecomplete-image-powerup_real', () => {
-      console.log('✅ Loaded real powerup sprite')
       this.textures.remove('powerup_star')
       this.textures.addImage('powerup_star', this.textures.get('powerup_real').source[0].image)
     })
@@ -282,8 +273,7 @@ export class PreloadScene extends Phaser.Scene {
     this.load.on('complete', () => {
       suppressErrors = false
       console.error = originalConsoleError
-      console.log('📦 Asset loading complete - using generated sprites and silent audio as fallbacks')
-    })
+      })
   }
 
   create() {

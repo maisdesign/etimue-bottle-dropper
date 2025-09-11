@@ -52,13 +52,14 @@ export default defineConfig({
       manifest: {
         name: 'Etimuè Bottle Dropper',
         short_name: 'Bottle Dropper',
-        description: 'Catch the right bottles, avoid the wrong ones!',
-        theme_color: '#87CEEB',
-        background_color: '#87CEEB',
+        description: 'Professional arcade game - Catch craft bottles, avoid industrial ones, and climb the leaderboard!',
+        theme_color: '#0ea5a3',
+        background_color: '#b7e3f0',
         display: 'standalone',
         orientation: 'portrait',
         scope: '/',
         start_url: '/',
+        categories: ['games', 'arcade', 'entertainment'],
         icons: [
           {
             src: 'pwa-192x192.png',
