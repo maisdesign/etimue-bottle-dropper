@@ -4,6 +4,11 @@ import path from 'path'
 
 export default defineConfig({
   base: './',
+  define: {
+    'import.meta.env.VITE_SUPABASE_URL': JSON.stringify(process.env.VITE_SUPABASE_URL || 'https://xtpfssiraytzvdvgrsol.supabase.co'),
+    'import.meta.env.VITE_SUPABASE_ANON_KEY': JSON.stringify(process.env.VITE_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh0cGZzc2lyYXl0enZkdmdyc29sIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTYyNjM1NzcsImV4cCI6MjA3MTgzOTU3N30.sr3C3c9vEC2yuM4k503_EcXjKp7kfX5TZx9uBM53UOw'),
+    'import.meta.env.VITE_ADMIN_UUIDS': JSON.stringify(process.env.VITE_ADMIN_UUIDS || '470c82f5-3997-4d93-a433-4dfee4a199c2')
+  },
   build: {
     outDir: 'dist',
     assetsDir: 'assets',
