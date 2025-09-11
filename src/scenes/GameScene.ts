@@ -497,9 +497,10 @@ export class GameScene extends Phaser.Scene {
       visible: bottle.visible
     })
     
-    // Auto-release when off screen (using object pool instead of destroy)
-    const releaseTimer = this.time.delayedCall(8000, () => {
+    // Auto-release as safety net (increased to 15 seconds)
+    const releaseTimer = this.time.delayedCall(15000, () => {
       if (bottle.active) {
+        console.log('🍶 Safety cleanup: bottle timeout after 15s')
         this.bottlePool.release(bottle)
       }
       // Remove from active timers list
@@ -799,10 +800,12 @@ export class GameScene extends Phaser.Scene {
         this.player.setVelocityX(0)
       }
 
-      // Clean up off-screen objects using object pools (mobile optimization)
+      // Clean up off-screen objects using object pools (mobile optimization)  
       this.bottles.children.entries.forEach(bottle => {
         const sprite = bottle as Phaser.Physics.Arcade.Sprite
-        if (sprite.active && sprite.y > this.cameras.main.height + 50) {
+        // More generous off-screen threshold and add debug logging
+        if (sprite.active && sprite.y > this.cameras.main.height + 100) {
+          console.log('🍶 Cleanup: bottle off-screen at y=' + sprite.y)
           this.bottlePool.release(sprite)
         }
       })
