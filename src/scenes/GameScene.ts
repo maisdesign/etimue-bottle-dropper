@@ -446,14 +446,29 @@ export class GameScene extends Phaser.Scene {
   }
 
   private spawnBottle() {
-    if (!this.gameRunning || this.bottles.children.size > 8) return
+    console.log('🍶 spawnBottle called', {
+      gameRunning: this.gameRunning,
+      bottleCount: this.bottles.children.size,
+      shouldReturn: !this.gameRunning || this.bottles.children.size > 8
+    })
+    
+    if (!this.gameRunning || this.bottles.children.size > 8) {
+      console.log('🍶 spawnBottle: skipping spawn', {
+        gameRunning: this.gameRunning,
+        bottleCount: this.bottles.children.size
+      })
+      return
+    }
 
     const width = this.cameras.main.width
     const x = Phaser.Math.Between(50, width - 50)
     const isGood = Math.random() > 0.3 // 70% chance of good bottle
 
     const textureKey = isGood ? 'bottle_craft' : 'bottle_industrial_green'
+    console.log('🍶 Creating bottle with texture:', textureKey)
+    
     const bottle = this.bottlePool.getBottle(textureKey)
+    console.log('🍶 Got bottle from pool:', bottle)
     
     // Position and configure bottle
     bottle.setPosition(x, -30)
@@ -466,6 +481,14 @@ export class GameScene extends Phaser.Scene {
     
     bottle.setVelocityY(speed + Math.random() * 30)
     bottle.setData('isGood', isGood)
+    
+    console.log('🍶 Bottle configured:', {
+      position: { x: bottle.x, y: bottle.y },
+      velocity: { x: bottle.body?.velocity.x, y: bottle.body?.velocity.y },
+      isGood,
+      active: bottle.active,
+      visible: bottle.visible
+    })
     
     // Auto-release when off screen (using object pool instead of destroy)
     const releaseTimer = this.time.delayedCall(8000, () => {
