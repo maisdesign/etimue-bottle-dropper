@@ -196,6 +196,12 @@ export class GameScene extends Phaser.Scene {
     this.bottles = this.physics.add.group()
     this.powerups = this.physics.add.group()
     
+    // Check if required textures exist before creating object pools
+    console.log('🔍 Checking game textures before creating pools:')
+    console.log('  - bottle_craft exists:', this.textures.exists('bottle_craft'))
+    console.log('  - bottle_industrial_green exists:', this.textures.exists('bottle_industrial_green'))
+    console.log('  - powerup_all_good exists:', this.textures.exists('powerup_all_good'))
+    
     // Initialize object pools for performance optimization
     this.bottlePool = new BottlePool(this, this.bottles, 'bottle_craft', 15)
     this.powerupPool = new PowerupPool(this, this.powerups, 'powerup_all_good', 5)

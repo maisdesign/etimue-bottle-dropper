@@ -73,8 +73,11 @@ export class BottlePool extends ObjectPool<Phaser.Physics.Arcade.Sprite> {
       bottle.setRotation(0)
       bottle.setTint(0xffffff)
       bottle.clearTint()
-      bottle.removeData('isGood')
-      bottle.removeData('autoDestroy')
+      // Fix: Use data.remove() instead of removeData()
+      if (bottle.data) {
+        bottle.data.remove('isGood')
+        bottle.data.remove('autoDestroy')
+      }
       // Remove from any physics bodies
       if (bottle.body) {
         bottle.body.setVelocity(0, 0)
