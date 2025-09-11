@@ -446,16 +446,23 @@ export class GameScene extends Phaser.Scene {
   }
 
   private spawnBottle() {
+    // Count only active bottles instead of all bottles in group
+    const activeBottles = this.bottles.children.entries.filter(bottle => 
+      (bottle as Phaser.Physics.Arcade.Sprite).active
+    ).length
+    
     console.log('🍶 spawnBottle called', {
       gameRunning: this.gameRunning,
-      bottleCount: this.bottles.children.size,
-      shouldReturn: !this.gameRunning || this.bottles.children.size > 8
+      totalBottles: this.bottles.children.size,
+      activeBottles,
+      shouldReturn: !this.gameRunning || activeBottles > 8
     })
     
-    if (!this.gameRunning || this.bottles.children.size > 8) {
+    if (!this.gameRunning || activeBottles > 8) {
       console.log('🍶 spawnBottle: skipping spawn', {
         gameRunning: this.gameRunning,
-        bottleCount: this.bottles.children.size
+        totalBottles: this.bottles.children.size,
+        activeBottles
       })
       return
     }
@@ -506,7 +513,12 @@ export class GameScene extends Phaser.Scene {
   }
 
   private spawnPowerup() {
-    if (!this.gameRunning || this.powerups.children.size > 2) return
+    // Count only active powerups instead of all powerups in group
+    const activePowerups = this.powerups.children.entries.filter(powerup => 
+      (powerup as Phaser.Physics.Arcade.Sprite).active
+    ).length
+    
+    if (!this.gameRunning || activePowerups > 2) return
 
     const width = this.cameras.main.width
     const x = Phaser.Math.Between(50, width - 50)
@@ -790,14 +802,14 @@ export class GameScene extends Phaser.Scene {
       // Clean up off-screen objects using object pools (mobile optimization)
       this.bottles.children.entries.forEach(bottle => {
         const sprite = bottle as Phaser.Physics.Arcade.Sprite
-        if (sprite.y > this.cameras.main.height + 50) {
+        if (sprite.active && sprite.y > this.cameras.main.height + 50) {
           this.bottlePool.release(sprite)
         }
       })
 
       this.powerups.children.entries.forEach(powerup => {
         const sprite = powerup as Phaser.Physics.Arcade.Sprite
-        if (sprite.y > this.cameras.main.height + 50) {
+        if (sprite.active && sprite.y > this.cameras.main.height + 50) {
           this.powerupPool.release(sprite)
         }
       })
