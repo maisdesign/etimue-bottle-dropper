@@ -34,7 +34,7 @@ export class AuthManager {
 
   private async initializeAuth(): Promise<void> {
     try {
-      console.log('🚀 Starting auth initialization...')
+      // Starting auth initialization
       
       // Get current session with timeout
       const sessionPromise = supabase.auth.getSession()
@@ -45,22 +45,22 @@ export class AuthManager {
       const { data: { session }, error } = await Promise.race([sessionPromise, sessionTimeoutPromise])
       
       if (error) {
-        console.error('❌ Error getting session:', error)
+        // Error getting session
       }
 
       if (session) {
-        console.log('👤 Session found, handling auth change...')
+        // Session found, handling auth change
         await this.handleAuthChange(session)
       } else {
-        console.log('👤 No active session found')
+        // No active session found
       }
 
       this.state.isLoading = false
-      console.log('✅ Auth initialization complete!')
+      // Auth initialization complete
       this.notifyListeners()
 
     } catch (error) {
-      console.error('❌ Auth initialization error:', error)
+      // Auth initialization error
       this.state.isLoading = false
       this.notifyListeners()
     }
@@ -68,7 +68,7 @@ export class AuthManager {
 
   private setupAuthListeners(): void {
     supabase.auth.onAuthStateChange(async (event, session) => {
-      console.log('Auth state changed:', event, session?.user?.email)
+      // Auth state changed
       
       switch (event) {
         case 'SIGNED_IN':
@@ -102,14 +102,14 @@ export class AuthManager {
 
   private async handleAuthChange(session: Session): Promise<void> {
     if (this.isProcessingAuth) {
-      console.log('⏭️ Skipping auth change - already processing')
+      // Skipping auth change - already processing
       return
     }
     
     // Anti-loop: Skip if same user processed recently (within 30 seconds)
     const now = Date.now()
     if (this.lastProcessedUserId === session.user.id && (now - this.lastProcessTime) < 30000) {
-      console.log(`⏭️ Skipping auth change - user ${session.user.email} processed recently`)
+      // Skipping auth change - user processed recently
       return
     }
     

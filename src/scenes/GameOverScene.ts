@@ -199,7 +199,7 @@ export class GameOverScene extends Phaser.Scene {
         }
       }
     } catch (error) {
-      console.warn('Failed to load leaderboard preview:', error)
+      logger.warn('GAME_OVER', 'Failed to load leaderboard preview', error)
     }
   }
 
