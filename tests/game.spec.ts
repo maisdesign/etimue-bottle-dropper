@@ -81,8 +81,12 @@ test.describe('Etimuè Bottle Dropper Game Tests', () => {
     const authModal = page.locator('#auth-modal');
     const gameCanvas = page.locator('canvas');
     
-    // One of these should appear
-    await expect(authModal.or(gameCanvas)).toBeVisible({ timeout: 10000 });
+    // Wait for either auth modal or game canvas
+    try {
+      await expect(authModal).toBeVisible({ timeout: 5000 });
+    } catch {
+      await expect(gameCanvas).toBeVisible({ timeout: 5000 });
+    }
   });
 
   test('Prize modal opens and displays correctly', async ({ page }) => {
@@ -103,8 +107,12 @@ test.describe('Etimuè Bottle Dropper Game Tests', () => {
     const authModal = page.locator('#auth-modal');
     const gameContainer = page.locator('#game-container');
     
-    // One of these should appear
-    await expect(authModal.or(gameContainer)).toBeVisible({ timeout: 10000 });
+    // Wait for either auth modal or game container
+    try {
+      await expect(authModal).toBeVisible({ timeout: 5000 });
+    } catch {
+      await expect(gameContainer).toBeVisible({ timeout: 5000 });
+    }
   });
 
   test('Supabase connectivity test', async ({ page }) => {
