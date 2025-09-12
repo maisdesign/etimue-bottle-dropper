@@ -332,6 +332,95 @@ export class AuthManager {
     
     this.listeners = []
   }
+
+  // TEST BACKDOOR: Only for automated testing - DO NOT USE IN PRODUCTION
+  public __TEST_setAuthenticatedUser(mockUser?: Partial<User>, mockProfile?: Partial<Profile>): void {
+    // Safety check: only allow in test environment  
+    if (typeof window !== 'undefined' && 
+        !window.location.href.includes('localhost') && 
+        !window.location.href.includes('127.0.0.1') &&
+        !window.navigator.userAgent.includes('Playwright')) {
+      console.warn('🚫 TEST_setAuthenticatedUser: Only available in test environment')
+      return
+    }
+
+    console.log('🧪 TEST BACKDOOR: Setting authenticated test user')
+    
+    // Create mock user
+    const testUser: User = {
+      id: 'test-user-id-12345',
+      aud: 'authenticated',
+      role: 'authenticated',
+      email: 'test@playwright.dev',
+      email_confirmed_at: new Date().toISOString(),
+      phone: '',
+      confirmed_at: new Date().toISOString(),
+      last_sign_in_at: new Date().toISOString(),
+      app_metadata: {},
+      user_metadata: {},
+      identities: [],
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+      is_anonymous: false,
+      ...mockUser
+    }
+
+    // Create mock profile
+    const testProfile: Profile = {
+      id: testUser.id,
+      email: testUser.email || 'test@playwright.dev',
+      nickname: 'TestPlayer',
+      consent_marketing: true,
+      consent_timestamp: new Date().toISOString(),
+      created_at: new Date().toISOString(),
+      ...mockProfile
+    }
+
+    // Update auth state
+    this.state = {
+      user: testUser,
+      profile: testProfile,
+      session: {
+        access_token: 'test-token',
+        token_type: 'bearer',
+        expires_in: 3600,
+        expires_at: Math.floor(Date.now() / 1000) + 3600,
+        refresh_token: 'test-refresh-token',
+        user: testUser
+      },
+      isLoading: false,
+      isAuthenticated: true,
+      hasMarketingConsent: testProfile.consent_marketing
+    }
+
+    // Notify listeners
+    this.notifyListeners()
+    console.log('✅ TEST BACKDOOR: User authenticated successfully')
+  }
+
+  // TEST BACKDOOR: Reset to unauthenticated state
+  public __TEST_resetAuthState(): void {
+    if (typeof window !== 'undefined' && 
+        !window.location.href.includes('localhost') && 
+        !window.location.href.includes('127.0.0.1') &&
+        !window.navigator.userAgent.includes('Playwright')) {
+      console.warn('🚫 TEST_resetAuthState: Only available in test environment')
+      return
+    }
+
+    console.log('🧪 TEST BACKDOOR: Resetting auth state')
+    this.state = {
+      user: null,
+      profile: null,
+      session: null,
+      isLoading: false,
+      isAuthenticated: false,
+      hasMarketingConsent: false
+    }
+
+    this.notifyListeners()
+    console.log('✅ TEST BACKDOOR: Auth state reset')
+  }
 }
 
 // Global instance

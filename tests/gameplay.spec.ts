@@ -1,4 +1,5 @@
-import { test, expect } from '@playwright/test';
+import { test, expect } from '@playwright/test'
+import { authenticateTestUser, setupAuthenticatedGame } from './test-utils';
 
 test.describe('Gameplay Tests', () => {
 
@@ -30,25 +31,19 @@ test.describe('Gameplay Tests', () => {
   });
 
   test('Game canvas appears after authentication', async ({ page }) => {
-    // Click GIOCA - should start game directly since we're "authenticated"
-    await page.click('text=GIOCA');
-    
-    // First check game container appears
-    await expect(page.locator('#game-container')).toBeVisible({ timeout: 15000 });
-    
-    // Then check canvas exists (may be initially hidden during loading)
-    await expect(page.locator('#game-container canvas')).toBeAttached({ timeout: 15000 });
+    // Use test backdoor to authenticate and start game
+    await setupAuthenticatedGame(page);
     
     // Check Phaser game initialized
     const gameExists = await page.evaluate(() => window.game !== undefined);
     expect(gameExists).toBe(true);
+    
+    // Check canvas is attached in DOM
+    await expect(page.locator('#game-container canvas')).toBeAttached();
   });
 
   test('Game scenes load properly', async ({ page }) => {
-    await page.click('.btn-primary');
-    const gameCanvas = page.locator('canvas');
-    const gameContainer = page.locator('#game-container');
-    await expect(gameCanvas.or(gameContainer)).toBeVisible({ timeout: 15000 });
+    await setupAuthenticatedGame(page);
     
     // Wait for game to initialize and check console for scene loading
     await page.waitForTimeout(3000);
@@ -63,10 +58,7 @@ test.describe('Gameplay Tests', () => {
   });
 
   test('Keyboard controls work in game', async ({ page }) => {
-    await page.click('.btn-primary');
-    const gameCanvas = page.locator('canvas');
-    const gameContainer = page.locator('#game-container');
-    await expect(gameCanvas.or(gameContainer)).toBeVisible({ timeout: 15000 });
+    await setupAuthenticatedGame(page);
     
     // Wait for game to fully load
     await page.waitForTimeout(5000);
