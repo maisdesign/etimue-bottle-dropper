@@ -91,3 +91,4 @@ test-*.html
 # Project-specific folders to exclude
 Screenshots/
 Performance/
+DEPLOYMENT_REMINDER.md
