@@ -9,17 +9,22 @@ test.describe('Authentication Tests', () => {
     await page.click('.btn-primary');
     
     // Wait for auth modal or game container
-    const authModal = page.locator('.auth-modal');
+    const authModal = page.locator('#auth-modal');
     const gameContainer = page.locator('#game-container');
     
-    // Should show either auth modal or go straight to game
-    await expect(authModal.or(gameContainer)).toBeVisible({ timeout: 10000 });
+    // Wait for either auth modal or game container to appear (not both)
+    // Due to async nature, wait for one to be visible
+    try {
+      await expect(authModal).toBeVisible({ timeout: 5000 });
+    } catch {
+      await expect(gameContainer).toBeVisible({ timeout: 5000 });
+    }
     
     // If auth modal appears, check for auth options
     if (await authModal.isVisible()) {
       // Look for any authentication buttons (text might vary)
-      const authButtons = page.locator('.auth-modal button');
-      await expect(authButtons.first()).toBeVisible();
+      const authButtons = page.locator('#auth-modal button');
+      await expect(authButtons.nth(0)).toBeVisible();
     }
   });
 
@@ -27,13 +32,13 @@ test.describe('Authentication Tests', () => {
     await page.goto('/');
     await page.click('.btn-primary');
     
-    const authModal = page.locator('.auth-modal');
+    const authModal = page.locator('#auth-modal');
     await expect(authModal).toBeVisible({ timeout: 10000 });
     
     // Look for any email-related button or option
     const emailOption = page.locator('button').filter({ hasText: /email|mail/i });
     if (await emailOption.count() > 0) {
-      await emailOption.first().click();
+      await emailOption.nth(0).click();
       await expect(page.locator('input[type="email"]')).toBeVisible();
     } else {
       // Skip this test if email auth not available
@@ -45,7 +50,7 @@ test.describe('Authentication Tests', () => {
     await page.goto('/');
     await page.click('.btn-primary');
     
-    const authModal = page.locator('.auth-modal');
+    const authModal = page.locator('#auth-modal');
     await expect(authModal).toBeVisible({ timeout: 10000 });
     
     // Look for Google auth button
@@ -54,7 +59,7 @@ test.describe('Authentication Tests', () => {
       // Listen for popup - Google OAuth will open new window
       const [popup] = await Promise.all([
         page.waitForEvent('popup'),
-        googleButton.first().click()
+        googleButton.nth(0).click()
       ]);
       
       // Check popup opened to Google domains
@@ -88,7 +93,7 @@ test.describe('Authentication Tests', () => {
     
     // This is a conditional test
     if (await consentModal.count() > 0) {
-      await expect(consentModal.first()).toBeVisible();
+      await expect(consentModal.nth(0)).toBeVisible();
     } else {
       // Skip if consent flow not triggered
       console.log('Consent modal not found - this may be expected');

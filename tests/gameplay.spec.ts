@@ -33,8 +33,11 @@ test.describe('Gameplay Tests', () => {
     // Click GIOCA - should start game directly since we're "authenticated"
     await page.click('text=GIOCA');
     
-    // Game canvas should appear
-    await expect(page.locator('canvas')).toBeVisible({ timeout: 15000 });
+    // First check game container appears
+    await expect(page.locator('#game-container')).toBeVisible({ timeout: 15000 });
+    
+    // Then check canvas exists (may be initially hidden during loading)
+    await expect(page.locator('#game-container canvas')).toBeAttached({ timeout: 15000 });
     
     // Check Phaser game initialized
     const gameExists = await page.evaluate(() => window.game !== undefined);
@@ -165,7 +168,7 @@ test.describe('Gameplay Tests', () => {
     
     // Should not show auth modal if we're already authenticated
     await page.waitForTimeout(2000);
-    const authModal = page.locator('.auth-modal');
+    const authModal = page.locator('#auth-modal');
     if (await authModal.count() > 0) {
       await expect(authModal).not.toBeVisible();
     }

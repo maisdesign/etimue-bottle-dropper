@@ -28,7 +28,7 @@ test.describe('Etimuè Bottle Dropper Game Tests', () => {
     await page.click('#character-mascot');
     
     // Check character selection appears
-    await expect(page.locator('.character-option')).first().toBeVisible({ timeout: 10000 });
+    await expect(page.locator('.character-option').nth(0)).toBeVisible({ timeout: 10000 });
     
     // Check multiple character options are available
     const characterOptions = page.locator('.character-option');
@@ -41,14 +41,25 @@ test.describe('Etimuè Bottle Dropper Game Tests', () => {
     // Initial should show play button
     await expect(page.locator('.btn-primary')).toBeVisible();
     
+    // Get initial button text
+    const initialButtonText = await page.locator('.btn-primary').textContent();
+    
     // Check language toggle exists
-    await expect(page.locator('.lang .chip')).first().toBeVisible();
+    await expect(page.locator('.lang .chip').nth(0)).toBeVisible();
     
     // Click language toggle (first chip)
-    await page.locator('.lang .chip').first().click();
+    await page.locator('.lang .chip').nth(0).click();
     
-    // Verify language toggle worked (button should still be visible)
+    // Wait for language change to complete
+    await page.waitForTimeout(500);
+    
+    // Verify language toggle worked - button should still be visible with potentially different text
     await expect(page.locator('.btn-primary')).toBeVisible();
+    
+    // Button text may have changed (IT/EN switch)
+    const newButtonText = await page.locator('.btn-primary').textContent();
+    // Just verify button still exists after language change
+    expect(newButtonText).toBeTruthy();
   });
 
   test('Auth button appears and functions', async ({ page }) => {
@@ -67,7 +78,7 @@ test.describe('Etimuè Bottle Dropper Game Tests', () => {
     
     // Should open auth modal or game depending on auth state
     // We'll check for either auth modal or game start
-    const authModal = page.locator('.auth-modal');
+    const authModal = page.locator('#auth-modal');
     const gameCanvas = page.locator('canvas');
     
     // One of these should appear
@@ -89,7 +100,7 @@ test.describe('Etimuè Bottle Dropper Game Tests', () => {
     await page.click('.btn-primary');
     
     // Should show auth modal or game container
-    const authModal = page.locator('.auth-modal');
+    const authModal = page.locator('#auth-modal');
     const gameContainer = page.locator('#game-container');
     
     // One of these should appear
