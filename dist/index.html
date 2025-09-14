@@ -1108,6 +1108,13 @@
         const authStatusText = document.getElementById('auth-status-text');
         const authStatusContainer = document.getElementById('auth-status');
         
+        console.log('🔄 updateAuthStatus called:', {
+          isAuthenticated: authState.isAuthenticated,
+          profile: authState.profile,
+          user: authState.user?.email,
+          statusElement: !!authStatusText
+        });
+        
         if (authState.isAuthenticated) {
           // Try multiple sources for display name
           const username = (authState.profile && authState.profile.username) || 
@@ -1115,16 +1122,21 @@
                          (authState.user && authState.user.user_metadata && authState.user.user_metadata.full_name) ||
                          (authState.user && authState.user.email && authState.user.email.split('@')[0]) ||
                          'Player';
+          
+          console.log('✅ Setting username to:', username);
           if (authStatusText) {
             authStatusText.textContent = username;
           }
           authStatusContainer.title = currentLang === 'it' ? 'Clicca per opzioni profilo' : 'Click for profile options';
         } else {
+          console.log('❌ User not authenticated, showing login');
           if (authStatusText) {
             authStatusText.textContent = currentLang === 'it' ? 'Accedi' : 'Login';
           }
           authStatusContainer.title = currentLang === 'it' ? 'Accedi per giocare' : 'Login to play';
         }
+      } else {
+        console.log('⚠️ authManager not available for updateAuthStatus');
       }
     }
 
@@ -1401,14 +1413,31 @@
         
       }
       
-      // Update auth status when available
+      // Update auth status when available - more aggressive timing
       setTimeout(() => {
-        updateAuthStatus(); // Update homepage status
+        updateAuthStatus(); // Initial update
+        
         // Subscribe to auth changes if authManager is available
         if (window.authManager) {
-          window.authManager.subscribe(() => updateAuthStatus()); // Update homepage status
+          window.authManager.subscribe(() => {
+            console.log('🔄 Auth state changed, updating status...');
+            updateAuthStatus();
+          });
+          
+          // Force periodic updates for first 10 seconds (handle race conditions)
+          let attempts = 0;
+          const forceUpdate = setInterval(() => {
+            attempts++;
+            console.log(`🔄 Force update auth status (attempt ${attempts})`);
+            updateAuthStatus();
+            
+            if (attempts >= 5 || (window.authManager && window.authManager.getState().isAuthenticated)) {
+              clearInterval(forceUpdate);
+              console.log('✅ Auth status updates stabilized');
+            }
+          }, 2000);
         }
-      }, 1000);
+      }, 500); // Reduced initial delay
       
       console.log('🏠 Homepage initialized');
     });
