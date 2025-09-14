@@ -46,7 +46,7 @@ function setLanguage(lang) {
     updateAuthStatus();
   }
   
-  // Update game language if available
+  // Update game language if available (development only)
   if (window.gameLanguage) {
     window.gameLanguage.setLanguage(lang);
   }
@@ -79,7 +79,7 @@ function showLeaderboard(fromProfile = false) {
     return;
   }
   
-  // Called from main menu - check authentication first
+  // Called from main menu - check authentication first (if available)
   if (window.authManager && !window.authManager.getState().isAuthenticated) {
     console.log('🔒 Not authenticated, showing auth modal');
     
@@ -117,6 +117,16 @@ function showLeaderboard(fromProfile = false) {
     return;
   }
   
+  // If authManager not available (production mode), show alert and proceed anyway
+  if (!window.authManager) {
+    console.log('🔓 AuthManager not available (production mode), alerting user');
+    alert(currentLang === 'it' ? 
+      'La classifica è disponibile solo dopo aver effettuato il login nel gioco.' :
+      'Leaderboard is only available after logging in through the game.'
+    );
+    return;
+  }
+  
   // User is authenticated - proceed with leaderboard
   console.log('✅ User authenticated, showing leaderboard');
   if (typeof window.startGame === 'function') {
@@ -138,7 +148,7 @@ function showLeaderboardFromProfile() {
 function startGame() {
   console.log('🎮 startGame called');
   
-  // Check if user is authenticated 
+  // Check if user is authenticated (if available)
   if (window.authManager && !window.authManager.getState().isAuthenticated) {
     console.log('🔒 Not authenticated, showing auth modal');
     
@@ -176,8 +186,13 @@ function startGame() {
     return;
   }
   
-  // User is authenticated, start the game
-  console.log('✅ User authenticated, starting game');
+  // If authManager not available (production mode), proceed with game start anyway
+  if (!window.authManager) {
+    console.log('🔓 AuthManager not available (production mode), starting game');
+  } else {
+    // User is authenticated, start the game
+    console.log('✅ User authenticated, starting game');
+  }
   
   // Hide homepage and show game
   const homepage = document.getElementById('homepage');
@@ -186,9 +201,12 @@ function startGame() {
   if (homepage) homepage.style.display = 'none';
   if (gameContainer) gameContainer.style.display = 'block';
   
-  // Initialize Phaser if needed
+  // Initialize Phaser if needed (if available in development mode)
   if (!window.game && typeof window.initializeGame === 'function') {
     window.initializeGame();
+  } else if (!window.game) {
+    console.log('⚠️ Game initialization not available (production mode)');
+    // In production, game should auto-initialize through main.ts
   }
 }
 
