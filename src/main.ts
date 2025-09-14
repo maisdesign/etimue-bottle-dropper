@@ -95,21 +95,21 @@ async function initGame() {
   // Create Phaser game
   const game = new Phaser.Game(config)
   
-  // Make game globally accessible for debugging and homepage integration
-  ;(window as any).game = game
-  
-  // Expose authManager for testing (only in non-production environments)
-  ;(window as any).gameInstance = game
-  ;(window as any).authManager = authManager
-  
-  if (window.location.hostname === 'localhost' || window.location.hostname.includes('localhost')) {
-    console.log('🧪 TEST MODE: authManager exposed to window for testing')
+  // Make game globally accessible for debugging and homepage integration (development only)
+  if (import.meta.env.MODE !== 'production') {
+    ;(window as any).game = game
+    ;(window as any).gameInstance = game
+    ;(window as any).authManager = authManager
+    ;(window as any).i18n = i18n
+    ;(window as any).AuthModal = AuthModal
+    ;(window as any).characterManager = characterManager
+    ;(window as any).updateManager = updateManager
+    ;(window as any).AuthGate = AuthGate
+    
+    if (window.location.hostname === 'localhost' || window.location.hostname.includes('localhost')) {
+      console.log('🧪 TEST MODE: authManager exposed to window for testing')
+    }
   }
-  ;(window as any).i18n = i18n
-  ;(window as any).AuthModal = AuthModal
-  ;(window as any).characterManager = characterManager
-  ;(window as any).updateManager = updateManager
-  ;(window as any).AuthGate = AuthGate
   
   // AuthGate available but not creating always-visible button (conflicts with homepage)
   // AuthGate.createAlwaysVisibleLoginButton()

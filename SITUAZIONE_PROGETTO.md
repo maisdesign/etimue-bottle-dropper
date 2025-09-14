@@ -1,5 +1,5 @@
 # SITUAZIONE PROGETTO - ETIMUÈ BOTTLE DROPPER
-*Ultimo aggiornamento: 14 Settembre 2025 - 18:45*
+*Ultimo aggiornamento: 14 Settembre 2025 - 18:51 - INIZIANDO FIX WINDOW GLOBALS*
 
 ## 🎯 STATO ATTUALE - VERSIONE v1.0.11 - CRITICAL BUGS FIXED
 
@@ -826,3 +826,77 @@ Il **Score Fallback è il problema più serio** perché:
 7. **Alert Replacement**: Non-blocking error surfaces
 
 **CONCLUSION**: Il code review ha identificato problemi seri che richiedono valutazione attenta prima dell'implementazione.
+
+---
+
+## 🔧 IMPLEMENTAZIONE FIX CRITICI - SESSION LOG (14 SETTEMBRE 2025 - 19:00)
+
+### 📋 STRATEGIA: Fix Incrementali con Documentazione
+
+**Approccio scelto**: Implementare solo fix SAFE, documentare ogni step per possibili interruzioni
+
+### ✅ FIX 1: WINDOW GLOBALS PROTECTION (COMPLETATO)
+**Status**: IMPLEMENTED - Modificato src/main.ts:99-112
+**Risk Assessment**: ✅ LOW RISK - Non breaking change
+**Problema**: `window.game`, `window.authManager` etc. esposti anche in produzione
+**Soluzione**: Environment-based conditional exposure
+
+**Linee specifiche da modificare in src/main.ts**:
+- Line 99: `(window as any).game = game`
+- Line 102-103: `(window as any).gameInstance`, `(window as any).authManager`  
+- Line 108-112: `(window as any).i18n`, `AuthModal`, `characterManager`, etc.
+
+**Implementazione prevista**:
+```typescript
+// Prima: (window as any).game = game (sempre)
+// Dopo: if (import.meta.env.MODE !== 'production') { (window as any).game = game }
+```
+
+**Next Steps se sessione interrotta**:
+1. Controllare quali window globals sono stati protetti
+2. Testare che development mode funzioni ancora
+3. Verificare che production non esponga oggetti sensibili
+
+### 🚨 FIX 2: SCORE FALLBACK SECURITY (PLANNED) 
+**Status**: EVALUATION PHASE
+**Risk Assessment**: ⚠️ HIGH RISK - Può rompere UX se Edge Function fallisce
+**Problema**: Fallback bypassa completamente anti-cheat
+**Soluzione pianificata**: Development-only fallback
+
+### 🎨 FIX 3: CSS FALLBACKS (PLANNED)
+**Status**: LOW PRIORITY
+**Risk Assessment**: ✅ SAFE - Solo miglioramenti progressivi  
+**Problema**: backdrop-filter senza fallback per browser vecchi
+
+---
+
+## 🚦 SESSION INTERRUPTION RECOVERY PLAN
+
+**Se la sessione viene interrotta durante l'implementazione**:
+
+1. **Controllare ultimo commit**: Vedere quali fix sono stati applicati
+2. **Status check**: `git status` per vedere file modificati non committati  
+3. **File priority**: Completare fix Window Globals prima di altri
+4. **Testing required**: Ogni fix richiede `npm run build` e test rapido
+5. **Rollback plan**: `git reset --hard HEAD` se qualcosa non funziona
+
+**File che DEVONO rimanere consistenti**:
+- `src/main.ts` - Non lasciare a metà protezioni
+- Qualsiasi file modificato deve essere committato o ripristinato
+
+---
+
+## ⚡ COMMIT TRACKING
+
+**Commit pianificati per questa sessione**:
+1. `FIX Window Globals protection - Environment-based exposure`
+2. `FIX Score Fallback security - Development-only (se implementato)`
+3. `FIX CSS backdrop-filter fallbacks (se implementato)`
+
+**Ogni commit includerà**:
+- Descrizione precisa del problema risolto
+- File modificati e motivazione
+- Test results (almeno build successful)
+- Impact assessment
+
+**READY TO START IMPLEMENTATION**
