@@ -649,3 +649,180 @@ build: {
 5. **Inline code** senza error handling
 
 **QUESTA SESSIONE HA DIMOSTRATO L'IMPORTANZA DI SYSTEMATIC DEBUGGING E RESILIENT ARCHITECTURE.**
+
+---
+
+## 🔍 NUOVO CODE REVIEW REPORT (14 SETTEMBRE 2025 - 22:27)
+
+### 📋 FONTE: Screenshots/code-review-report.md
+**Generato da**: Altro chatbot (code review statico)
+**Scope**: Analisi statica del codice, nessuna modifica ai file
+
+### 🚨 PROBLEMI CRITICI IDENTIFICATI
+
+#### ⚠️ CRITICO 1: Hard-coded Supabase Keys
+**File**: `vite.config.ts:9-12`
+**Problema**: 
+```typescript
+'import.meta.env.VITE_SUPABASE_ANON_KEY': JSON.stringify(process.env.VITE_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...')
+```
+**Rischio**: Anche se anon key è pubblica, hardcoding nel codice:
+- Incoraggia misuso delle chiavi
+- Rende fragile la separazione degli ambienti
+- Espone credentials nel source control
+
+**Fix Suggerito**: Rimuovere defaults, richiedere env vars obbligatorie
+
+#### ⚠️ CRITICO 2: Fallback Score Submission Bypassa Sicurezza
+**File**: `src/net/supabaseClient.ts` (metodo `_submitScoreDirect`)
+**Problema**: Il nostro fix di fallback automatico permette di scrivere punteggi direttamente dal client
+**Rischio**: **UNDERMINA COMPLETAMENTE L'ANTI-CHEAT** che avevamo implementato
+**Fix Suggerito**: Limitare fallback solo in development o rimuovere in produzione
+
+#### ⚠️ CRITICO 3: Window Globals Esposti in Produzione
+**File**: `src/main.ts`, `src/utils/Logger.ts`, etc.
+**Problema**: `window.game`, `window.authManager`, `window.gameInstance` etc. esposti anche in produzione
+**Rischio**: Superficie di attacco aumentata - possibile manipolazione da console/script 3rd party
+**Fix Suggerito**: Esporre solo in development mode
+
+### 🔶 PROBLEMI HIGH PRIORITY
+
+#### PWA Update Flow Troppo Aggressivo
+**File**: `src/utils/UpdateManager.ts`
+**Problema**: Reload immediato su `controllerchange` può interrompere gameplay
+**Fix**: Ritardare reload fino a idle state
+
+#### CSP Permissivo per WASM
+**File**: `netlify.toml`
+**Problema**: `'wasm-unsafe-eval'` permette eval ovunque
+**Fix**: Verificare se Phaser/Vite lo richiede davvero
+
+### 🔸 PROBLEMI MEDI E MINORI
+
+- **Mojibake/Encoding**: `Etimuè` → `Etimu�` in vari file
+- **backdrop-filter**: Manca fallback per browser vecchi
+- **Console logs**: Molti `console.*` diretti invece che tramite Logger
+- **Alerts**: `alert()` bloccante in init flow
+- **Classi monolitiche**: AuthModal e scene molto lunghe
+
+---
+
+## ⚖️ ANALISI RISCHI/BENEFICI DEI FIX CRITICI
+
+### 🎯 CRITICO 1: Rimozione Hard-coded Supabase Keys
+
+#### ❌ RISCHI MOLTO ALTI:
+1. **ROTTURA COMPLETA DEL GIOCO**: Senza chiavi, il gioco non può connettersi a Supabase
+2. **Build Failure**: Se env vars non sono settate, il build fallisce
+3. **Deployment Complications**: Netlify deve avere le env vars configurate
+4. **Development Workflow**: Sviluppatori devono configurare `.env` locale
+
+#### ✅ BENEFICI SICUREZZA:
+1. **Environment Separation**: Dev/staging/prod con chiavi diverse
+2. **Security Best Practice**: No credentials nel source code
+3. **Rotation Capability**: Più facile ruotare chiavi se compromesse
+
+#### 💡 WORKAROUND SUGGERITO:
+```typescript
+// Opzione 1: Fail gracefully
+const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
+const SUPABASE_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY;
+
+if (!SUPABASE_URL || !SUPABASE_KEY) {
+  console.error('❌ Supabase configuration missing. Check environment variables.');
+  // Show user-friendly error instead of crash
+}
+
+// Opzione 2: Keep fallback ma con warning
+const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || DEFAULT_URL;
+if (import.meta.env.VITE_SUPABASE_URL !== DEFAULT_URL) {
+  console.warn('⚠️ Using fallback Supabase configuration');
+}
+```
+
+### 🎯 CRITICO 2: Fallback Score Submission
+
+#### ❌ RISCHI ALTISSIMI DEL NOSTRO FIX ATTUALE:
+1. **BYPASSA ANTI-CHEAT**: Chiunque può inviare punteggi falsi disabilitando Edge Function
+2. **Server-side Validation Inutile**: Il nostro lavoro di sicurezza è vanificato
+3. **Rate Limiting Bypassato**: Il fallback non ha rate limiting
+4. **Timestamp Validation Ignorata**: Possibili replay attacks
+
+#### ✅ BENEFICI UX:
+1. **Resilienza**: Gioco funziona anche se Edge Function offline
+2. **User Experience**: Nessun punteggio perso per problemi server
+
+#### 💡 WORKAROUND SICURO:
+```typescript
+// Opzione 1: Solo development
+if (import.meta.env.MODE === 'development') {
+  console.warn('🔄 Using fallback score submission (DEV ONLY)');
+  return await this._submitScoreDirect(userId, score, runSeconds);
+}
+return null; // Fail in production
+
+// Opzione 2: Feature flag con rate limiting
+if (ENABLE_SCORE_FALLBACK && await this.checkRateLimit(userId)) {
+  return await this._submitScoreDirect(userId, score, runSeconds);
+}
+```
+
+### 🎯 CRITICO 3: Window Globals
+
+#### ❌ RISCHI MEDI:
+1. **Console Manipulation**: `window.authManager.signIn()` da console
+2. **3rd Party Scripts**: Possibile interference  
+3. **Debug Surface**: Più superficie esposta per debugging malizioso
+
+#### ✅ BENEFICI DEVELOPMENT:
+1. **Debugging**: Essenziale per development e testing
+2. **Integration Testing**: Playwright può accedere agli oggetti
+3. **User Support**: Console access per troubleshooting
+
+#### 💡 WORKAROUND BILANCIATO:
+```typescript
+if (import.meta.env.MODE !== 'production') {
+  (window as any).game = game;
+  (window as any).authManager = authManager;
+}
+```
+
+---
+
+## 📊 RACCOMANDAZIONI FINALI
+
+### 🚫 NON IMPLEMENTARE ORA (Rischi Troppo Alti):
+1. **Rimozione Supabase Keys**: RISCHIOSISSIMO - potrebbe rompere tutto
+2. **Rimozione Score Fallback**: DA BILANCIARE - security vs UX
+
+### ✅ SAFE TO IMPLEMENT:
+1. **Window Globals Gating**: Rischio basso, benefici chiari
+2. **Console Logs Cleanup**: Non breaking changes
+3. **CSS Fallbacks**: Solo miglioramenti progressivi
+
+### ⚠️ PRIORITY ASSESSMENT:
+Il **Score Fallback è il problema più serio** perché:
+- Rende inutile tutto il lavoro anti-cheat fatto
+- È un vero security hole in produzione  
+- Ma rimuoverlo può peggiorare UX se Edge Function ha problemi
+
+**SUGGERIMENTO**: Implementare solo il **Window Globals fix** come primo passo sicuro, e poi valutare gli altri.
+
+---
+
+## 📝 AZIONI DOCUMENTATE PER SESSIONE FUTURA
+
+### Priority 1 (Sicurezza Immediata):
+1. **Score Fallback Security**: Implementare feature flag o development-only
+2. **Window Globals Protection**: Environment-based exposure
+
+### Priority 2 (Configuration Safety):  
+3. **Supabase Keys Strategy**: Valutare approccio sicuro che non rompa il deployment
+4. **Environment Variables Setup**: Configurare Netlify env vars se necessario
+
+### Priority 3 (Code Quality):
+5. **Encoding Issues**: Fixare mojibake `Etimuè` → `Etimu�`
+6. **CSS Fallbacks**: backdrop-filter compatibility
+7. **Alert Replacement**: Non-blocking error surfaces
+
+**CONCLUSION**: Il code review ha identificato problemi seri che richiedono valutazione attenta prima dell'implementazione.
