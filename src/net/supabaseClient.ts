@@ -174,6 +174,8 @@ export const scoreService = {
         gameEndTimestamp: gameEndTimestamp || Date.now()
       }
 
+      console.log('📤 Calling submit-score with:', submissionData)
+
       // Call Supabase Edge Function for server-side validation
       const { data, error } = await supabase.functions.invoke('submit-score', {
         body: submissionData,
@@ -184,6 +186,12 @@ export const scoreService = {
 
       if (error) {
         console.error('❌ Edge Function error:', error)
+        console.error('❌ Error details:', {
+          name: error.name,
+          message: error.message,
+          context: error.context,
+          details: error.details
+        })
         return null
       }
 
