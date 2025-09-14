@@ -96,13 +96,13 @@ serve(async (req) => {
       )
     }
 
-    // Validation 3: Run duration (45-180 seconds with tolerance for bonuses)
-    if (runSeconds < 45 || runSeconds > 180) {
+    // Validation 3: Run duration (5-180 seconds, consistent with client)
+    if (runSeconds < 5 || runSeconds > 180) {
       return new Response(
         JSON.stringify({ 
           success: false, 
           error: 'Invalid game duration',
-          details: `Duration: ${runSeconds}s (allowed: 45-180s)`
+          details: `Duration: ${runSeconds}s (allowed: 5-180s)`
         }),
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       )

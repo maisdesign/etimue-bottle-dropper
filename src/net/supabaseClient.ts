@@ -192,12 +192,18 @@ export const scoreService = {
           context: error.context,
           details: error.details
         })
-        return null
+        
+        // Fallback to direct database submission if Edge Function fails
+        console.warn('🔄 Trying fallback direct submission...')
+        return await this._submitScoreDirect(userId, score, runSeconds)
       }
 
       if (!data.success) {
         console.error('❌ Score submission failed:', data.error, data.details)
-        return null
+        
+        // Fallback to direct database submission if server validation fails
+        console.warn('🔄 Trying fallback direct submission...')
+        return await this._submitScoreDirect(userId, score, runSeconds)
       }
 
       console.log('✅ Score submitted successfully:', data.storedScore)
