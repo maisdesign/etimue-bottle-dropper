@@ -117,15 +117,7 @@ function showLeaderboard(fromProfile = false) {
     return;
   }
   
-  // If authManager not available (production mode), show alert and proceed anyway
-  if (!window.authManager) {
-    console.log('🔓 AuthManager not available (production mode), alerting user');
-    alert(currentLang === 'it' ? 
-      'La classifica è disponibile solo dopo aver effettuato il login nel gioco.' :
-      'Leaderboard is only available after logging in through the game.'
-    );
-    return;
-  }
+  // AuthManager should always be available now
   
   // User is authenticated - proceed with leaderboard
   console.log('✅ User authenticated, showing leaderboard');
@@ -186,13 +178,8 @@ function startGame() {
     return;
   }
   
-  // If authManager not available (production mode), proceed with game start anyway
-  if (!window.authManager) {
-    console.log('🔓 AuthManager not available (production mode), starting game');
-  } else {
-    // User is authenticated, start the game
-    console.log('✅ User authenticated, starting game');
-  }
+  // User is authenticated, start the game
+  console.log('✅ User authenticated, starting game');
   
   // Hide homepage and show game
   const homepage = document.getElementById('homepage');
