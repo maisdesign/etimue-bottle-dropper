@@ -341,7 +341,8 @@
       }
     }
   </style>
-  <script type="module" crossorigin src="./assets/index-B00N4j_m.js"></script>
+  <script type="module" crossorigin src="./assets/main-B9RauZ5D.js"></script>
+  <link rel="modulepreload" crossorigin href="./assets/homepage-GEQktT3w.js">
 <link rel="manifest" href="./manifest.webmanifest"><script id="vite-plugin-pwa:register-sw" src="./registerSW.js"></script></head>
 <body>
   <div class="frame" id="homepage">
@@ -589,46 +590,47 @@
       });
     }
 
-    function setLanguage(lang) {
-      currentLang = lang;
-      
-      // Update language chips
-      document.querySelectorAll('.lang .chip').forEach(chip => {
-        chip.setAttribute('aria-selected', 'false');
-      });
-      event.target.setAttribute('aria-selected', 'true');
-      
-      // Update flag
-      const flag = document.getElementById('current-lang');
-      if (flag) {
-        flag.textContent = lang === 'it' ? '🇮🇹' : '🇺🇸';
-      }
-      
-      // Translate page
-      translatePage();
-      
-      // Update click hint text based on language
-      const clickHint = document.getElementById('click-hint');
-      if (clickHint) {
-        clickHint.textContent = lang === 'it' ? '🎭 Cambia' : '🎭 Change';
-      }
-      
-      // Update Charlie tooltip
-      const charlieLink = document.querySelector('a[title*="Clicca per cambiare"]');
-      if (charlieLink) {
-        charlieLink.title = lang === 'it' ? 
-          '🎭 Clicca per cambiare personaggio' : 
-          '🎭 Click to change character';
-      }
-      
-      // 🔥 CRITICAL FIX: Update auth status after language change
-      updateAuthStatus();
-      
-      // Update game language if available
-      if (window.gameLanguage) {
-        window.gameLanguage.setLanguage(lang);
-      }
-    }
+    // DEPRECATED: Replaced by /src/homepage.js to fix event.target bug
+    // function setLanguage(lang) {
+    //   currentLang = lang;
+    //   
+    //   // Update language chips
+    //   document.querySelectorAll('.lang .chip').forEach(chip => {
+    //     chip.setAttribute('aria-selected', 'false');
+    //   });
+    //   event.target.setAttribute('aria-selected', 'true'); // BUG: event not defined
+    //   
+    //   // Update flag
+    //   const flag = document.getElementById('current-lang');
+    //   if (flag) {
+    //     flag.textContent = lang === 'it' ? '🇮🇹' : '🇺🇸';
+    //   }
+    //   
+    //   // Translate page
+    //   translatePage();
+    //   
+    //   // Update click hint text based on language
+    //   const clickHint = document.getElementById('click-hint');
+    //   if (clickHint) {
+    //     clickHint.textContent = lang === 'it' ? '🎭 Cambia' : '🎭 Change';
+    //   }
+    //   
+    //   // Update Charlie tooltip
+    //   const charlieLink = document.querySelector('a[title*="Clicca per cambiare"]');
+    //   if (charlieLink) {
+    //     charlieLink.title = lang === 'it' ? 
+    //       '🎭 Clicca per cambiare personaggio' : 
+    //       '🎭 Click to change character';
+    //   }
+    //   
+    //   // 🔥 CRITICAL FIX: Update auth status after language change
+    //   updateAuthStatus();
+    //   
+    //   // Update game language if available
+    //   if (window.gameLanguage) {
+    //     window.gameLanguage.setLanguage(lang);
+    //   }
+    // } // END DEPRECATED setLanguage
 
     function toggleLanguage() {
       setLanguage(currentLang === 'it' ? 'en' : 'it');

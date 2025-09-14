@@ -12,6 +12,12 @@ export default defineConfig({
   build: {
     outDir: 'dist',
     assetsDir: 'assets',
+    rollupOptions: {
+      input: {
+        main: path.resolve(__dirname, 'index.html'),
+        homepage: path.resolve(__dirname, 'src/homepage.js')
+      }
+    }
   },
   server: {
     port: 3000
