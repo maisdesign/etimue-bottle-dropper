@@ -66,10 +66,13 @@ function showLeaderboard(fromProfile = false) {
       closeProfileMenu();
     }
     
-    // Start Phaser and navigate to leaderboard
-    if (typeof window.startGame === 'function') {
+    // Check if game is already running
+    if (window.game && window.game.scene) {
+      // Game already running, go directly to leaderboard
+      window.game.scene.start('LeaderboardScene');
+    } else if (typeof window.startGame === 'function') {
+      // Game not running, start it and then navigate to leaderboard
       window.startGame();
-      // Wait for game to load, then navigate to leaderboard
       setTimeout(() => {
         if (window.game?.scene) {
           window.game.scene.start('LeaderboardScene');
@@ -121,7 +124,13 @@ function showLeaderboard(fromProfile = false) {
   
   // User is authenticated - proceed with leaderboard
   console.log('✅ User authenticated, showing leaderboard');
-  if (typeof window.startGame === 'function') {
+  
+  // Check if game is already running
+  if (window.game && window.game.scene) {
+    // Game already running, go directly to leaderboard
+    window.game.scene.start('LeaderboardScene');
+  } else if (typeof window.startGame === 'function') {
+    // Game not running, start it and then navigate to leaderboard
     window.startGame();
     setTimeout(() => {
       if (window.game?.scene) {
@@ -139,6 +148,13 @@ function showLeaderboardFromProfile() {
 // Game start function
 function startGame() {
   console.log('🎮 startGame called');
+  
+  // If game is already running, ensure we start from GameScene (not stuck in LeaderboardScene)
+  if (window.game && window.game.scene) {
+    console.log('🎮 Game already running, starting GameScene');
+    window.game.scene.start('GameScene');
+    return;
+  }
   
   // Check if user is authenticated (if available)
   if (window.authManager && !window.authManager.getState().isAuthenticated) {

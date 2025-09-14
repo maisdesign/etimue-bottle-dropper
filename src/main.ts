@@ -99,11 +99,11 @@ async function initGame() {
   ;(window as any).authManager = authManager
   ;(window as any).AuthModal = AuthModal
   ;(window as any).i18n = i18n
+  ;(window as any).game = game // Needed for homepage navigation and scene control
   
   // Development-only debugging objects
   if (import.meta.env.MODE !== 'production') {
-    ;(window as any).game = game
-    ;(window as any).gameInstance = game
+    ;(window as any).gameInstance = game // Alias for development debugging
     ;(window as any).characterManager = characterManager
     ;(window as any).updateManager = updateManager
     ;(window as any).AuthGate = AuthGate
