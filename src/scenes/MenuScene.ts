@@ -743,36 +743,72 @@ export class MenuScene extends Phaser.Scene {
     }
   }
 
+  private safeSetText(object: any, text: string) {
+    try {
+      if (object && object.setText) {
+        object.setText(text)
+      }
+    } catch (error) {
+      // Silently ignore errors from destroyed objects
+    }
+  }
+
+  private safeSetStyle(object: any, style: any) {
+    try {
+      if (object && object.setStyle) {
+        object.setStyle(style)
+      }
+    } catch (error) {
+      // Silently ignore errors from destroyed objects
+    }
+  }
+
+  private safeSetAlpha(object: any, alpha: number) {
+    try {
+      if (object && object.setAlpha) {
+        object.setAlpha(alpha)
+      }
+    } catch (error) {
+      // Silently ignore errors from destroyed objects
+    }
+  }
+
   private updateAuthStatus() {
     const authState = authManager.getState()
-    
+
+    // Safety check: don't update if scene objects have been destroyed
+    if (!this.authStatusText || !this.playButton || !this.headerAuthButton) {
+      return
+    }
+
     if (authState.isLoading) {
-      this.authStatusText.setText('Loading...')
-      this.playButton.setAlpha(0.5)
-      this.headerAuthButton.setText('Loading...')
-      this.headerAuthButton.setStyle({ backgroundColor: '#6c757d' })
+      this.safeSetText(this.authStatusText, 'Loading...')
+      this.safeSetAlpha(this.playButton, 0.5)
+      this.safeSetText(this.headerAuthButton, 'Loading...')
+      this.safeSetStyle(this.headerAuthButton, { backgroundColor: '#6c757d' })
       return
     }
 
     if (authState.isAuthenticated) {
       const username = authState.profile?.username || 'Player'
-      this.authStatusText.setText(`Welcome, ${username}!`)
-      this.playButton.setAlpha(authState.hasMarketingConsent ? 1 : 0.5)
-      
+      this.safeSetText(this.authStatusText, `Welcome, ${username}!`)
+      this.safeSetAlpha(this.playButton, authState.hasMarketingConsent ? 1 : 0.5)
+
       // Update header button to show username
-      this.headerAuthButton.setText(username)
-      this.headerAuthButton.setStyle({ backgroundColor: '#28a745' })
-      
+      this.safeSetText(this.headerAuthButton, username)
+      this.safeSetStyle(this.headerAuthButton, { backgroundColor: '#28a745' })
+
       if (!authState.hasMarketingConsent) {
-        this.authStatusText.setText(`${this.authStatusText.text}\n(Newsletter subscription required to play)`)
+        const currentText = this.authStatusText?.text || `Welcome, ${username}!`
+        this.safeSetText(this.authStatusText, `${currentText}\n(Newsletter subscription required to play)`)
       }
     } else {
-      this.authStatusText.setText('Please sign in to play')
-      this.playButton.setAlpha(0.5)
+      this.safeSetText(this.authStatusText, 'Please sign in to play')
+      this.safeSetAlpha(this.playButton, 0.5)
       
       // Update header button to show login text
-      this.headerAuthButton.setText(t('auth.login'))
-      this.headerAuthButton.setStyle({ backgroundColor: '#007bff' })
+      this.safeSetText(this.headerAuthButton, t('auth.login'))
+      this.safeSetStyle(this.headerAuthButton, { backgroundColor: '#007bff' })
     }
   }
 

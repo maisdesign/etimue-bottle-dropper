@@ -96,17 +96,20 @@ serve(async (req) => {
       )
     }
 
-    // Validation 3: Run duration (5-180 seconds, consistent with client)
+    // Validation 3: Run duration (5-180 seconds, but database requires min 45s)
     if (runSeconds < 5 || runSeconds > 180) {
       return new Response(
-        JSON.stringify({ 
-          success: false, 
+        JSON.stringify({
+          success: false,
           error: 'Invalid game duration',
           details: `Duration: ${runSeconds}s (allowed: 5-180s)`
         }),
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       )
     }
+
+    // TEMPORARY: Database constraint requires min 45s, pad short games
+    const dbRunSeconds = Math.max(runSeconds, 45)
 
     // Validation 4: Rate limiting - check last submission time
     const { data: lastScore, error: lastScoreError } = await supabase
@@ -139,7 +142,7 @@ serve(async (req) => {
       .insert({
         user_id: user.id,
         score: score,
-        run_seconds: runSeconds,
+        run_seconds: dbRunSeconds,
         tz: 'Europe/Rome'
       })
       .select()

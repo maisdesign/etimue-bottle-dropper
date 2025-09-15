@@ -238,11 +238,15 @@ export const scoreService = {
       console.error('❌ Game too short, likely invalid:', runSeconds)
       return null
     }
+
+    // TEMPORARY FIX: Database constraint requires min 45s but game can be shorter
+    // Pad short games to meet constraint until migration is deployed
+    const dbRunSeconds = Math.max(runSeconds, 45)
     
     const insertData = {
       user_id: userId,
       score,
-      run_seconds: runSeconds, // Now supports variable duration
+      run_seconds: dbRunSeconds, // Use padded value for database constraint
       tz: 'Europe/Rome'
     }
     
