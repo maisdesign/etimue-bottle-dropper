@@ -9,15 +9,37 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - `npm run build` - Build for production (outputs to `dist/`)
 - `npm run preview` - Preview production build locally
 
-### CRITICAL DEPLOYMENT WORKFLOW
-**⚠️ ALWAYS FOLLOW THIS SEQUENCE FOR EVERY CHANGE:**
-1. Make code changes to source files
-2. Run `npm run build` to update dist/ folder
-3. Run `git add .` to stage ALL files (including dist/)
-4. Commit with descriptive message
-5. Push to deploy to Netlify (Netlify reads from dist/ folder)
+### 🚨 MANDATORY DEPLOYMENT RULES - NO EXCEPTIONS! 🚨
 
-**🚨 NEVER SKIP THE BUILD STEP** - Netlify only shows what's in the dist/ folder!
+**CLAUDE CODE MUST FOLLOW THESE RULES FOR EVERY SINGLE CHANGE:**
+
+**RULE #1: BUILD BEFORE COMMIT - ALWAYS!**
+```bash
+# MANDATORY sequence - NO SHORTCUTS:
+npm run build          # Update dist/ folder
+git add .              # Stage ALL files including dist/
+git commit -m "..."    # Commit with build
+git push               # Deploy to Netlify
+```
+
+**RULE #2: DIST/ FILES = NETLIFY LIVE SITE**
+- dist/ folder IS the live website on Netlify
+- Source files (src/) are for development only
+- Changes to src/ WITHOUT rebuilding dist/ = NO EFFECT ON LIVE SITE
+- You MUST run `npm run build` after ANY change to src/
+
+**RULE #3: VERIFICATION CHECKLIST**
+Before every commit, Claude MUST verify:
+- [ ] `npm run build` was executed
+- [ ] dist/ folder has new timestamp files
+- [ ] `git status` shows dist/ files as modified
+- [ ] All dist/ files are staged for commit
+
+**RULE #4: COMMIT MESSAGE MUST INCLUDE BUILD STATUS**
+Every commit message MUST confirm build was done:
+"✅ BUILD UPDATED: [description]" or fail the commit
+
+**🚨 BREAKING THESE RULES = BROKEN LIVE SITE! 🚨**
 
 ### Database Management
 Use the Supabase CLI for database operations:
