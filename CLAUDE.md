@@ -306,8 +306,9 @@ Other files are for the local version of the game
 - committa ogni modifica
 - ricordati di buildare ogni volta perché la versione online pesca dalla cartella dist
 - Lo sviluppo funziona in questo modo, tutti i file vanno qui: https://github.com/maisdesign/etimue-bottle-dropper\
-I file presenti nella cartella dist invece vanno qui: https://github.com/maisdesign/bottledropper\
-Perché il progetto Netlify ( https://astounding-rolypoly-fc5137.netlify.app/) mostra quello che è presente nella cartella dist
+🚨🚨🚨 ATTENZIONE: I file presenti nella cartella dist invece vanno qui: https://github.com/maisdesign/bottledropper2 🚨🚨🚨\
+⚠️ NON bottledropper MA bottledropper2 ⚠️\
+Perché il progetto Netlify ( https://etimuebottledropper.netlify.app/) mostra quello che è presente nella cartella dist del repo bottledropper2
 - 1)In homepage devono essere presenti       │
 │   questi pulsanti:\                          │
 │   2)Gioca -> se login eseguito fa partire    │
