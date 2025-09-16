@@ -152,6 +152,14 @@ function startGame() {
   // If game is already running, ensure we start from GameScene (not stuck in LeaderboardScene)
   if (window.game && window.game.scene) {
     console.log('🎮 Game already running, starting GameScene');
+
+    // CRITICAL: Still need to show the game container!
+    const homepage = document.getElementById('homepage');
+    const gameContainer = document.getElementById('game-container');
+
+    if (homepage) homepage.style.display = 'none';
+    if (gameContainer) gameContainer.style.display = 'block';
+
     window.game.scene.start('GameScene');
     return;
   }
