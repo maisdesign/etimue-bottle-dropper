@@ -722,7 +722,14 @@ export class MenuScene extends Phaser.Scene {
 
   private async showAuthModal() {
     try {
+      console.log('⚡ Loading AuthModal...')
+      const startTime = performance.now()
+
       const { AuthModal } = await import('@/ui/AuthModal')
+
+      const loadTime = performance.now() - startTime
+      console.log(`⚡ AuthModal loaded in ${loadTime.toFixed(2)}ms`)
+
       const authModal = new AuthModal(this)
       authModal.show()
     } catch (error) {

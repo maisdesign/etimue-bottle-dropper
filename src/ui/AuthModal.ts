@@ -374,9 +374,16 @@ export class AuthModal {
     try {
       this.showLoading(true)
       const redirectUrl = `${window.location.origin}/`
-      
+
       console.log(`🔐 Starting ${provider} OAuth...`)
       console.log('📍 Redirect URL:', redirectUrl)
+      console.log('📍 Current domain:', window.location.hostname)
+      console.log('📍 Full URL info:', {
+        origin: window.location.origin,
+        hostname: window.location.hostname,
+        href: window.location.href,
+        protocol: window.location.protocol
+      })
       
       // First attempt: Try popup/redirect (Supabase auto-detects best method)
       const { data, error } = await supabase.auth.signInWithOAuth({
@@ -387,6 +394,14 @@ export class AuthModal {
       })
 
       if (error) {
+        console.error(`❌ OAuth error details:`, {
+          message: error.message,
+          name: error.name,
+          status: (error as any).status,
+          code: (error as any).code,
+          details: (error as any).details
+        })
+
         // Check for popup blocked errors
         if (error.message.includes('popup') || error.message.includes('blocked')) {
           console.warn('⚠️ Popup blocked, user will be redirected instead')
@@ -394,6 +409,14 @@ export class AuthModal {
           // Supabase will handle the redirect automatically
           return
         }
+
+        // Check for 400 errors specifically
+        if (error.message.includes('400') || error.message.includes('Bad Request')) {
+          console.error('🚨 OAuth 400 Error - likely domain configuration issue')
+          this.showError('Authentication failed. Please contact support if this continues.')
+          return
+        }
+
         throw error
       }
 
