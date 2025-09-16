@@ -66,6 +66,28 @@ export class PreloadScene extends Phaser.Scene {
     playerGraphics.generateTexture('player', 80, 100)
     playerGraphics.destroy()
 
+    // Generate character-specific placeholders with different colors
+    const characterColors = {
+      charlie: 0x8B4513,   // Brown for punk cat
+      scrocca: 0xFF6347,   // Tomato for party cat
+      irlandese: 0x228B22  // Forest green for Irish cat
+    }
+
+    Object.entries(characterColors).forEach(([character, color]) => {
+      const charGraphics = this.add.graphics()
+      charGraphics.fillStyle(color)
+      charGraphics.fillRoundedRect(0, 0, 80, 100, 10)
+      // Add simple distinguishing features
+      charGraphics.fillStyle(0xFFFFFF)
+      charGraphics.fillCircle(25, 30, 8) // Left eye
+      charGraphics.fillCircle(55, 30, 8) // Right eye
+      charGraphics.fillStyle(0x000000)
+      charGraphics.fillCircle(25, 30, 4) // Left pupil
+      charGraphics.fillCircle(55, 30, 4) // Right pupil
+      charGraphics.generateTexture(`${character}_fallback`, 80, 100)
+      charGraphics.destroy()
+    })
+
     // Good bottle (craft beer brown)
     const goodBottleGraphics = this.add.graphics()
     goodBottleGraphics.fillStyle(0x8B4513)
@@ -210,11 +232,17 @@ export class PreloadScene extends Phaser.Scene {
     // Player characters - load all available characters
     const characters = ['charlie', 'scrocca', 'irlandese']
     const characterLoadStatus: { [key: string]: boolean } = {}
-    
+
     characters.forEach(character => {
-      this.load.image(character, `/characters/${character}.png`)
+      // Try both with and without leading slash for compatibility
+      this.load.image(character, `characters/${character}.png`)
       this.load.on(`filecomplete-image-${character}`, () => {
         characterLoadStatus[character] = true
+        console.log(`✅ Successfully loaded character: ${character}`)
+      })
+      this.load.on(`loaderror-image-${character}`, () => {
+        console.warn(`❌ Failed to load character: ${character}`)
+        characterLoadStatus[character] = false
       })
     })
 
@@ -304,14 +332,20 @@ export class PreloadScene extends Phaser.Scene {
     
     characters.forEach(character => {
       const exists = this.textures.exists(character)
+      const fallbackExists = this.textures.exists(`${character}_fallback`)
       charactersLoaded[character as keyof typeof charactersLoaded] = exists
-      
+
       if (!exists) {
-        if (playerExists) {
+        if (fallbackExists) {
+          // Use character-specific fallback
+          this.textures.addImage(character, this.textures.get(`${character}_fallback`).source[0].image)
+          logger.warn('TEXTURE_FALLBACK', `Created ${character} from fallback texture (real ${character} missing)`)
+        } else if (playerExists) {
+          // Fallback to generic player
           this.textures.addImage(character, this.textures.get('player').source[0].image)
-          logger.warn('TEXTURE_FALLBACK', `Created ${character} from player texture (${character} missing)`)
+          logger.warn('TEXTURE_FALLBACK', `Created ${character} from player texture (both ${character} and fallback missing)`)
         } else {
-          logger.error('TEXTURE_ERROR', `Both ${character} and player textures missing!`)
+          logger.error('TEXTURE_ERROR', `All ${character} textures missing!`)
         }
       } else {
         logger.info('TEXTURE_SUCCESS', `${character} texture loaded successfully`)

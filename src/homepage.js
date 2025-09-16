@@ -151,7 +151,7 @@ function startGame() {
   
   // If game is already running, ensure we start from GameScene (not stuck in LeaderboardScene)
   if (window.game && window.game.scene) {
-    console.log('🎮 Game already running, starting GameScene');
+    console.log('🎮 Game already running, checking if MenuScene is active');
 
     // CRITICAL: Still need to show the game container!
     const homepage = document.getElementById('homepage');
@@ -160,7 +160,19 @@ function startGame() {
     if (homepage) homepage.style.display = 'none';
     if (gameContainer) gameContainer.style.display = 'block';
 
-    window.game.scene.start('GameScene');
+    // FIX: Always go through MenuScene to avoid conflicts and ensure proper auth flow
+    console.log('🎮 Redirecting to MenuScene to handle game start properly');
+    window.game.scene.start('MenuScene');
+
+    // Set a flag to tell MenuScene to start the game immediately after auth check
+    setTimeout(() => {
+      const menuScene = window.game.scene.getScene('MenuScene');
+      if (menuScene && menuScene.scene.isActive()) {
+        // Trigger the GIOCA button programmatically to ensure proper auth flow
+        const event = new CustomEvent('homepageStartGame');
+        window.dispatchEvent(event);
+      }
+    }, 500);
     return;
   }
   

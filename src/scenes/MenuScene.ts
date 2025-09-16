@@ -87,6 +87,18 @@ export class MenuScene extends Phaser.Scene {
       this.checkConsentAfterOAuth(state)
     })
 
+    // Listen for homepage-triggered game start
+    const homepageGameStartHandler = () => {
+      console.log('🎮 Homepage requested game start via event')
+      this.startGame()
+    }
+    window.addEventListener('homepageStartGame', homepageGameStartHandler)
+
+    // Store handler for cleanup
+    this.events.once('shutdown', () => {
+      window.removeEventListener('homepageStartGame', homepageGameStartHandler)
+    })
+
     // Listen for language changes - DISABLED: causing username loss on header button
     // window.addEventListener('languageChanged', () => {
     //   this.scene.restart()
