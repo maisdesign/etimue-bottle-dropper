@@ -47,26 +47,50 @@ Use the Supabase CLI for database operations:
 - `supabase functions deploy submit-score` - Deploy score submission edge function
 - `supabase functions deploy mailchimp-subscribe` - Deploy newsletter subscription function
 
-## Project Status (as of September 7, 2025 - 03:00)
+## Project Status (as of September 16, 2025 - 05:30)
 
-**✅ CHARLIE IMPLEMENTATION COMPLETED** - Character selection system fully working and deployed.
+**🚨 CRITICAL ISSUES IDENTIFIED IN PRODUCTION TESTING** - Multiple deployment and initialization problems found.
 
-### Recently Completed Features
+### CRITICAL SESSION NOTES (September 16, 2025 - 05:30)
+**🔥 PRODUCTION TESTING REVEALED MAJOR ISSUES:**
+
+1. **OAuth Redirect Domain Bug** ⚠️
+   - After game over, login redirects to OLD domain (astounding-rolypoly-fc5137.netlify.app)
+   - Should redirect to NEW domain (etimuebottledropper.netlify.app)
+   - Google OAuth settings need domain update
+
+2. **Game Initialization Instability** 🚨
+   - Second game start causes automatic page refresh
+   - Game returns to homepage unexpectedly
+   - Initialization process is unreliable
+
+3. **Asset Loading Failure** 💥
+   - Game starts but shows placeholder sprites instead of actual images
+   - Texture loading system broken
+   - Character sprites not displaying correctly
+
+### DEPLOYMENT STATUS
+- ✅ **Script Loading Fix**: Homepage script now properly loaded in production
+- ✅ **DOM Visibility Fix**: Game container properly shows/hides
+- ⚠️ **Live Site**: https://etimuebottledropper.netlify.app/ (has critical bugs above)
+- ⚠️ **OAuth Domain**: Needs update from old to new domain
+
+### URGENT NEXT STEPS REQUIRED
+1. **Fix OAuth Domain Redirect** - Update Google OAuth settings to use new domain
+2. **Investigate Game Initialization Loop** - Debug why second game start causes page refresh
+3. **Fix Asset Loading System** - Resolve texture/sprite loading failures
+4. **Test Complete Game Flow** - Verify game → game over → score submission → leaderboard works
+
+### RECENT FIXES COMPLETED (September 16)
+- ✅ **Script Loading Issue**: Fixed missing homepage-C4kRYVcX.js script tag in dist/index.html
+- ✅ **DOM Manipulation Bug**: Fixed startGame() not hiding homepage when game already running
+- ✅ **Build Process**: Fixed asset reference issues in production build
+
+### PREVIOUS WORKING FEATURES
 - ✅ **NUCLEAR WASD Fix**: Fully resolved double character insertion bug in input fields after gameplay
-- ✅ **Charlie Character Selection**: Clickable mascot with modal for character selection (Charlie, Scrocca, Irlandese)  
+- ✅ **Charlie Character Selection**: Clickable mascot with modal for character selection (Charlie, Scrocca, Irlandese)
 - ✅ **Homepage Auth Button**: Clickable profile/login button in header area
 - ✅ **Character Selection System**: Complete implementation with localStorage persistence and modal UI
-- ✅ **Build Deployment**: All dist/ files properly committed and deployed to Netlify
-
-### MOBILE UX COMPLETED
-- ✅ **Charlie Mobile Indicators**: Enhanced 28px orange gradient bounce badge with 🎭 emoji
-- ✅ **Responsive Design**: Mobile-first clamp() typography and modal optimization  
-- ✅ **Italian Translations**: Full IT/EN localization in character selection modal
-- ✅ **Touch Interactions**: Proper mobile clickability and visual feedback
-
-### PREVIOUS CRITICAL ISSUES (RESOLVED)
-- ✅ **Homepage Auth Button Bugs**: Auth flow working correctly
-- ✅ **Build Corruption**: Vite build corruption of authModal.show() - workaround implemented
 
 ### Current Working State  
 - ✅ Google OAuth authentication working completely (production OAuth URLs configured)
