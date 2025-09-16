@@ -1,3 +1,4 @@
+// Clean Build v1.0.22 - Security Cleared
 import Phaser from 'phaser'
 import { BootScene } from '@/scenes/BootScene'
 import { PreloadScene } from '@/scenes/PreloadScene'
