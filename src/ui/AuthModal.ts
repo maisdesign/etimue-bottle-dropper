@@ -606,7 +606,7 @@ export class AuthModal {
       })
 
       const timeoutPromise = new Promise((_, reject) =>
-        setTimeout(() => reject(new Error('Profile update timeout')), 10000)
+        setTimeout(() => reject(new Error('Profile update timeout')), 30000)
       )
 
       const updatedProfile = await Promise.race([updatePromise, timeoutPromise])

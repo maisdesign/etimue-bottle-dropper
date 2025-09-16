@@ -127,7 +127,7 @@ export class AuthManager {
       
       const profilePromise = profileService.getProfile(session.user.id)
       const timeoutPromise = new Promise((_, reject) =>
-        setTimeout(() => reject(new Error('Profile loading timeout')), 20000)
+        setTimeout(() => reject(new Error('Profile loading timeout')), 30000)
       )
       
       let profile
@@ -155,7 +155,7 @@ export class AuthManager {
           })
           
           const createTimeoutPromise = new Promise((_, reject) =>
-            setTimeout(() => reject(new Error('Profile creation timeout')), 20000)
+            setTimeout(() => reject(new Error('Profile creation timeout')), 30000)
           )
           
           profile = await Promise.race([createPromise, createTimeoutPromise])

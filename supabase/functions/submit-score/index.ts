@@ -108,8 +108,8 @@ serve(async (req) => {
       )
     }
 
-    // TEMPORARY: Database constraint requires min 45s, pad short games
-    const dbRunSeconds = Math.max(runSeconds, 45)
+    // TEMPORARY: Database constraint requires min 60s, pad short games
+    const dbRunSeconds = Math.max(runSeconds, 60)
 
     // Validation 4: Rate limiting - check last submission time
     const { data: lastScore, error: lastScoreError } = await supabase

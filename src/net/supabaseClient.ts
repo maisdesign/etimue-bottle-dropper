@@ -239,9 +239,9 @@ export const scoreService = {
       return null
     }
 
-    // TEMPORARY FIX: Database constraint requires min 45s but game can be shorter
+    // TEMPORARY FIX: Database constraint requires min 60s but game can be shorter
     // Pad short games to meet constraint until migration is deployed
-    const dbRunSeconds = Math.max(runSeconds, 45)
+    const dbRunSeconds = Math.max(runSeconds, 60)
     
     const insertData = {
       user_id: userId,
