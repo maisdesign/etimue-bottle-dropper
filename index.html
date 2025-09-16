@@ -345,6 +345,7 @@
     }
   </style>
   <script type="module" crossorigin src="./assets/main-DHxF15t8.js"></script>
+  <script type="module" crossorigin src="./assets/homepage-C4kRYVcX.js"></script>
   <link rel="modulepreload" crossorigin href="./assets/homepage-C4kRYVcX.js">
 <link rel="manifest" href="./manifest.webmanifest"><script id="vite-plugin-pwa:register-sw" src="./registerSW.js"></script></head>
 <body>
@@ -498,7 +499,27 @@
             <h2 data-translate="ready">Prontə, a far cadere le bottiglie?</h2>
             <p class="lead" data-translate="description">Schiva le verdi, prendi le artigianali e punta alla vetta della classifica per vincere premi e drink!</p>
             <div class="cta-row">
-              <button class="btn btn-primary" onclick="startGame()" data-translate="play">GIOCA</button>
+              <button class="btn btn-primary" onclick="
+                console.log('🎮 GIOCA button clicked!');
+                console.log('📋 DOM before startGame:', {
+                  homepage: document.getElementById('homepage')?.style.display,
+                  gameContainer: document.getElementById('game-container')?.style.display,
+                  gameContainerExists: !!document.getElementById('game-container')
+                });
+                if(typeof startGame === 'function') {
+                  console.log('✅ startGame function found, calling...');
+                  startGame();
+                  setTimeout(() => {
+                    console.log('📋 DOM after startGame:', {
+                      homepage: document.getElementById('homepage')?.style.display,
+                      gameContainer: document.getElementById('game-container')?.style.display,
+                      gameCanvas: document.querySelector('canvas'),
+                      phaserGame: !!window.game
+                    });
+                  }, 100);
+                } else {
+                  console.log('❌ startGame function not found!', typeof startGame);
+                }" data-translate="play">GIOCA</button>
               <button class="btn btn-secondary" onclick="showLeaderboard()" data-translate="leaderboard">Classifica</button>
               <button class="btn btn-info" onclick="showHowToPlay()" data-translate="howto">Come si gioca</button>
               <button class="btn btn-ghost" onclick="showPrizes()" data-translate="prizes">Cosa si vince</button>
