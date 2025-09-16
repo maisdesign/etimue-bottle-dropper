@@ -390,9 +390,12 @@ export class GameScene extends Phaser.Scene {
         logger.info('NAVIGATION', 'Using returnToHomepage function from pause menu')
         ;(window as any).returnToHomepage()
       } else {
-        // Fallback to MenuScene if homepage function not available
-        logger.warn('NAVIGATION', 'returnToHomepage not available, falling back to MenuScene')
-        this.scene.start('MenuScene')
+        // Fallback to homepage manually (MenuScene removed)
+        logger.warn('NAVIGATION', 'returnToHomepage not available, showing homepage manually')
+        const homepage = document.getElementById('homepage')
+        const gameContainer = document.getElementById('game-container')
+        if (homepage) homepage.style.display = 'grid'
+        if (gameContainer) gameContainer.style.display = 'none'
       }
     })
 

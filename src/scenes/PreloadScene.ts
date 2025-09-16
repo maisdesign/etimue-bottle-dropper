@@ -377,9 +377,20 @@ export class PreloadScene extends Phaser.Scene {
         ;(window as any).skipToLeaderboard = false
         this.scene.start('LeaderboardScene')
       } else {
-        logger.info('NAVIGATION', 'Going to MenuScene (normal flow)')
-        gameStateTracker.trackSceneTransition('PreloadScene', 'MenuScene', 'normal flow')
-        this.scene.start('MenuScene')
+        // MenuScene removed - return to homepage instead
+        logger.info('NAVIGATION', 'Preload complete, returning to homepage')
+        gameStateTracker.trackSceneTransition('PreloadScene', 'Homepage', 'normal flow - MenuScene removed')
+
+        // Hide game container and show homepage
+        if (typeof (window as any).returnToHomepage === 'function') {
+          ;(window as any).returnToHomepage()
+        } else {
+          // Fallback manual homepage show
+          const homepage = document.getElementById('homepage')
+          const gameContainer = document.getElementById('game-container')
+          if (homepage) homepage.style.display = 'grid'
+          if (gameContainer) gameContainer.style.display = 'none'
+        }
       }
     })
   }

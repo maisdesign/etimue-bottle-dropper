@@ -2,7 +2,7 @@
 import Phaser from 'phaser'
 import { BootScene } from '@/scenes/BootScene'
 import { PreloadScene } from '@/scenes/PreloadScene'
-import { MenuScene } from '@/scenes/MenuScene'
+// Removed MenuScene - using homepage HTML interface instead
 import { GameScene } from '@/scenes/GameScene'
 import { GameOverScene } from '@/scenes/GameOverScene'
 import { LeaderboardScene } from '@/scenes/LeaderboardScene'
@@ -45,7 +45,7 @@ const config: Phaser.Types.Core.GameConfig = {
   scene: [
     BootScene,
     PreloadScene,
-    MenuScene,
+    // MenuScene removed - using homepage HTML interface
     GameScene,
     GameOverScene,
     LeaderboardScene

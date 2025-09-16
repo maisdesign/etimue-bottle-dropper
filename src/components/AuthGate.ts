@@ -194,10 +194,8 @@ export class AuthGate {
       const authState = authManager.getState()
       
       if (authState.isAuthenticated) {
-        // Se già autenticato, mostra il profilo o menu
-        if ((window as any).game?.scene?.getScene('MenuScene')?.showProfileModal) {
-          ;(window as any).game.scene.getScene('MenuScene').showProfileModal()
-        }
+        // Se già autenticato - MenuScene removed, no action needed
+        console.log('✅ User already authenticated (MenuScene removed, no profile modal)')
       } else {
         // Se non autenticato, mostra login
         if ((window as any).AuthModal) {

@@ -402,9 +402,12 @@ export class LeaderboardScene extends Phaser.Scene {
       console.log('🏠 LeaderboardScene: Using returnToHomepage function')
       ;(window as any).returnToHomepage()
     } else {
-      // Fallback to MenuScene if homepage function not available
-      console.warn('⚠️ LeaderboardScene: returnToHomepage not available, falling back to MenuScene')
-      this.scene.start('MenuScene')
+      // Fallback to homepage manually (MenuScene removed)
+      console.warn('⚠️ LeaderboardScene: returnToHomepage not available, showing homepage manually')
+      const homepage = document.getElementById('homepage')
+      const gameContainer = document.getElementById('game-container')
+      if (homepage) homepage.style.display = 'grid'
+      if (gameContainer) gameContainer.style.display = 'none'
     }
   }
 
