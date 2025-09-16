@@ -243,9 +243,18 @@ window.startGame = startGame;
 // Initialize on page load
 document.addEventListener('DOMContentLoaded', () => {
   console.log('📱 Homepage JavaScript initialized');
-  
+  console.log('🌐 Current URL:', window.location.href);
+  console.log('🌐 Expected URL should be etimuebottledropper.netlify.app');
+
+  // Check if we're on the wrong domain and redirect if needed
+  if (window.location.hostname === 'astounding-rolypoly-fc5137.netlify.app') {
+    console.log('🚨 WRONG DOMAIN DETECTED! Redirecting to correct domain...');
+    window.location.replace('https://etimuebottledropper.netlify.app/');
+    return;
+  }
+
   // Set initial language based on browser or saved preference
-  const savedLang = localStorage.getItem('language') || 
+  const savedLang = localStorage.getItem('language') ||
                    (navigator.language?.startsWith('it') ? 'it' : 'en');
   setLanguage(savedLang);
 });

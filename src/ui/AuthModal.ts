@@ -373,7 +373,11 @@ export class AuthModal {
   private async signInWithProvider(provider: 'google'): Promise<void> {
     try {
       this.showLoading(true)
-      const redirectUrl = `${window.location.origin}/`
+      // Force correct domain to override any OAuth misconfiguration
+      const redirectUrl = 'https://etimuebottledropper.netlify.app/'
+
+      console.log('🚨 FORCED REDIRECT URL to correct domain:', redirectUrl)
+      console.log('📍 Current location origin:', window.location.origin)
 
       console.log(`🔐 Starting ${provider} OAuth...`)
       console.log('📍 Redirect URL:', redirectUrl)
