@@ -726,30 +726,32 @@
       document.getElementById('home-button').style.display = 'flex';
       
       // If game is already initialized, check if textures are ready
-      if (window.gameInstance) {
-        // Check if critical textures are loaded
-        const bootScene = window.gameInstance.scene.getScene('BootScene');
-        const preloadScene = window.gameInstance.scene.getScene('PreloadScene');
-        const gameScene = window.gameInstance.scene.getScene('GameScene');
-        
-        // Check if we have essential textures loaded
-        const hasCharlie = gameScene && gameScene.textures && gameScene.textures.exists('charlie');
-        const hasPauseBtn = gameScene && gameScene.textures && gameScene.textures.exists('btn_pause');
-        
-        if (hasCharlie && hasPauseBtn) {
-          // Textures ready, starting GameScene directly
-          window.gameInstance.scene.start('GameScene');
-        } else {
-          
-          // Set flag and let PreloadScene handle the transition
-          window.skipToGame = true;
-          // Make sure we go through PreloadScene to load textures
-          if (preloadScene && !preloadScene.scene.isActive()) {
-            window.gameInstance.scene.start('PreloadScene');
+      if (window.game) {
+        console.log('🎮 Game instance found, checking texture status...');
+
+        // Try to get the scene manager and check texture status more safely
+        try {
+          const sceneManager = window.game.scene;
+          if (sceneManager) {
+            // Always go through MenuScene for proper auth flow
+            console.log('🎮 Redirecting to MenuScene for proper initialization');
+            sceneManager.start('MenuScene');
+
+            // Use the event system we created to trigger game start
+            setTimeout(() => {
+              const event = new CustomEvent('homepageStartGame');
+              window.dispatchEvent(event);
+            }, 500);
+          } else {
+            console.log('⚠️ Scene manager not ready, setting skipToGame flag');
+            window.skipToGame = true;
           }
+        } catch (error) {
+          console.log('❌ Error checking game state:', error);
+          window.skipToGame = true;
         }
       } else {
-        
+        console.log('🎮 Game not initialized yet, setting skipToGame flag');
         // Set flag to skip menu when game loads
         window.skipToGame = true;
       }
@@ -762,9 +764,9 @@
       document.getElementById('home-button').style.display = 'none';
       
       // Pause or stop the game if running
-      if (window.gameInstance) {
+      if (window.game) {
         // Stop all scenes and go back to menu (but don't show it)
-        window.gameInstance.scene.stop();
+        window.game.scene.stop();
       }
     }
 
@@ -813,9 +815,9 @@
       document.getElementById('home-button').style.display = 'flex';
       
       // Go directly to leaderboard
-      if (window.gameInstance) {
+      if (window.game) {
         // Starting LeaderboardScene directly
-        window.gameInstance.scene.start('LeaderboardScene');
+        window.game.scene.start('LeaderboardScene');
       } else {
         
         // Set flag to go to leaderboard when game loads
@@ -1486,9 +1488,9 @@
     window.managePhaserKeyboard = {
       disable: function() {
         console.log('💥 NUCLEAR KEYBOARD DISABLE - REMOVING ALL PHASER KEY LISTENERS');
-        if (window.gameInstance && window.gameInstance.scene) {
+        if (window.game && window.game.scene) {
           // Get all active scenes
-          const scenes = window.gameInstance.scene.scenes;
+          const scenes = window.game.scene.scenes;
           scenes.forEach(scene => {
             if (scene.input && scene.input.keyboard) {
               console.log(`💥 NUCLEAR disabling keyboard for scene: ${scene.scene.key}`);
@@ -1527,8 +1529,8 @@
           });
           
           // Also disable the main keyboard manager
-          if (window.gameInstance.input && window.gameInstance.input.keyboard) {
-            window.gameInstance.input.keyboard.enabled = false;
+          if (window.game.input && window.game.input.keyboard) {
+            window.game.input.keyboard.enabled = false;
             console.log('💥 NUCLEAR: Disabled main game keyboard manager');
           }
         }
@@ -1536,9 +1538,9 @@
       
       enable: function() {
         console.log('🔄 NUCLEAR KEYBOARD RE-ENABLE - RECREATING PHASER KEY LISTENERS');
-        if (window.gameInstance && window.gameInstance.scene) {
+        if (window.game && window.game.scene) {
           // Get all active scenes
-          const scenes = window.gameInstance.scene.scenes;
+          const scenes = window.game.scene.scenes;
           scenes.forEach(scene => {
             if (scene.input && scene.input.keyboard) {
               console.log(`🔄 NUCLEAR re-enabling keyboard for scene: ${scene.scene.key}`);
@@ -1564,8 +1566,8 @@
           });
           
           // Re-enable main keyboard manager
-          if (window.gameInstance.input && window.gameInstance.input.keyboard) {
-            window.gameInstance.input.keyboard.enabled = true;
+          if (window.game.input && window.game.input.keyboard) {
+            window.game.input.keyboard.enabled = true;
             console.log('🔄 NUCLEAR: Re-enabled main game keyboard manager');
           }
         }
