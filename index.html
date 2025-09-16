@@ -341,7 +341,7 @@
       }
     }
   </style>
-  <script type="module" crossorigin src="./assets/main-D-49YTLX.js"></script>
+  <script type="module" crossorigin src="./assets/main-DHxF15t8.js"></script>
   <link rel="modulepreload" crossorigin href="./assets/homepage-C4kRYVcX.js">
 <link rel="manifest" href="./manifest.webmanifest"><script id="vite-plugin-pwa:register-sw" src="./registerSW.js"></script></head>
 <body>
@@ -517,9 +517,9 @@
           <div class="toggle">
             <span data-translate="language">Lingua</span>
             <div class="lang" role="tablist" aria-label="Lingua">
-              <div class="chip" role="tab" aria-selected="true" onclick="setLanguage('it')">IT</div>
-              <div class="chip" role="tab" aria-selected="false" onclick="setLanguage('en')">EN</div>
-              <div class="chip" role="tab" aria-selected="false" onclick="setLanguage('es')" style="display:none;">ES</div>
+              <div class="chip" role="tab" aria-selected="true" onclick="window.setLanguage && window.setLanguage('it')">IT</div>
+              <div class="chip" role="tab" aria-selected="false" onclick="window.setLanguage && window.setLanguage('en')">EN</div>
+              <div class="chip" role="tab" aria-selected="false" onclick="window.setLanguage && window.setLanguage('es')" style="display:none;">ES</div>
             </div>
           </div>
         </div>
@@ -633,7 +633,11 @@
     // } // END DEPRECATED setLanguage
 
     function toggleLanguage() {
-      setLanguage(currentLang === 'it' ? 'en' : 'it');
+      if (window.setLanguage) {
+        window.setLanguage(currentLang === 'it' ? 'en' : 'it');
+      } else {
+        console.log('⚠️ setLanguage not yet available, language toggle ignored');
+      }
     }
 
     // Game integration functions
