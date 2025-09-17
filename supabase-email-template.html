@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px; }
+        .header { background: linear-gradient(135deg, #87CEEB, #4285f4); padding: 30px; text-align: center; color: white; border-radius: 10px 10px 0 0; }
+        .content { background: #ffffff; padding: 30px; border: 1px solid #ddd; border-top: none; }
+        .button { display: inline-block; background: #ffc107; color: #333; padding: 15px 30px; text-decoration: none; border-radius: 8px; font-weight: bold; margin: 20px 0; }
+        .button:hover { background: #e0a800; }
+        .footer { background: #f8f9fa; padding: 20px; text-align: center; color: #666; border-radius: 0 0 10px 10px; font-size: 14px; }
+        .flag { font-size: 20px; margin-right: 10px; }
+        .divider { border-top: 2px solid #eee; margin: 25px 0; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🍺 Etimuè Bottle Dropper 🍺</h1>
+    </div>
+    
+    <div class="content">
+        <!-- ITALIANO -->
+        <div>
+            <h2>🇮🇹 Ciao! Benvenutə nel gioco!</h2>
+            <p>Hai richiesto l'accesso a <strong>Etimuè Bottle Dropper</strong>, il gioco ufficiale del pub Etimuè!</p>
+            
+            <p><strong>Hai 2 modi per accedere:</strong></p>
+            
+            <h3>📱 OPZIONE 1: Clicca il pulsante magico</h3>
+            <div style="text-align: center;">
+                <a href="{{ .ConfirmationURL }}" class="button">
+                    🎮 ACCEDI AL GIOCO
+                </a>
+            </div>
+            
+            <h3>🔢 OPZIONE 2: Copia il codice a 6 cifre</h3>
+            <div style="background: #f8f9fa; padding: 20px; text-align: center; border-radius: 8px; margin: 15px 0;">
+                <p style="margin: 0; font-size: 14px; color: #666;">Inserisci questo codice nel gioco:</p>
+                <p style="font-family: 'Courier New', monospace; font-size: 32px; font-weight: bold; color: #333; margin: 10px 0; letter-spacing: 8px;">{{ .Token }}</p>
+            </div>
+            
+            <p><strong>🏆 Ricorda:</strong> Gioca e vinci sconti per le cene al pub!</p>
+            <ul>
+                <li>🥇 <strong>Classifica settimanale:</strong> Sconto 5%</li>
+                <li>🏆 <strong>Classifica mensile:</strong> Sconto 10%</li>
+            </ul>
+        </div>
+        
+        <div class="divider"></div>
+        
+        <!-- ENGLISH -->
+        <div>
+            <h2>🇬🇧 Hello! Welcome to the game!</h2>
+            <p>You requested access to <strong>Etimuè Bottle Dropper</strong>, the official game of Etimuè pub!</p>
+            
+            <p><strong>You have 2 ways to login:</strong></p>
+            
+            <h3>📱 OPTION 1: Click the magic button</h3>
+            <div style="text-align: center;">
+                <a href="{{ .ConfirmationURL }}" class="button">
+                    🎮 LOGIN TO GAME
+                </a>
+            </div>
+            
+            <h3>🔢 OPTION 2: Copy the 6-digit code</h3>
+            <div style="background: #f8f9fa; padding: 20px; text-align: center; border-radius: 8px; margin: 15px 0;">
+                <p style="margin: 0; font-size: 14px; color: #666;">Enter this code in the game:</p>
+                <p style="font-family: 'Courier New', monospace; font-size: 32px; font-weight: bold; color: #333; margin: 10px 0; letter-spacing: 8px;">{{ .Token }}</p>
+            </div>
+            
+            <p><strong>🏆 Remember:</strong> Play and win discounts for dinners at the pub!</p>
+            <ul>
+                <li>🥇 <strong>Weekly leaderboard:</strong> 5% discount</li>
+                <li>🏆 <strong>Monthly leaderboard:</strong> 10% discount</li>
+            </ul>
+        </div>
+    </div>
+    
+    <div class="footer">
+        <p>Questo link è valido per 1 ora • This link is valid for 1 hour</p>
+        <p><strong>Etimuè Pub</strong> - Il posto giusto per divertirsi!</p>
+        <p>Se non hai richiesto questo accesso, ignora questa email.</p>
+    </div>
+</body>
+</html>

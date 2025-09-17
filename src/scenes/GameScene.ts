@@ -1,862 +1,168 @@
-import Phaser from 'phaser'
-import { scoreService } from '@/net/supabaseClient'
-import { authManager } from '@/net/authManager'
-import { t } from '@/i18n'
-import { logger } from '@/utils/Logger'
-import { gameStateTracker } from '@/utils/GameStateTracker'
-import { characterManager } from '@/utils/CharacterManager'
-import { BottlePool, PowerupPool } from '@/utils/ObjectPool'
+import { Scene } from 'phaser'
 
-interface MobileControls {
-  leftPressed: boolean
-  rightPressed: boolean
-}
-
-export class GameScene extends Phaser.Scene {
-  private player!: Phaser.Physics.Arcade.Sprite
+export class GameScene extends Scene {
+  private bucket!: Phaser.Physics.Arcade.Image
   private bottles!: Phaser.Physics.Arcade.Group
-  private powerups!: Phaser.Physics.Arcade.Group
-  private cursors!: Phaser.Types.Input.Keyboard.CursorKeys
-  private wasdKeys!: { [key: string]: Phaser.Input.Keyboard.Key }
-  
-  // Game state
   private score: number = 0
-  private lives: number = 3
-  private gameTime: number = 60
-  private gameStarted: boolean = false
-  private gameRunning: boolean = false
-  private isPaused: boolean = false
-  private allGoodPowerupActive: boolean = false
-  private powerupEndTime: number = 0
-  private powerupRemainingTime: number = 0
-  private powerupTimer!: Phaser.Time.TimerEvent
-  private activeTimers: Phaser.Time.TimerEvent[] = []
-  
-  // UI elements
   private scoreText!: Phaser.GameObjects.Text
-  private livesText!: Phaser.GameObjects.Text
-  private timeText!: Phaser.GameObjects.Text
-  private pauseButton!: Phaser.GameObjects.Image
-  private pauseOverlay!: Phaser.GameObjects.Container
-  private powerupIndicator!: Phaser.GameObjects.Text
-  
-  // Timers
-  private gameTimer!: Phaser.Time.TimerEvent
   private spawnTimer!: Phaser.Time.TimerEvent
-  private powerupSpawnTimer!: Phaser.Time.TimerEvent
-  
-  // Mobile controls
-  private mobileControls: MobileControls = {
-    leftPressed: false,
-    rightPressed: false
-  }
-  private leftButton!: Phaser.GameObjects.Image
-  private rightButton!: Phaser.GameObjects.Image
-  private isMobile: boolean = false
-  
-  // Audio
-  private audioEnabled: boolean = true
-  private bgMusic?: Phaser.Sound.BaseSound
-  
-  // Game start time for anti-cheat
-  private gameStartTimestamp: number = 0
-  
-  // Object pools for performance optimization
-  private bottlePool!: BottlePool
-  private powerupPool!: PowerupPool
+  private gameStarted: boolean = false
 
   constructor() {
     super({ key: 'GameScene' })
   }
 
-  create() {
-    logger.info('GAME_CREATE', 'GameScene create started')
-    
-    const width = this.cameras.main.width
-    const height = this.cameras.main.height
-    
-    // Check texture availability before starting
-    const selectedCharacterTexture = characterManager.getSelectedCharacterTextureKey()
-    const requiredTextures = [selectedCharacterTexture, 'btn_pause']
-    const mobileTextures = ['btn_left', 'btn_right']
-    const isMobile = this.isMobile
-    
-    if (isMobile) {
-      requiredTextures.push(...mobileTextures)
-    }
-    
-    const texturesOK = gameStateTracker.checkTextures(this, requiredTextures)
-    
-    gameStateTracker.updateGame({
-      currentScene: 'GameScene',
-      isMobile,
-      screenSize: { width, height }
+  create(): void {
+    console.log('🎮 GameScene: Initializing game...')
+
+    // Set background
+    this.add.image(400, 300, 'background')
+
+    this.setupUI()
+    this.setupGameObjects()
+    this.setupInput()
+    this.setupCollisions()
+
+    // Fade in
+    this.cameras.main.fadeIn(300, 0, 0, 0)
+
+    console.log('✅ GameScene: Ready to play!')
+  }
+
+  private setupUI(): void {
+    // Score display
+    this.scoreText = this.add.text(16, 16, 'Score: 0', {
+      fontSize: '24px',
+      color: '#000000',
+      fontFamily: 'Arial'
     })
 
-    // Get audio setting
-    const gameSettings = this.registry.get('gameSettings')
-    this.audioEnabled = gameSettings?.audioEnabled ?? true
-
-    // Reset game state
-    this.resetGameState()
-
-    // Create game world
-    this.createWorld(width, height)
-    this.createPlayer()
-    this.createGroups()
-    this.createControls()
-    this.createUI(width, height)
-    this.createCollisions()
-
-    // Start background music
-    if (this.audioEnabled) {
-      this.startBackgroundMusic()
-    }
-
-    logger.info('GAME_CREATE', 'GameScene create completed', {
-      texturesOK,
-      isMobile,
-      audioEnabled: this.audioEnabled,
-      gameState: { width, height }
-    })
-
-    // Auto-start the game (remove countdown for now)
-    this.startGame()
-
-    // Handle window focus/blur for auto-pause
-    this.setupFocusHandling()
-  }
-
-  private resetGameState() {
-    this.score = 0
-    this.lives = 3
-    this.gameTime = 60
-    this.gameStarted = false
-    this.gameRunning = false
-    this.isPaused = false
-    this.allGoodPowerupActive = false
-    this.powerupEndTime = 0
-    this.powerupRemainingTime = 0
-    this.gameStartTimestamp = 0
-    this.activeTimers = []
-  }
-
-  private createWorld(width: number, height: number) {
-    // Background
-    this.add.rectangle(width / 2, height / 2, width, height, 0x87CEEB)
-    
-    // Add some simple background elements (clouds, etc.)
-    this.createBackgroundElements(width, height)
-  }
-
-  private createBackgroundElements(width: number, height: number) {
-    // Simple cloud shapes
-    for (let i = 0; i < 3; i++) {
-      const cloud = this.add.ellipse(
-        Phaser.Math.Between(50, width - 50),
-        Phaser.Math.Between(50, 150),
-        Phaser.Math.Between(60, 100),
-        Phaser.Math.Between(30, 50),
-        0xffffff,
-        0.3
-      )
-      
-      // Animate clouds
-      this.tweens.add({
-        targets: cloud,
-        x: width + 100,
-        duration: Phaser.Math.Between(20000, 40000),
-        repeat: -1,
-        onComplete: () => {
-          cloud.x = -100
-        }
-      })
-    }
-  }
-
-  private createPlayer() {
-    const width = this.cameras.main.width
-    
-    // Get selected character from CharacterManager
-    const selectedCharacter = characterManager.getSelectedCharacterTextureKey()
-    logger.info('CHARACTER_SELECTION', 'Creating player with selected character', { 
-      character: selectedCharacter,
-      characterData: characterManager.getSelectedCharacter()
-    })
-    
-    this.player = this.physics.add.sprite(width / 2, 550, selectedCharacter)
-    this.player.setCollideWorldBounds(true)
-    this.player.setScale(0.4) // 50% smaller for sprite - better hitbox
-    
-    // Set player body size for more precise collisions
-    this.player.body?.setSize(this.player.width * 0.7, this.player.height * 0.7)
-  }
-
-  private createGroups() {
-    this.bottles = this.physics.add.group()
-    this.powerups = this.physics.add.group()
-    
-    
-    // Initialize object pools for performance optimization
-    this.bottlePool = new BottlePool(this, this.bottles, 'bottle_craft', 15)
-    this.powerupPool = new PowerupPool(this, this.powerups, 'powerup_star', 5)
-  }
-
-  private createControls() {
-    // Keyboard controls
-    this.cursors = this.input.keyboard!.createCursorKeys()
-    
-    // WASD controls
-    this.wasdKeys = this.input.keyboard!.addKeys('W,S,A,D')
-    
-    // Pause key
-    this.input.keyboard!.on('keydown-P', () => {
-      this.togglePause()
-    })
-
-    // Detect mobile
-    this.isMobile = this.sys.game.device.input.touch
-    console.log('📱 Mobile detection:', this.isMobile)
-    
-    if (this.isMobile) {
-      console.log('📱 Creating mobile controls...')
-      this.createMobileControls()
-    } else {
-      console.log('🖥️ Desktop mode - no mobile controls')
-    }
-  }
-
-  private createMobileControls() {
-    const width = this.cameras.main.width
-    const height = this.cameras.main.height
-    
-    logger.info('MOBILE_CONTROLS', 'Creating mobile controls', { width, height })
-    
-    // Check if UI sprites exist before creating controls
-    const hasLeftBtn = this.textures.exists('btn_left')
-    const hasRightBtn = this.textures.exists('btn_right')
-    
-    logger.info('MOBILE_CONTROLS', 'Checking mobile sprite availability', {
-      btn_left: hasLeftBtn,
-      btn_right: hasRightBtn
-    })
-    
-    if (!hasLeftBtn || !hasRightBtn) {
-      logger.error('MOBILE_CONTROLS', 'Mobile control sprites not ready, skipping mobile controls', {
-        btn_left: hasLeftBtn,
-        btn_right: hasRightBtn,
-        allTextures: this.textures.list
-      })
-      return
-    }
-    
-    // Left button
-    this.leftButton = this.add.image(80, height - 80, 'btn_left')
-    if (this.leftButton) {
-      console.log('📱 Left button created at', 80, height - 80)
-      this.leftButton
-        .setInteractive()
-        .setAlpha(0.8)
-        .on('pointerdown', () => {
-          this.mobileControls.leftPressed = true
-        })
-        .on('pointerup', () => {
-          this.mobileControls.leftPressed = false
-        })
-        .on('pointerout', () => {
-          this.mobileControls.leftPressed = false
-        })
-        .on('pointercancel', () => {
-          this.mobileControls.leftPressed = false
-        })
-    }
-
-    // Right button
-    this.rightButton = this.add.image(width - 80, height - 80, 'btn_right')
-    if (this.rightButton) {
-      console.log('📱 Right button created at', width - 80, height - 80)
-      this.rightButton
-        .setInteractive()
-        .setAlpha(0.8)
-      .on('pointerdown', () => {
-        this.mobileControls.rightPressed = true
-      })
-      .on('pointerup', () => {
-        this.mobileControls.rightPressed = false
-      })
-      .on('pointerout', () => {
-        this.mobileControls.rightPressed = false
-      })
-      .on('pointercancel', () => {
-        this.mobileControls.rightPressed = false
-      })
-    }
-  }
-
-  private createUI(width: number, height: number) {
-    // Score
-    this.scoreText = this.add.text(16, 16, t('game.score', { score: this.score }), {
+    // Instructions
+    this.add.text(400, 50, 'Use arrow keys or drag to move the bucket!', {
       fontSize: '18px',
-      fontFamily: 'Inter, sans-serif',
-      color: '#333333',
-      fontWeight: 'bold',
-      stroke: '#ffffff',
-      strokeThickness: 2
-    })
-
-    // Lives
-    this.livesText = this.add.text(16, 45, this.getLivesText(), {
-      fontSize: '18px',
-      fontFamily: 'Inter, sans-serif',
-      color: '#333333',
-      stroke: '#ffffff',
-      strokeThickness: 2
-    })
-
-    // Time
-    this.timeText = this.add.text(width - 16, 16, t('game.time', { time: this.gameTime }), {
-      fontSize: '18px',
-      fontFamily: 'Inter, sans-serif',
-      color: '#333333',
-      fontWeight: 'bold',
-      stroke: '#ffffff',
-      strokeThickness: 2
-    }).setOrigin(1, 0)
-
-    // Pause button
-    if (this.textures.exists('btn_pause')) {
-      this.pauseButton = this.add.image(width - 16, 50, 'btn_pause')
-        .setOrigin(1, 0)
-        .setScale(0.8)
-        .setInteractive({ useHandCursor: true })
-        .on('pointerdown', () => this.togglePause())
-      console.log('✅ Pause button created at', width - 16, 50)
-    } else {
-      console.warn('⚠️ Pause button sprite not ready, skipping pause button')
-    }
-
-    // Power-up indicator
-    this.powerupIndicator = this.add.text(width / 2, 100, '', {
-      fontSize: '16px',
-      color: '#FFD700',
-      fontWeight: 'bold',
-      backgroundColor: 'rgba(0,0,0,0.5)',
-      padding: { x: 10, y: 5 }
-    }).setOrigin(0.5).setVisible(false)
-
-    // Create pause overlay
-    this.createPauseOverlay(width, height)
-  }
-
-  private createPauseOverlay(width: number, height: number) {
-    this.pauseOverlay = this.add.container(0, 0)
-
-    // Background
-    const pauseBg = this.add.rectangle(width / 2, height / 2, width, height, 0x000000, 0.8)
-    
-    // Pause text
-    const pauseText = this.add.text(width / 2, height / 2 - 50, t('game.pause'), {
-      fontSize: '32px',
-      color: '#ffffff',
-      fontWeight: 'bold'
+      color: '#000000',
+      fontFamily: 'Arial'
     }).setOrigin(0.5)
 
-    // Resume button
-    const resumeButton = this.add.text(width / 2, height / 2 + 20, t('game.resume'), {
-      fontSize: '20px',
-      color: '#ffffff',
-      backgroundColor: '#28a745',
-      padding: { x: 20, y: 10 }
-    })
-    .setOrigin(0.5)
-    .setInteractive({ useHandCursor: true })
-    .on('pointerdown', () => this.togglePause())
-
-    // Menu button
-    const menuButton = this.add.text(width / 2, height / 2 + 80, 'Menu', {
+    this.add.text(400, 75, 'Catch the falling bottles to score points', {
       fontSize: '16px',
-      color: '#ffffff',
-      backgroundColor: '#6c757d',
-      padding: { x: 15, y: 8 }
+      color: '#333333',
+      fontFamily: 'Arial'
+    }).setOrigin(0.5)
+  }
+
+  private setupGameObjects(): void {
+    // Create bucket
+    this.bucket = this.physics.add.image(400, 520, 'bucket')
+    this.bucket.setCollideWorldBounds(true)
+    this.bucket.setImmovable(true)
+
+    // Create bottles group
+    this.bottles = this.physics.add.group({
+      defaultKey: 'bottle',
+      maxSize: 10
     })
-    .setOrigin(0.5)
-    .setInteractive({ useHandCursor: true })
-    .on('pointerdown', () => {
-      logger.info('NAVIGATION', 'GameScene pause menu -> returning to homepage')
-      this.scene.stop()
-      
-      // Return to homepage instead of MenuScene
-      if (typeof window !== 'undefined' && (window as any).returnToHomepage) {
-        logger.info('NAVIGATION', 'Using returnToHomepage function from pause menu')
-        ;(window as any).returnToHomepage()
-      } else {
-        // Fallback to homepage manually (MenuScene removed)
-        logger.warn('NAVIGATION', 'returnToHomepage not available, showing homepage manually')
-        const homepage = document.getElementById('homepage')
-        const gameContainer = document.getElementById('game-container')
-        if (homepage) homepage.style.display = 'grid'
-        if (gameContainer) gameContainer.style.display = 'none'
+  }
+
+  private setupInput(): void {
+    // Keyboard controls
+    const cursors = this.input.keyboard?.createCursorKeys()
+    if (cursors) {
+      // Handle keyboard input in update loop
+    }
+
+    // Mouse/Touch controls
+    this.input.on('pointermove', (pointer: Phaser.Input.Pointer) => {
+      if (pointer.isDown) {
+        this.bucket.x = Phaser.Math.Clamp(pointer.x, 40, 760)
       }
     })
 
-    this.pauseOverlay.add([pauseBg, pauseText, resumeButton, menuButton])
-    this.pauseOverlay.setVisible(false)
+    this.input.on('pointerdown', () => {
+      this.startGame()
+    })
   }
 
-  private createCollisions() {
-    // Player vs bottles
-    this.physics.add.overlap(this.player, this.bottles, (player, bottle) => {
-      this.collectBottle(bottle as Phaser.Physics.Arcade.Sprite)
-    }, undefined, this)
-
-    // Player vs powerups
-    this.physics.add.overlap(this.player, this.powerups, (player, powerup) => {
-      this.collectPowerup(powerup as Phaser.Physics.Arcade.Sprite)
-    }, undefined, this)
+  private setupCollisions(): void {
+    this.physics.add.overlap(
+      this.bucket,
+      this.bottles,
+      this.catchBottle,
+      undefined,
+      this
+    )
   }
 
-  private startGame() {
+  private startGame(): void {
     if (this.gameStarted) return
 
     this.gameStarted = true
-    this.gameRunning = true
-    this.gameStartTimestamp = Date.now()
+    console.log('🚀 Game started!')
 
-    // Start game timer
-    this.gameTimer = this.time.addEvent({
-      delay: 1000,
-      callback: this.updateTime,
-      callbackScope: this,
-      loop: true
-    })
-
-    // Start bottle spawning
-    const spawnDelay = this.isMobile ? 1200 : 1000
+    // Start spawning bottles
     this.spawnTimer = this.time.addEvent({
-      delay: spawnDelay,
+      delay: 1000,
       callback: this.spawnBottle,
       callbackScope: this,
       loop: true
     })
-
-    // Start power-up spawning
-    this.powerupSpawnTimer = this.time.addEvent({
-      delay: 8000,
-      callback: this.spawnPowerup,
-      callbackScope: this,
-      loop: true
-    })
   }
 
-  private spawnBottle() {
-    // Count only active bottles instead of all bottles in group
-    const activeBottles = this.bottles.children.entries.filter(bottle => 
-      (bottle as Phaser.Physics.Arcade.Sprite).active
-    ).length
-    
-    console.log('🍶 spawnBottle called', {
-      gameRunning: this.gameRunning,
-      totalBottles: this.bottles.children.size,
-      activeBottles,
-      shouldReturn: !this.gameRunning || activeBottles > 8
-    })
-    
-    if (!this.gameRunning || activeBottles > 8) {
-      console.log('🍶 spawnBottle: skipping spawn', {
-        gameRunning: this.gameRunning,
-        totalBottles: this.bottles.children.size,
-        activeBottles
-      })
-      return
-    }
+  private spawnBottle(): void {
+    const x = Phaser.Math.Between(50, 750)
 
-    const width = this.cameras.main.width
-    const x = Phaser.Math.Between(50, width - 50)
-    const isGood = Math.random() > 0.3 // 70% chance of good bottle
+    const bottle = this.bottles.get(x, -50, 'bottle')
+    if (bottle) {
+      bottle.setActive(true)
+      bottle.setVisible(true)
+      bottle.body.velocity.y = 200
+      bottle.body.velocity.x = Phaser.Math.Between(-50, 50)
 
-    const textureKey = isGood ? 'bottle_craft' : 'bottle_industrial_green'
-    console.log('🍶 Creating bottle with texture:', textureKey)
-    
-    const bottle = this.bottlePool.getBottle(textureKey)
-    console.log('🍶 Got bottle from pool:', bottle)
-    
-    // Position and configure bottle
-    bottle.setPosition(x, -30)
-    
-    // Calculate speed based on time elapsed (difficulty increase)
-    const timeElapsed = 60 - this.gameTime
-    const speedMultiplier = 1 + (timeElapsed * 0.01) // 1% increase per second
-    const baseSpeed = 150
-    const speed = baseSpeed * speedMultiplier
-    
-    bottle.setVelocityY(speed + Math.random() * 30)
-    bottle.setData('isGood', isGood)
-    
-    console.log('🍶 Bottle configured:', {
-      position: { x: bottle.x, y: bottle.y },
-      velocity: { x: bottle.body?.velocity.x, y: bottle.body?.velocity.y },
-      isGood,
-      active: bottle.active,
-      visible: bottle.visible
-    })
-    
-    // Auto-release as safety net (increased to 15 seconds)
-    const releaseTimer = this.time.delayedCall(15000, () => {
-      if (bottle.active) {
-        console.log('🍶 Safety cleanup: bottle timeout after 15s')
-        this.bottlePool.release(bottle)
-      }
-      // Remove from active timers list
-      const index = this.activeTimers.indexOf(releaseTimer)
-      if (index > -1) {
-        this.activeTimers.splice(index, 1)
-      }
-    })
-    bottle.setData('autoDestroy', releaseTimer)
-    this.activeTimers.push(releaseTimer)
-  }
-
-  private spawnPowerup() {
-    // Count only active powerups instead of all powerups in group
-    const activePowerups = this.powerups.children.entries.filter(powerup => 
-      (powerup as Phaser.Physics.Arcade.Sprite).active
-    ).length
-    
-    if (!this.gameRunning || activePowerups > 2) return
-
-    const width = this.cameras.main.width
-    const x = Phaser.Math.Between(50, width - 50)
-    
-    const powerup = this.powerupPool.get()
-    powerup.setPosition(x, -30)
-    powerup.setTexture('powerup_star')
-    powerup.setVelocityY(120)
-    
-    // Auto-release when off screen
-    const releaseTimer = this.time.delayedCall(10000, () => {
-      if (powerup.active) {
-        this.powerupPool.release(powerup)
-      }
-      // Remove from active timers list
-      const index = this.activeTimers.indexOf(releaseTimer)
-      if (index > -1) {
-        this.activeTimers.splice(index, 1)
-      }
-    })
-    powerup.setData('autoDestroy', releaseTimer)
-    this.activeTimers.push(releaseTimer)
-  }
-
-  private collectBottle(bottle: Phaser.Physics.Arcade.Sprite) {
-    const isGood = bottle.getData('isGood')
-    
-    // Clear auto-destroy timer
-    const autoDestroy = bottle.getData('autoDestroy')
-    if (autoDestroy) {
-      autoDestroy.destroy()
-      // Remove from active timers list
-      const index = this.activeTimers.indexOf(autoDestroy)
-      if (index > -1) {
-        this.activeTimers.splice(index, 1)
-      }
-    }
-    
-    // Release bottle back to pool instead of destroying
-    this.bottlePool.release(bottle)
-
-    if (isGood || this.allGoodPowerupActive) {
-      this.score += 1
-      this.scoreText.setText(t('game.score', { score: this.score }))
-      
-      if (this.audioEnabled) {
-        this.sound.play('pickup_good', { volume: 0.5 })
-      }
-    } else {
-      this.lives -= 1
-      this.livesText.setText(this.getLivesText())
-      
-      if (this.audioEnabled) {
-        this.sound.play('pickup_bad', { volume: 0.5 })
-      }
-      
-      // Screen shake effect
-      this.cameras.main.shake(200, 0.01)
-      
-      if (this.lives <= 0) {
-        this.endGame()
-      }
-    }
-  }
-
-  private collectPowerup(powerup: Phaser.Physics.Arcade.Sprite) {
-    // Clear auto-destroy timer
-    const autoDestroy = powerup.getData('autoDestroy')
-    if (autoDestroy) {
-      autoDestroy.destroy()
-      // Remove from active timers list
-      const index = this.activeTimers.indexOf(autoDestroy)
-      if (index > -1) {
-        this.activeTimers.splice(index, 1)
-      }
-    }
-    
-    // Release powerup back to pool instead of destroying
-    this.powerupPool.release(powerup)
-    
-    this.score += 5
-    this.gameTime += 5 // Add 5 seconds
-    this.scoreText.setText(t('game.score', { score: this.score }))
-    this.timeText.setText(t('game.time', { time: this.gameTime }))
-    
-    // Activate "All Good" power-up for 10 seconds
-    this.allGoodPowerupActive = true
-    this.powerupRemainingTime = 10
-    
-    // Stop any existing powerup timer
-    if (this.powerupTimer) {
-      this.powerupTimer.destroy()
-    }
-    
-    // Create a new timer that can be paused
-    this.powerupTimer = this.time.addEvent({
-      delay: 1000,
-      repeat: 9,
-      callback: () => {
-        this.powerupRemainingTime -= 1
-        if (this.powerupRemainingTime <= 0) {
-          this.allGoodPowerupActive = false
-          this.powerupIndicator.setVisible(false)
+      // Remove bottle when it leaves the screen
+      bottle.body.world.on('worldbounds', (_event: any, body: Phaser.Physics.Arcade.Body) => {
+        if (body.gameObject === bottle && body.y > 600) {
+          this.bottles.killAndHide(bottle)
         }
-      },
-      callbackScope: this
-    })
-    
-    this.powerupIndicator.setText('ALL GOOD! 🌟')
-    this.powerupIndicator.setVisible(true)
-    
-    if (this.audioEnabled) {
-      this.sound.play('powerup', { volume: 0.7 })
-    }
-    
-    // Visual effect
-    this.cameras.main.flash(200, 255, 255, 0)
-  }
-
-  private updateTime() {
-    this.gameTime -= 1
-    this.timeText.setText(t('game.time', { time: this.gameTime }))
-
-    if (this.gameTime <= 0) {
-      this.endGame()
+      })
+      bottle.body.setCollideWorldBounds(false)
+      bottle.body.onWorldBounds = true
     }
   }
 
-  private async endGame() {
-    this.gameRunning = false
-    
-    // Cleanup timers
-    if (this.gameTimer) {
-      this.gameTimer.destroy()
+  private catchBottle(_bucket: any, bottle: any): void {
+    // Remove caught bottle
+    this.bottles.killAndHide(bottle)
+
+    // Increase score
+    this.score += 10
+    this.scoreText.setText(`Score: ${this.score}`)
+
+    // Visual feedback
+    this.cameras.main.flash(100, 255, 255, 255, false)
+
+    console.log(`🍶 Bottle caught! Score: ${this.score}`)
+  }
+
+  update(): void {
+    // Keyboard controls
+    const cursors = this.input.keyboard?.createCursorKeys()
+    if (cursors) {
+      if (cursors.left?.isDown) {
+        this.bucket.x = Math.max(40, this.bucket.x - 5)
+      } else if (cursors.right?.isDown) {
+        this.bucket.x = Math.min(760, this.bucket.x + 5)
+      }
     }
+
+    // Auto-start game after a few seconds if not started
+    if (!this.gameStarted && this.time.now > 3000) {
+      this.startGame()
+    }
+  }
+
+  shutdown(): void {
     if (this.spawnTimer) {
       this.spawnTimer.destroy()
     }
-    if (this.powerupSpawnTimer) {
-      this.powerupSpawnTimer.destroy()
-    }
-    if (this.powerupTimer) {
-      this.powerupTimer.destroy()
-    }
-
-    // Clear all objects using object pools
-    this.bottles.children.entries.forEach((sprite) => {
-      if (sprite instanceof Phaser.Physics.Arcade.Sprite) {
-        this.bottlePool.release(sprite)
-      }
-    })
-    this.powerups.children.entries.forEach((sprite) => {
-      if (sprite instanceof Phaser.Physics.Arcade.Sprite) {
-        this.powerupPool.release(sprite)
-      }
-    })
-
-    // Stop background music
-    if (this.bgMusic) {
-      this.bgMusic.stop()
-    }
-
-    // Calculate game duration for anti-cheat
-    const gameEndTimestamp = Date.now()
-    const actualDuration = (gameEndTimestamp - this.gameStartTimestamp) / 1000
-
-    // Pass game data to GameOver scene
-    const gameData = {
-      score: this.score,
-      lives: this.lives,
-      gameEndTimestamp,
-      actualDuration: Math.round(actualDuration),
-      reason: this.lives <= 0 ? 'lives' : 'time'
-    }
-
-    this.scene.start('GameOverScene', gameData)
-  }
-
-  private togglePause() {
-    if (!this.gameRunning) return
-
-    this.isPaused = !this.isPaused
-    
-    if (this.isPaused) {
-      this.physics.pause()
-      this.pauseOverlay.setVisible(true)
-      
-      // Pause timers
-      if (this.gameTimer) this.gameTimer.paused = true
-      if (this.spawnTimer) this.spawnTimer.paused = true
-      if (this.powerupSpawnTimer) this.powerupSpawnTimer.paused = true
-      if (this.powerupTimer) this.powerupTimer.paused = true
-      
-      // Pause all active destroy timers
-      this.activeTimers.forEach(timer => {
-        if (timer && timer.paused !== undefined) {
-          timer.paused = true
-        }
-      })
-      
-      if (this.bgMusic && this.bgMusic.isPlaying) {
-        this.bgMusic.pause()
-      }
-    } else {
-      this.physics.resume()
-      this.pauseOverlay.setVisible(false)
-      
-      // Resume timers
-      if (this.gameTimer) this.gameTimer.paused = false
-      if (this.spawnTimer) this.spawnTimer.paused = false
-      if (this.powerupSpawnTimer) this.powerupSpawnTimer.paused = false
-      if (this.powerupTimer) this.powerupTimer.paused = false
-      
-      // Resume all active destroy timers
-      this.activeTimers.forEach(timer => {
-        if (timer && timer.paused !== undefined) {
-          timer.paused = false
-        }
-      })
-      
-      if (this.bgMusic && this.bgMusic.isPaused) {
-        this.bgMusic.resume()
-      }
-    }
-  }
-
-  private getLivesText(): string {
-    const hearts = '❤️'.repeat(this.lives) + '🤍'.repeat(3 - this.lives)
-    return `${t('game.lives')} ${hearts}`
-  }
-
-  private startBackgroundMusic() {
-    // Check if audio is cached before trying to play
-    if (this.cache.audio.exists('music_bg')) {
-      try {
-        this.bgMusic = this.sound.add('music_bg', { volume: 0.3, loop: true })
-        this.bgMusic.play()
-      } catch (error) {
-        console.log('🔇 Background music not available, continuing without audio')
-      }
-    } else {
-      console.log('🔇 Background music cache not found, continuing silently')
-    }
-  }
-
-  private setupFocusHandling() {
-    // Auto-pause when window loses focus
-    this.events.on('pause', () => {
-      if (this.gameRunning && !this.isPaused) {
-        this.togglePause()
-      }
-    })
-  }
-
-  update() {
-    if (!this.gameRunning || this.isPaused) return
-
-    try {
-      // Update power-up indicator countdown
-      if (this.allGoodPowerupActive) {
-        this.powerupIndicator.setText(`ALL GOOD! 🌟 (${this.powerupRemainingTime}s)`)
-      }
-
-      // Player movement
-      const leftActive = this.cursors.left.isDown || 
-                        this.input.keyboard!.checkDown(this.input.keyboard!.addKey('A')) ||
-                        this.mobileControls.leftPressed
-      
-      const rightActive = this.cursors.right.isDown || 
-                         this.input.keyboard!.checkDown(this.input.keyboard!.addKey('D')) ||
-                         this.mobileControls.rightPressed
-
-      if (leftActive && !rightActive) {
-        this.player.setVelocityX(-250)
-      } else if (rightActive && !leftActive) {
-        this.player.setVelocityX(250)
-      } else {
-        this.player.setVelocityX(0)
-      }
-
-      // Clean up off-screen objects using object pools (mobile optimization)  
-      this.bottles.children.entries.forEach(bottle => {
-        const sprite = bottle as Phaser.Physics.Arcade.Sprite
-        // More generous off-screen threshold and add debug logging
-        if (sprite.active && sprite.y > this.cameras.main.height + 100) {
-          console.log('🍶 Cleanup: bottle off-screen at y=' + sprite.y)
-          this.bottlePool.release(sprite)
-        }
-      })
-
-      this.powerups.children.entries.forEach(powerup => {
-        const sprite = powerup as Phaser.Physics.Arcade.Sprite
-        if (sprite.active && sprite.y > this.cameras.main.height + 50) {
-          this.powerupPool.release(sprite)
-        }
-      })
-
-    } catch (error) {
-      console.warn('GameScene update error:', error)
-    }
-  }
-
-  shutdown() {
-    // Clean up keyboard listeners to prevent conflicts with HTML inputs
-    if (this.input?.keyboard) {
-      // Remove WASD key listeners
-      if (this.wasdKeys) {
-        Object.values(this.wasdKeys).forEach(key => {
-          if (key) {
-            this.input.keyboard!.removeKey(key)
-          }
-        })
-      }
-      
-      // Remove all keyboard listeners for this scene
-      this.input.keyboard.removeAllListeners()
-    }
-    
-    // Clean up object pools
-    if (this.bottlePool) {
-      this.bottlePool.clear()
-    }
-    if (this.powerupPool) {
-      this.powerupPool.clear()
-    }
-    
-    // Clean up active timers
-    this.activeTimers.forEach(timer => {
-      if (timer) {
-        timer.destroy()
-      }
-    })
-    this.activeTimers = []
-    
-    logger.debug('GAME_CLEANUP', 'GameScene cleanup completed')
   }
 }

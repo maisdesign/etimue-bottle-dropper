@@ -1,139 +1,83 @@
-import Phaser from 'phaser'
-import { i18n } from '@/i18n'
+import { Scene } from 'phaser'
 
-export class BootScene extends Phaser.Scene {
+export class BootScene extends Scene {
   constructor() {
     super({ key: 'BootScene' })
   }
 
-  preload() {
-    // Create loading bar
-    const width = this.cameras.main.width
-    const height = this.cameras.main.height
-    
+  preload(): void {
+    console.log('🔧 BootScene: Starting asset loading...')
+
+    // Create simple loading graphics
+    this.createLoadingUI()
+
+    // Load basic game assets - using simple rectangles for now
+    this.load.image('bottle', 'data:image/svg+xml;base64,' + btoa(`
+      <svg width="20" height="40" xmlns="http://www.w3.org/2000/svg">
+        <rect width="20" height="40" fill="#8B4513" stroke="#654321" stroke-width="2"/>
+        <rect x="5" y="5" width="10" height="30" fill="#A0522D"/>
+      </svg>
+    `))
+
+    this.load.image('bucket', 'data:image/svg+xml;base64,' + btoa(`
+      <svg width="80" height="60" xmlns="http://www.w3.org/2000/svg">
+        <path d="M10,20 L70,20 L65,55 L15,55 Z" fill="#888888" stroke="#666666" stroke-width="2"/>
+        <rect x="10" y="15" width="60" height="10" fill="#AAAAAA"/>
+      </svg>
+    `))
+
+    this.load.image('background', 'data:image/svg+xml;base64,' + btoa(`
+      <svg width="800" height="600" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="skyGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" style="stop-color:#87CEEB;stop-opacity:1" />
+            <stop offset="100%" style="stop-color:#E0F6FF;stop-opacity:1" />
+          </linearGradient>
+        </defs>
+        <rect width="800" height="600" fill="url(#skyGradient)"/>
+      </svg>
+    `))
+  }
+
+  create(): void {
+    console.log('✅ BootScene: Assets loaded, transitioning to GameScene')
+
+    // Smooth transition to game
+    this.cameras.main.fadeOut(300, 0, 0, 0)
+    this.cameras.main.once('camerafadeoutcomplete', () => {
+      this.scene.start('GameScene')
+    })
+  }
+
+  private createLoadingUI(): void {
+    const { width, height } = this.cameras.main
+
+    // Loading text
+    const loadingText = this.add.text(width / 2, height / 2 - 50, 'Loading...', {
+      fontSize: '32px',
+      color: '#ffffff',
+      fontFamily: 'Arial'
+    }).setOrigin(0.5)
+
+    // Loading bar background
+    const progressBg = this.add.graphics()
+    progressBg.fillStyle(0x000000, 0.3)
+    progressBg.fillRect(width / 2 - 150, height / 2, 300, 20)
+
+    // Loading bar
     const progressBar = this.add.graphics()
-    const progressBox = this.add.graphics()
-    progressBox.fillStyle(0x222222, 0.8)
-    progressBox.fillRect(width / 2 - 160, height / 2 - 25, 320, 50)
-    
-    const loadingText = this.make.text({
-      x: width / 2,
-      y: height / 2 - 50,
-      text: 'Loading...',
-      style: {
-        font: '20px monospace',
-        color: '#ffffff'
-      }
-    })
-    loadingText.setOrigin(0.5, 0.5)
-    
-    const percentText = this.make.text({
-      x: width / 2,
-      y: height / 2,
-      text: '0%',
-      style: {
-        font: '18px monospace',
-        color: '#ffffff'
-      }
-    })
-    percentText.setOrigin(0.5, 0.5)
-    
+
     // Update loading bar
     this.load.on('progress', (value: number) => {
       progressBar.clear()
-      progressBar.fillStyle(0x28a745, 1)
-      progressBar.fillRect(width / 2 - 150, height / 2 - 15, 300 * value, 30)
-      percentText.setText(`${Math.round(value * 100)}%`)
+      progressBar.fillStyle(0x00ff00)
+      progressBar.fillRect(width / 2 - 150, height / 2, 300 * value, 20)
     })
-    
+
     this.load.on('complete', () => {
-      progressBar.destroy()
-      progressBox.destroy()
-      loadingText.destroy()
-      percentText.destroy()
-    })
-
-    // Load essential assets for preload scene
-    // Try to load Charlie image for boot screen
-    this.load.image('boot_charlie', '/characters/charlie.png')
-    this.load.on('filecomplete-image-boot_charlie', () => {
-    })
-    
-    this.load.on('loaderror', (fileObj: any) => {
-      if (fileObj.key === 'boot_charlie') {
-        // Failed to load charlie.png for boot, using SVG logo fallback
-        // Create fallback logo as before
-        this.load.image('logo', 'data:image/svg+xml;base64,' + btoa(`
-          <svg width="200" height="100" xmlns="http://www.w3.org/2000/svg">
-            <rect width="200" height="100" fill="#87CEEB"/>
-            <text x="100" y="35" font-family="Arial, sans-serif" font-size="16" font-weight="bold" text-anchor="middle" fill="#333">
-              Etimuè
-            </text>
-            <text x="100" y="65" font-family="Arial, sans-serif" font-size="14" text-anchor="middle" fill="#333">
-              Bottle Dropper
-            </text>
-          </svg>
-        `))
-      }
-    })
-
-    // Check PWA installability
-    this.checkPWAInstallability()
-  }
-
-  private checkPWAInstallability() {
-    // Check if app is already installed
-    if (window.matchMedia('(display-mode: standalone)').matches) {
-      // App is running in standalone mode (PWA)
-    }
-
-    // Listen for beforeinstallprompt event
-    window.addEventListener('beforeinstallprompt', (e) => {
-      // PWA installable
-      // Store the event so it can be triggered later
-      ;(window as any).deferredPrompt = e
-    })
-
-    // Check if service worker is supported
-    if ('serviceWorker' in navigator) {
-      // Service worker supported
-    }
-  }
-
-  create() {
-    // BootScene create started
-    // Set up initial game state
-    this.registry.set('gameSettings', {
-      audioEnabled: localStorage.getItem('audio-enabled') === 'true',
-      language: i18n.getCurrentLanguage(),
-      firstTime: !localStorage.getItem('game-played-before')
-    })
-
-    // Initialize analytics consent
-    const analyticsConsent = localStorage.getItem('analytics-consent')
-    this.registry.set('analyticsConsent', analyticsConsent === 'true')
-
-    // Show title briefly then go to preload
-    // Use Charlie if available, otherwise use logo
-    const imageKey = this.textures.exists('boot_charlie') ? 'boot_charlie' : 'logo'
-    const bootImage = this.add.image(this.cameras.main.centerX, this.cameras.main.centerY - 50, imageKey)
-      .setOrigin(0.5)
-    
-    // If using Charlie, scale it appropriately for boot screen
-    if (imageKey === 'boot_charlie') {
-      bootImage.setScale(0.3) // Scale down Charlie to fit boot screen
-    }
-
-    this.add.text(this.cameras.main.centerX, this.cameras.main.centerY + 50, 
-      i18n.getCurrentLanguage() === 'it' ? 'Inizializzazione...' : 'Initializing...', {
-      fontSize: '16px',
-      color: '#333333'
-    }).setOrigin(0.5)
-
-    // Transition to PreloadScene after a brief delay
-    this.time.delayedCall(1500, () => {
-      // BootScene transitioning to PreloadScene
-      this.scene.start('PreloadScene')
+      loadingText.setText('Ready!')
+      progressBar.clear()
+      progressBg.clear()
     })
   }
 }

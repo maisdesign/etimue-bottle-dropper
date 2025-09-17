@@ -23,13 +23,12 @@
     "baseUrl": ".",
     "paths": {
       "@/*": ["src/*"],
-      "@/assets/*": ["src/assets/*"],
       "@/scenes/*": ["src/scenes/*"],
+      "@/systems/*": ["src/systems/*"],
       "@/ui/*": ["src/ui/*"],
-      "@/i18n/*": ["src/i18n/*"],
-      "@/net/*": ["src/net/*"]
+      "@/utils/*": ["src/utils/*"]
     }
   },
-  "include": ["src/**/*", "vite.config.ts"],
-  "references": [{ "path": "./tsconfig.node.json" }]
+  "include": ["src/**/*", "*.ts", "vite-env.d.ts"],
+  "exclude": ["node_modules", "Legacy/**/*"]
 }

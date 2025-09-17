@@ -6,6 +6,8 @@ yarn-error.log*
 
 # Build output
 build/
+dist/
+.vite/
 
 # Environment variables
 .env
@@ -77,17 +79,20 @@ supabase/.temp/
 mailchimp-function*.ts
 SITUAZIONE_PROGETTO.md
 
-# Test files  
+# Test files
 test-*.html
+test-results/
+playwright-report/
+blob-report/
 
-# Exclude most PNG and HTML files but allow specific ones
-*.png
-!public/characters/*.png
-!public/*.png
-*.html
-!index.html
+# PWA generated files
+sw.js
+workbox-*.js
 
 # Project-specific folders to exclude
 Screenshots/
 Performance/
 DEPLOYMENT_REMINDER.md
+
+# Legacy backup (never commit to avoid conflicts)
+Legacy/
