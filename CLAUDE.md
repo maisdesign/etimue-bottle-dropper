@@ -92,16 +92,37 @@ Use the Supabase CLI for database operations:
 - ✅ **Homepage Auth Button**: Clickable profile/login button in header area
 - ✅ **Character Selection System**: Complete implementation with localStorage persistence and modal UI
 
-### Current Working State  
-- ✅ Google OAuth authentication working completely (production OAuth URLs configured)
-- ✅ Game fully playable with score submission
-- ✅ Nickname system with profanity filtering implemented (but broken on homepage)
-- ✅ Leaderboards with correct UI alignment and translations
-- ✅ WASD keyboard fix working perfectly (nuclear solution deployed)
-- ✅ Database connectivity verified and working
-- ✅ Character assets optimized and ready (Charlie, Scrocca, Irlandese at 256px ~58KB each)
-- ✅ All translations verified and correct (IT/EN) 
-- ✅ Site deployed at: https://astounding-rolypoly-fc5137.netlify.app/ with OAuth properly configured
+### 🚨 CRITICAL BUGS IDENTIFIED (September 17, 2025 - 01:30) 🚨
+
+**CURRENT STATUS: MAJOR INSTABILITY ISSUES**
+
+**🔥 CRITICAL BUGS FOUND IN PRODUCTION:**
+1. **Page refresh loop on first GIOCA click** - Still happening despite MenuScene removal
+2. **Asset loading inconsistency** - Game shows placeholders initially, then real images on subsequent loads
+3. **Game auto-closes** - Game terminates automatically and returns to homepage after few interactions
+4. **Initialization instability** - Multiple clicks required to get stable game state
+
+**⚠️ TECHNICAL DEBT ASSESSMENT:**
+- Multiple patches applied without addressing root cause
+- Complex interaction between HTML homepage and Phaser game initialization
+- Asset loading system unreliable
+- Game state management fragmented
+
+**🤔 RECOMMENDED SOLUTION:**
+**COMPLETE REWRITE** with clean architecture knowing final requirements:
+- Move current codebase to `OLD/` folder as backup
+- Design proper separation between homepage and game
+- Implement reliable asset loading system
+- Clean game state management
+- Proper auth flow integration
+
+**Current Working Features (when stable):**
+- ✅ Google OAuth authentication (when working)
+- ✅ Game mechanics and scoring
+- ✅ Database connectivity
+- ✅ Character assets available
+- ✅ Translations system
+- ⚠️ Everything else highly unstable
 
 ### Screenshots Available
 - 🧹 Screenshots folder cleaned (iPhone UX issues resolved)
