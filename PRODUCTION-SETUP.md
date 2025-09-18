@@ -8,7 +8,7 @@
 ## 🔥 CRITICAL FIXES NEEDED
 
 ### 1. Netlify Environment Variables
-**Go to Netlify Dashboard** → `astounding-rolypoly-fc5137` → **Site settings** → **Environment variables**
+**Go to Netlify Dashboard** → `etimuebottledropper` → **Site settings** → **Environment variables**
 
 Add these variables:
 ```
@@ -20,13 +20,13 @@ VITE_ADMIN_UUIDS=470c82f5-3997-4d93-a433-4dfee4a199c2
 ### 2. Supabase OAuth Configuration
 **Go to Supabase Dashboard** → **Authentication** → **URL Configuration**
 
-**Site URL:** `https://astounding-rolypoly-fc5137.netlify.app`
+**Site URL:** `https://etimuebottledropper.netlify.app`
 
 **Redirect URLs (add these):**
 ```
-https://astounding-rolypoly-fc5137.netlify.app
-https://astounding-rolypoly-fc5137.netlify.app/#auth-callback
-https://astounding-rolypoly-fc5137.netlify.app/
+https://etimuebottledropper.netlify.app
+https://etimuebottledropper.netlify.app/#auth-callback
+https://etimuebottledropper.netlify.app/
 ```
 
 ### 3. Google OAuth Console
@@ -39,7 +39,7 @@ https://xtpfssiraytzvdvgrsol.supabase.co/auth/v1/callback
 
 **Authorized JavaScript origins (add):**
 ```
-https://astounding-rolypoly-fc5137.netlify.app
+https://etimuebottledropper.netlify.app
 ```
 
 ### 4. Supabase Database Access
@@ -47,7 +47,7 @@ https://astounding-rolypoly-fc5137.netlify.app
 
 Verify **Allowed Origins** includes:
 ```
-https://astounding-rolypoly-fc5137.netlify.app
+https://etimuebottledropper.netlify.app
 *
 ```
 

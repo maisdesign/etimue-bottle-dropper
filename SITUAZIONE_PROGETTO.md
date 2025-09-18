@@ -31,11 +31,35 @@
 - ⚠️ **Live Site**: https://etimuebottledropper.netlify.app/ (ha i bug critici sopra)
 - ⚠️ **OAuth Domain**: Richiede aggiornamento da vecchio a nuovo dominio
 
-### 🎯 PIANO AZIONE IMMEDIATO
-1. **Investigare e risolvere asset loading system**
-2. **Debug game initialization loop**
-3. **Aggiornare Google OAuth settings per nuovo dominio**
-4. **Test completo flusso game → game over → score submission → leaderboard**
+### ✅ PROGRESS UPDATE (18 SET 2025 - Sessione in corso)
+
+#### 🔧 FIXED: Game Double Initialization Issue
+- ✅ **Problema risolto**: Eliminata doppia inizializzazione dal DOMContentLoaded
+- ✅ **File modificati**: main.ts e index.html - rimossa auto-init duplicata
+- ✅ **Fix TypeScript**: Risolto errore SupabaseClient.updateProfile
+- ✅ **Build riuscito**: Commit 1210d9f deployato in produzione
+- 🎯 **Risultato atteso**: Eliminazione auto-refresh su secondo avvio gioco
+
+#### 📋 OAUTH DOMAIN FIX ACTION PLAN
+Il problema OAuth richiede aggiornamenti server-side in 3 locations:
+
+1. **Supabase Dashboard** → Authentication → URL Configuration
+   - Cambiare Site URL: `astounding-rolypoly-fc5137.netlify.app` → `etimuebottledropper.netlify.app`
+   - Aggiornare Redirect URLs per nuovo dominio
+
+2. **Google Cloud Console** → OAuth 2.0 Client
+   - Aggiornare Authorized JavaScript origins
+   - Aggiornare Authorized redirect URIs
+
+3. **Netlify Dashboard** → Site settings
+   - Verificare environment variables sono settate per nuovo dominio
+
+✅ **Documentazione aggiornata**: PRODUCTION-SETUP.md ora riflette nuovo dominio
+
+### 🎯 AZIONI RIMANENTI
+1. **Applicare OAuth domain fixes** (richiede accesso admin panels)
+2. **Test asset loading** dopo fix inizializzazione
+3. **Test completo flusso game** → game over → score submission → leaderboard
 
 ### 🚨 SESSIONE CRITICA: RISOLTI BUG BLOCCANTI (14 SET 2025)
 
