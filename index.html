@@ -404,6 +404,263 @@
         }
       }
     }
+
+    /* Auth Modal Styles */
+    .auth-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 9999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .auth-modal-backdrop {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.8);
+      backdrop-filter: blur(5px);
+    }
+
+    .auth-modal-content {
+      position: relative;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border-radius: 20px;
+      padding: 2rem;
+      max-width: 400px;
+      width: 90%;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .auth-step {
+      text-align: center;
+      color: white;
+    }
+
+    .auth-step h2 {
+      margin-bottom: 1rem;
+      font-size: 1.5rem;
+      font-weight: 600;
+    }
+
+    .auth-step p {
+      margin-bottom: 2rem;
+      opacity: 0.9;
+      font-size: 1rem;
+    }
+
+    .auth-buttons {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+
+    .auth-button {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      padding: 0.75rem 1.5rem;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      border-radius: 25px;
+      background: rgba(255, 255, 255, 0.1);
+      color: white;
+      font-size: 1rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-decoration: none;
+      font-family: inherit;
+    }
+
+    .auth-button:hover {
+      background: rgba(255, 255, 255, 0.2);
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    .auth-button-google {
+      background: #4285f4;
+      border-color: #4285f4;
+    }
+
+    .auth-button-google:hover {
+      background: #3367d6;
+    }
+
+    .auth-button-primary {
+      background: linear-gradient(45deg, #ff6b6b, #ee5a24);
+      border: none;
+    }
+
+    .auth-button-primary:hover {
+      background: linear-gradient(45deg, #ff5252, #e55039);
+    }
+
+    .auth-button-secondary {
+      background: transparent;
+      border-color: rgba(255, 255, 255, 0.5);
+    }
+
+    .auth-form {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .auth-input {
+      padding: 0.75rem 1rem;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      border-radius: 15px;
+      background: rgba(255, 255, 255, 0.1);
+      color: white;
+      font-size: 1rem;
+      font-family: inherit;
+      backdrop-filter: blur(10px);
+    }
+
+    .auth-input::placeholder {
+      color: rgba(255, 255, 255, 0.7);
+    }
+
+    .auth-input:focus {
+      outline: none;
+      border-color: rgba(255, 255, 255, 0.6);
+      background: rgba(255, 255, 255, 0.15);
+    }
+
+    .auth-input-otp {
+      text-align: center;
+      font-size: 1.5rem;
+      letter-spacing: 0.5rem;
+      font-weight: 600;
+    }
+
+    .consent-checkbox {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      text-align: left;
+      margin: 0.5rem 0;
+    }
+
+    .auth-checkbox {
+      width: 20px;
+      height: 20px;
+      accent-color: #ff6b6b;
+    }
+
+    .consent-checkbox label {
+      font-size: 0.9rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .auth-close-btn {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      background: rgba(255, 255, 255, 0.2);
+      border: none;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      color: white;
+      font-size: 1.5rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s ease;
+    }
+
+    .auth-close-btn:hover {
+      background: rgba(255, 255, 255, 0.3);
+      transform: scale(1.1);
+    }
+
+    .auth-loading {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.8);
+      border-radius: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: white;
+    }
+
+    .spinner {
+      width: 40px;
+      height: 40px;
+      border: 3px solid rgba(255, 255, 255, 0.3);
+      border-top: 3px solid white;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin-bottom: 1rem;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .auth-alert {
+      padding: 0.75rem;
+      border-radius: 10px;
+      margin-bottom: 1rem;
+      font-size: 0.9rem;
+      font-weight: 500;
+    }
+
+    .auth-alert-error {
+      background: rgba(255, 59, 48, 0.2);
+      border: 1px solid rgba(255, 59, 48, 0.5);
+      color: #ff6b6b;
+    }
+
+    .auth-alert-success {
+      background: rgba(48, 209, 88, 0.2);
+      border: 1px solid rgba(48, 209, 88, 0.5);
+      color: #4ade80;
+    }
+
+    @media (max-width: 480px) {
+      .auth-modal-content {
+        padding: 1.5rem;
+        max-width: 95%;
+      }
+
+      .auth-step h2 {
+        font-size: 1.3rem;
+      }
+
+      .auth-button {
+        padding: 0.7rem 1.2rem;
+        font-size: 0.95rem;
+      }
+
+      .auth-input {
+        padding: 0.7rem 0.9rem;
+        font-size: 0.95rem;
+      }
+    }
   </style>
 </head>
 <body>
@@ -433,6 +690,9 @@
       <button class="btn" onclick="showInstructions()">
         ❓ Instructions
       </button>
+      <button class="btn" onclick="testAuth()">
+        🔐 Test Auth
+      </button>
     </div>
 
     <div class="footer">
@@ -443,12 +703,22 @@
 
   <script type="module">
     import { initializeGame, getGame, destroyGame } from './src/main.ts'
+    import { requireAuth } from './src/systems/AuthManager.ts'
 
     // Global game state
     let gamePaused = false
 
-    window.startNewGame = function() {
+    window.startNewGame = async function() {
       console.log('🎮 Starting new game...')
+
+      // Check authentication first
+      const canPlay = await requireAuth()
+      if (!canPlay) {
+        console.log('❌ User not authenticated, game start cancelled')
+        return
+      }
+
+      console.log('✅ User authenticated, starting game...')
       destroyGame()
       initializeGame()
     }
@@ -485,6 +755,16 @@
 • Try to catch as many as possible!
 
 Good luck!`)
+    }
+
+    window.testAuth = async function() {
+      console.log('🧪 Testing auth flow...')
+      const canPlay = await requireAuth()
+      if (canPlay) {
+        alert('✅ Authentication successful! You can play the game.')
+      } else {
+        alert('❌ Authentication failed or cancelled.')
+      }
     }
 
     // Mobile touch controls

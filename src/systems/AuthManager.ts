@@ -322,6 +322,25 @@ export const requireAuth = async (): Promise<boolean> => {
     })
   }
 
+  // If still not authenticated, show auth modal
+  if (!authManager.canPlayGame()) {
+    console.log('🔐 Showing auth modal...')
+    return new Promise<boolean>((resolve) => {
+      // Dynamic import to avoid circular dependency
+      import('../ui/AuthModal').then(({ AuthModal }) => {
+        const modal = new AuthModal()
+        modal.onAuth((success) => {
+          modal.destroy()
+          resolve(success && authManager.canPlayGame())
+        })
+        modal.show()
+      }).catch(error => {
+        console.error('Failed to load AuthModal:', error)
+        resolve(false)
+      })
+    })
+  }
+
   const canPlay = authManager.canPlayGame()
   console.log('🎯 Final auth check result:', canPlay)
   return canPlay
