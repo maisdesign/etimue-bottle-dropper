@@ -2,7 +2,6 @@ import { authManager } from '../systems/AuthManager'
 
 export class AuthModal {
   private element: HTMLElement
-  private isVisible: boolean = false
   private onAuthCallback?: (success: boolean) => void
   private currentStep: 'welcome' | 'email' | 'verify' | 'profile' = 'welcome'
   private currentEmail: string = ''
@@ -377,7 +376,6 @@ export class AuthModal {
 
   // Public API
   public show(): void {
-    this.isVisible = true
     this.element.classList.remove('hidden')
     this.showStep('welcome')
 
@@ -389,7 +387,6 @@ export class AuthModal {
   }
 
   public hide(): void {
-    this.isVisible = false
     this.element.classList.add('hidden')
     this.completeAuth(false)
   }
