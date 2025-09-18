@@ -720,7 +720,12 @@
       }
 
       console.log('✅ User authenticated, starting game...')
-      destroyGame()
+      // Only destroy if game exists to avoid unnecessary recreation
+      const existingGame = getGame()
+      if (existingGame) {
+        console.log('🔄 Destroying existing game instance')
+        destroyGame()
+      }
       initializeGame()
     }
 
@@ -819,7 +824,8 @@ Click "New Game" to see auth requirement in action.`)
     // Auto-initialize when page loads
     document.addEventListener('DOMContentLoaded', function() {
       console.log('🚀 Etimuè Bottle Dropper v2.0.0 loaded!')
-      initializeGame()
+      // DO NOT initialize game here - wait for user to click GIOCA
+      // initializeGame() - REMOVED to fix double initialization bug
 
       // Setup mobile touch controls
       const touchLeft = document.getElementById('touch-left')

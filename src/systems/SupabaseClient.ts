@@ -110,11 +110,12 @@ export const profileService = {
     }
   },
 
-  async updateProfile(userId: string, updates: any): Promise<Profile | null> {
+  async updateProfile(userId: string, updates: Partial<Omit<Profile, 'id' | 'created_at'>>): Promise<Profile | null> {
     try {
       const { data, error } = await supabase
         .from('profiles')
-        .update({}) // Temporary fix for compilation
+        // @ts-ignore - Temporary fix for type inference issue
+        .update(updates)
         .eq('id', userId)
         .select()
         .single()

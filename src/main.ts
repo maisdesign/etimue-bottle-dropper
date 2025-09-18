@@ -60,10 +60,6 @@ export function destroyGame(): void {
   }
 }
 
-// Auto-initialize if game container exists
-document.addEventListener('DOMContentLoaded', () => {
-  const gameContainer = document.getElementById('game-container')
-  if (gameContainer) {
-    initializeGame()
-  }
-})
+// DO NOT auto-initialize - wait for user to click GIOCA
+// This prevents double initialization issues
+// Game will be initialized via startNewGame() function in index.html

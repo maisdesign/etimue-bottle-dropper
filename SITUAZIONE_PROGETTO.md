@@ -1,7 +1,41 @@
 # SITUAZIONE PROGETTO - ETIMUÈ BOTTLE DROPPER
-*Ultimo aggiornamento: 15 Settembre 2025 - 00:15 - CRITICAL BUGS ANALYSIS COMPLETED*
+*Ultimo aggiornamento: 18 Settembre 2025 - INIZIO SESSIONE RISOLUZIONE BUGS CRITICI*
 
-## 🎯 STATO ATTUALE - VERSIONE v1.0.11 - CRITICAL BUGS FIXED
+## 🎯 STATO ATTUALE - PRODUZIONE CON BUG CRITICI IDENTIFICATI
+
+### 🚨 NUOVA SESSIONE: RISOLUZIONE BUG CRITICI (18 SET 2025)
+
+**URGENZA**: I seguenti bug critici sono stati identificati in produzione e richiedono fix immediati:
+
+#### 🔥 BUG CRITICO 1: OAuth Redirect Domain Errato
+- **Problema**: Dopo game over, login redirect va al dominio OLD (astounding-rolypoly-fc5137.netlify.app)
+- **Dovrebbe andare a**: nuovo dominio (etimuebottledropper.netlify.app)
+- **Impact**: Utenti vengono reindirizzati al sito sbagliato dopo login
+- **Urgenza**: ALTA - Google OAuth settings da aggiornare
+
+#### 🔥 BUG CRITICO 2: Game Initialization Instabile
+- **Problema**: Secondo avvio gioco causa refresh automatico pagina
+- **Sintomi**: Gioco torna inaspettatamente alla homepage
+- **Impact**: Processo di inizializzazione unreliable
+- **Urgenza**: ALTA - UX compromessa
+
+#### 🔥 BUG CRITICO 3: Asset Loading Fallimento
+- **Problema**: Gioco parte ma mostra placeholder sprites invece di immagini reali
+- **Sintomi**: Sistema di caricamento texture rotto
+- **Impact**: Character sprites non vengono visualizzati correttamente
+- **Urgenza**: ALTA - Gameplay compromesso visualmente
+
+### 📊 STATUS DEPLOYMENT ATTUALE
+- ✅ **Homepage Script Fix**: Script homepage ora caricato correttamente in produzione
+- ✅ **DOM Visibility Fix**: Container gioco si mostra/nasconde correttamente
+- ⚠️ **Live Site**: https://etimuebottledropper.netlify.app/ (ha i bug critici sopra)
+- ⚠️ **OAuth Domain**: Richiede aggiornamento da vecchio a nuovo dominio
+
+### 🎯 PIANO AZIONE IMMEDIATO
+1. **Investigare e risolvere asset loading system**
+2. **Debug game initialization loop**
+3. **Aggiornare Google OAuth settings per nuovo dominio**
+4. **Test completo flusso game → game over → score submission → leaderboard**
 
 ### 🚨 SESSIONE CRITICA: RISOLTI BUG BLOCCANTI (14 SET 2025)
 
