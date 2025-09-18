@@ -4,8 +4,15 @@ import { createClient } from '@supabase/supabase-js'
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY
 
+console.log('🔍 Environment check:', {
+  url: supabaseUrl ? 'SET' : 'MISSING',
+  key: supabaseAnonKey ? 'SET' : 'MISSING',
+  env: import.meta.env
+})
+
 if (!supabaseUrl || !supabaseAnonKey) {
-  throw new Error('Missing Supabase environment variables')
+  console.error('❌ Missing env vars:', { supabaseUrl, supabaseAnonKey })
+  throw new Error(`Missing Supabase environment variables: URL=${!!supabaseUrl}, KEY=${!!supabaseAnonKey}`)
 }
 
 // Database types

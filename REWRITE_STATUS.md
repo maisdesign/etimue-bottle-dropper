@@ -160,7 +160,7 @@ Ripartire da zero con architettura pulita eliminando:
 
 ---
 
-**ULTIMA AZIONE COMPLETATA**: ✅ AUTH SYSTEM READY FOR TESTING - Environment setup + Dev testing completo (18/09/2025 - 11:30)
+**ULTIMA AZIONE COMPLETATA**: 🔧 CRITICAL BUTTON FIXES - Env variables + Global functions fixed (18/09/2025 - 12:55)
 
 ## ✅ GAME MECHANICS COMPLETATI (18/09/2025)
 
@@ -207,7 +207,21 @@ Ripartire da zero con architettura pulita eliminando:
 - ✅ Responsive Design (100% - Mobile-first approach)
 - ✅ Authentication System (98% - Ready for production testing)
 
-## 🎯 ETIMUÈ BOTTLE DROPPER v2.0.0 - READY FOR PRODUCTION!
+## 🔧 CRITICAL FIXES APPLIED (18/09/2025 - 12:55)
+
+**🐛 BUGS IDENTIFICATI E RISOLTI**:
+1. ✅ **Supabase Environment Variables**: Missing .env loading fixed
+2. ✅ **All Button Functions Undefined**: Moved to global scope
+3. ✅ **startNewGame/togglePause/showInstructions/testAuth**: Fixed scope errors
+4. ✅ **Environment Debug**: Added console logging for troubleshooting
+
+**🔄 NEXT SESSION TODO**:
+- Test all button functionality after fixes
+- Verify Supabase environment variables loading
+- Fix any remaining TypeScript compilation errors
+- Deploy working v2.0.0 to production
+
+## 🎯 ETIMUÈ BOTTLE DROPPER v2.0.0 - FIXING CRITICAL ISSUES
 
 **SISTEMA COMPLETAMENTE FUNZIONANTE**:
 - ✅ Core Game Engine (Phaser 3 + TypeScript)
