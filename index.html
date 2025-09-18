@@ -2,7 +2,7 @@
 <html lang="it">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0" />
   <title>Etimuè Bottle Dropper v2</title>
   <meta name="description" content="Etimuè Bottle Dropper - Fun bottle catching game by Etimuè pub" />
 
@@ -27,11 +27,18 @@
       font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
       background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
       min-height: 100vh;
+      min-height: 100dvh; /* Dynamic viewport height for mobile */
       display: flex;
       flex-direction: column;
       justify-content: center;
       align-items: center;
       color: white;
+      /* Prevent mobile browser behaviors */
+      touch-action: manipulation;
+      overscroll-behavior: none;
+      -webkit-touch-callout: none;
+      -webkit-user-select: none;
+      -webkit-tap-highlight-color: transparent;
     }
 
     .container {
@@ -78,11 +85,18 @@
     #game-container {
       width: 100%;
       max-width: 800px;
-      height: 600px;
+      height: 70vh;
+      min-height: 400px;
+      max-height: 600px;
       background: #87CEEB;
       border-radius: 15px;
       overflow: hidden;
       box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+      aspect-ratio: 4/3; /* Maintain aspect ratio on mobile */
+      /* Optimize for mobile gaming */
+      touch-action: none;
+      user-select: none;
+      -webkit-user-select: none;
     }
 
     .controls {
@@ -126,12 +140,79 @@
       display: none !important;
     }
 
+    /* Mobile Touch Controls */
+    .mobile-controls {
+      display: none;
+      position: absolute;
+      bottom: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      gap: 80px;
+      z-index: 1000;
+      /* Ensure controls are always visible and within viewport */
+      width: auto;
+      height: auto;
+    }
+
+    .touch-btn {
+      width: 70px;
+      height: 70px;
+      border-radius: 50%;
+      border: 3px solid rgba(255,255,255,0.9);
+      background: rgba(0,0,0,0.5);
+      color: white;
+      font-size: 28px;
+      font-weight: bold;
+      cursor: pointer;
+      user-select: none;
+      -webkit-user-select: none;
+      touch-action: manipulation;
+      backdrop-filter: blur(10px);
+      transition: all 0.1s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+    }
+
+    .touch-btn:active {
+      background: rgba(255,255,255,0.3);
+      transform: scale(0.95);
+    }
+
+    .touch-left {
+      float: left;
+    }
+
+    .touch-right {
+      float: right;
+    }
+
     .footer {
       margin-top: 2rem;
       opacity: 0.8;
       font-size: 0.9rem;
     }
 
+    /* Tablet styles */
+    @media (max-width: 1024px) and (min-width: 769px) {
+      .title {
+        font-size: 2.2rem;
+      }
+
+      #game-container {
+        height: 65vh;
+        min-height: 450px;
+        max-height: 550px;
+        width: 85vw;
+      }
+
+      .btn {
+        padding: 0.8rem 1.4rem;
+      }
+    }
+
+    /* Small tablet/large phone styles */
     @media (max-width: 768px) {
       .title {
         font-size: 2rem;
@@ -142,20 +223,189 @@
       }
 
       #game-container {
-        height: 400px;
+        height: 55vh;
+        min-height: 350px;
+        max-height: 500px;
+        width: 90vw;
+        max-width: none;
       }
 
       .controls {
-        flex-direction: column;
+        flex-direction: row;
+        justify-content: center;
         align-items: center;
+        gap: 0.8rem;
+        margin: 1.5rem 0;
+        flex-wrap: wrap;
       }
 
       .btn {
-        width: 200px;
+        width: auto;
+        min-width: 120px;
+        padding: 0.7rem 1.2rem;
+        font-size: 0.95rem;
+      }
+
+      .game-container {
+        padding: 0.8rem;
+        margin: 1rem 0;
+      }
+
+      .mobile-controls {
+        display: none;
+      }
+    }
+
+    @media (max-width: 480px) {
+      body {
+        padding: 0;
+        margin: 0;
+        justify-content: flex-start;
+        padding: 1vh 2vw;
+        overflow-x: hidden;
+      }
+
+      .title {
+        font-size: 1.6rem;
+        margin-bottom: 0.3rem;
+      }
+
+      .subtitle {
+        font-size: 0.9rem;
+        margin-bottom: 0.3rem;
+      }
+
+      .version {
+        font-size: 0.75rem;
+      }
+
+      .container {
+        padding: 0;
+        max-width: 100%;
+        height: 100vh;
+        height: 100dvh;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        width: 100%;
+      }
+
+      #game-container {
+        height: 50vh;
+        height: 50dvh;
+        min-height: 280px;
+        max-height: 400px;
+        width: 96vw;
+        max-width: none;
+        border-radius: 10px;
+        margin: 0 auto;
+      }
+
+      .game-container {
+        padding: 0.5rem;
+        margin: 0.5rem 0;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        position: relative;
+        max-height: 60vh;
+      }
+
+      .mobile-controls {
+        display: flex !important;
+        bottom: 15px;
+        gap: 100px;
+      }
+
+      .touch-btn {
+        width: 65px;
+        height: 65px;
+        font-size: 26px;
+      }
+
+      .header {
+        margin-bottom: 0.5rem;
+        flex-shrink: 0;
+      }
+
+      .controls {
+        margin: 0.8rem 0;
+        flex-shrink: 0;
+        gap: 0.8rem;
+      }
+
+      .btn {
+        width: 140px;
+        padding: 0.6rem 1rem;
+        font-size: 0.9rem;
+      }
+
+      .footer {
+        margin-top: 0.5rem;
+        font-size: 0.7rem;
+        flex-shrink: 0;
+        padding-bottom: 1rem;
+      }
+
+      /* Landscape orientation adjustments for phones */
+      @media (orientation: landscape) and (max-height: 500px) {
+        .header {
+          margin-bottom: 0.3rem;
+        }
+
+        .title {
+          font-size: 1.3rem;
+          margin-bottom: 0.2rem;
+        }
+
+        .subtitle {
+          font-size: 0.8rem;
+          margin-bottom: 0.2rem;
+        }
+
+        #game-container {
+          height: 60vh;
+          min-height: 250px;
+          max-height: 300px;
+        }
+
+        .game-container {
+          margin: 0.3rem 0;
+          padding: 0.3rem;
+        }
+
+        .controls {
+          margin: 0.5rem 0;
+          gap: 0.6rem;
+        }
+
+        .btn {
+          padding: 0.5rem 0.8rem;
+          font-size: 0.85rem;
+          min-width: 100px;
+        }
+
+        .footer {
+          font-size: 0.65rem;
+          margin-top: 0.3rem;
+          padding-bottom: 0.5rem;
+        }
+
+        .mobile-controls {
+          bottom: 8px;
+          gap: 80px;
+        }
+
+        .touch-btn {
+          width: 55px;
+          height: 55px;
+          font-size: 22px;
+        }
       }
     }
   </style>
-  <script type="module" crossorigin src="/assets/index-ff409b35.js"></script>
+  <script type="module" crossorigin src="/assets/index-7b7ff5de.js"></script>
   <link rel="modulepreload" crossorigin href="/assets/phaser-a167adc1.js">
 <link rel="manifest" href="/manifest.webmanifest"><script id="vite-plugin-pwa:register-sw" src="/registerSW.js"></script></head>
 <body>
@@ -168,6 +418,11 @@
 
     <div class="game-container">
       <div id="game-container"></div>
+      <!-- Mobile Touch Controls -->
+      <div class="mobile-controls">
+        <button class="touch-btn touch-left" id="touch-left">←</button>
+        <button class="touch-btn touch-right" id="touch-right">→</button>
+      </div>
     </div>
 
     <div class="controls">
