@@ -13,8 +13,8 @@ const config: Types.Core.GameConfig = {
     mode: Phaser.Scale.FIT,
     autoCenter: Phaser.Scale.CENTER_BOTH,
     min: {
-      width: 320,
-      height: 240
+      width: 300,
+      height: 400
     },
     max: {
       width: 1200,
