@@ -668,8 +668,120 @@
         font-size: 0.95rem;
       }
     }
+
+    /* Instructions Modal Styles */
+    .instructions-modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+    }
+
+    .instructions-content {
+      background-color: #fefefe;
+      margin: 2% auto;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+      width: 90%;
+      max-width: 600px;
+      max-height: 85vh;
+      overflow-y: auto;
+      position: relative;
+    }
+
+    .instructions-header {
+      text-align: center;
+      margin-bottom: 25px;
+      color: #2c3e50;
+    }
+
+    .instructions-header h2 {
+      margin: 0;
+      font-size: 28px;
+      color: #e74c3c;
+    }
+
+    .instructions-section {
+      margin-bottom: 25px;
+    }
+
+    .instructions-section h3 {
+      color: #2980b9;
+      font-size: 20px;
+      margin-bottom: 12px;
+      border-bottom: 2px solid #3498db;
+      padding-bottom: 5px;
+    }
+
+    .instructions-section p, .instructions-section ul {
+      color: #34495e;
+      font-size: 16px;
+      line-height: 1.6;
+      margin-bottom: 10px;
+    }
+
+    .instructions-section ul {
+      padding-left: 20px;
+    }
+
+    .instructions-section li {
+      margin-bottom: 8px;
+    }
+
+    .close-btn {
+      position: absolute;
+      top: 15px;
+      right: 20px;
+      font-size: 28px;
+      font-weight: bold;
+      color: #aaa;
+      cursor: pointer;
+      transition: color 0.3s;
+    }
+
+    .close-btn:hover {
+      color: #e74c3c;
+    }
+
+    .good-luck {
+      text-align: center;
+      font-size: 18px;
+      color: #27ae60;
+      font-weight: bold;
+      margin-top: 20px;
+      padding: 15px;
+      background-color: #d5f4e6;
+      border-radius: 8px;
+    }
+
+    /* Mobile responsive */
+    @media (max-width: 768px) {
+      .instructions-content {
+        width: 95%;
+        margin: 5% auto;
+        padding: 20px;
+        max-height: 90vh;
+      }
+
+      .instructions-header h2 {
+        font-size: 24px;
+      }
+
+      .instructions-section h3 {
+        font-size: 18px;
+      }
+
+      .instructions-section p, .instructions-section ul {
+        font-size: 15px;
+      }
+    }
   </style>
-  <script type="module" crossorigin src="/assets/index-1ec71464.js"></script>
+  <script type="module" crossorigin src="/assets/index-80099ef7.js"></script>
   <link rel="modulepreload" crossorigin href="/assets/phaser-f8c8a439.js">
   <link rel="modulepreload" crossorigin href="/assets/supabase-2481e69c.js">
 <link rel="manifest" href="/manifest.webmanifest"><script id="vite-plugin-pwa:register-sw" src="/registerSW.js"></script></head>
@@ -701,9 +813,6 @@
       <button class="btn" onclick="showInstructions()" data-i18n="instructions">
         ❓ Instructions
       </button>
-      <button class="btn" onclick="testAuth()" data-i18n="testAuth">
-        🔐 Test Auth
-      </button>
       <button id="language-btn" class="btn" onclick="toggleLanguage()">
         🌍 IT
       </button>
@@ -715,6 +824,54 @@
     <div class="footer">
       <p data-i18n="footerMadeBy">Made with ❤️ by Etimuè</p>
       <p><small data-i18n="footerControls">Use arrow keys or mouse to control the character</small></p>
+    </div>
+  </div>
+
+  <!-- Instructions Modal -->
+  <div id="instructions-modal" class="instructions-modal">
+    <div class="instructions-content">
+      <span class="close-btn" onclick="closeInstructions()">&times;</span>
+
+      <div class="instructions-header">
+        <h2 data-i18n="instructionsTitle">🎮 How to Play:</h2>
+      </div>
+
+      <div class="instructions-section">
+        <h3 data-i18n="instructionsObjective">🎯 Objective: Catch falling bottles with your bucket!</h3>
+      </div>
+
+      <div class="instructions-section">
+        <h3 data-i18n="instructionsControls">🕹️ Controls:</h3>
+        <ul>
+          <li data-i18n="instructionsArrowKeys">• Use ← → arrow keys to move</li>
+          <li data-i18n="instructionsMouseDrag">• Or click and drag with mouse/touch</li>
+          <li data-i18n="instructionsMobileTouch">• On mobile: Use touch controls at bottom</li>
+        </ul>
+      </div>
+
+      <div class="instructions-section">
+        <h3 data-i18n="instructionsRules">🍶 Game Rules:</h3>
+        <ul>
+          <li data-i18n="instructionsBrownBottles">• Brown bottles: +1 point each</li>
+          <li data-i18n="instructionsGreenBottles">• Green bottles: Lose 1 life (unless All Good mode)</li>
+          <li data-i18n="instructionsStarPowerups">• ⭐ Star power-ups: Activate All Good mode</li>
+          <li data-i18n="instructionsLives">• 💗 You have 3 lives</li>
+          <li data-i18n="instructionsTimer">• ⏰ 60 seconds to play</li>
+        </ul>
+      </div>
+
+      <div class="instructions-section">
+        <h3 data-i18n="instructionsTips">🏆 Tips:</h3>
+        <ul>
+          <li data-i18n="instructionsCatchStars">• Catch star power-ups to avoid green bottle damage</li>
+          <li data-i18n="instructionsAllGoodMode">• All Good mode makes green bottles worth +1 point</li>
+          <li data-i18n="instructionsHighScore">• Try to get the highest score possible!</li>
+        </ul>
+      </div>
+
+      <div class="good-luck" data-i18n="instructionsGoodLuck">
+        Good luck! 🎮
+      </div>
     </div>
   </div>
 
