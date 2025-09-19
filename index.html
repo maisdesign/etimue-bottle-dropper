@@ -73,6 +73,7 @@
       display: inline-block;
     }
 
+
     .game-container {
       background: rgba(255,255,255,0.1);
       border-radius: 20px;
@@ -204,7 +205,7 @@
         height: 65vh;
         min-height: 450px;
         max-height: 550px;
-        width: 85vw;
+        width: 100%;
       }
 
       .btn {
@@ -226,7 +227,7 @@
         height: 55vh;
         min-height: 350px;
         max-height: 500px;
-        width: 90vw;
+        width: 100%;
         max-width: none;
       }
 
@@ -295,7 +296,7 @@
         height: 50dvh;
         min-height: 280px;
         max-height: 400px;
-        width: 96vw;
+        width: 100%;
         max-width: none;
         border-radius: 10px;
         margin: 0 auto;
@@ -412,10 +413,15 @@
       left: 0;
       width: 100%;
       height: 100%;
+      height: 100vh; /* Better mobile support */
+      height: 100dvh; /* Dynamic viewport height */
       z-index: 9999;
       display: flex;
       align-items: center;
       justify-content: center;
+      /* Better mobile positioning */
+      box-sizing: border-box;
+      padding: 1rem;
     }
 
     .auth-modal-backdrop {
@@ -435,6 +441,7 @@
       padding: 2rem;
       max-width: 400px;
       width: 90%;
+      margin: 5% auto 0 auto; /* 5% top margin, centered horizontally */
       max-height: 90vh;
       overflow-y: auto;
       box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
@@ -666,9 +673,10 @@
 <body>
   <div class="container">
     <div class="header">
-      <h1 class="title">Etimuè Bottle Dropper</h1>
-      <p class="subtitle">Catch the falling bottles!</p>
-      <span class="version">v2.0.0 - Clean Architecture</span>
+
+      <h1 class="title" data-i18n="title">Etimuè Bottle Dropper</h1>
+      <p class="subtitle" data-i18n="subtitle">Catch the falling bottles!</p>
+      <span class="version" data-i18n="version">v2.0.0 - Clean Architecture</span>
     </div>
 
     <div class="game-container">
@@ -681,32 +689,103 @@
     </div>
 
     <div class="controls">
-      <button class="btn btn-primary" onclick="startNewGame()">
+      <button class="btn btn-primary" onclick="startNewGame()" data-i18n="newGame">
         🎮 New Game
       </button>
-      <button class="btn" onclick="togglePause()">
+      <button class="btn" onclick="togglePause()" data-i18n="pause">
         ⏸️ Pause
       </button>
-      <button class="btn" onclick="showInstructions()">
+      <button class="btn" onclick="showInstructions()" data-i18n="instructions">
         ❓ Instructions
       </button>
-      <button class="btn" onclick="testAuth()">
+      <button class="btn" onclick="testAuth()" data-i18n="testAuth">
         🔐 Test Auth
+      </button>
+      <button id="language-btn" class="btn" onclick="toggleLanguage()">
+        🌍 IT
+      </button>
+      <button id="character-btn" class="btn" onclick="cycleCharacter()">
+        🐱 Charlie
       </button>
     </div>
 
     <div class="footer">
-      <p>Made with ❤️ by Etimuè</p>
-      <p><small>Use arrow keys or mouse to control the bucket</small></p>
+      <p data-i18n="footerMadeBy">Made with ❤️ by Etimuè</p>
+      <p><small data-i18n="footerControls">Use arrow keys or mouse to control the character</small></p>
     </div>
   </div>
 
   <script type="module">
     import { initializeGame, getGame, destroyGame } from './src/main.ts'
     import { requireAuth } from './src/systems/AuthManager.ts'
+    import { languageManager } from './src/i18n/LanguageManager.ts'
+    import { characterManager } from './src/systems/CharacterManager.ts'
 
     // Global game state
     let gamePaused = false
+
+    // Initialize language system
+    function initializeLanguage() {
+      // Update all elements with data-i18n attributes
+      function updateTranslations() {
+        const translation = languageManager.getTranslation()
+        document.querySelectorAll('[data-i18n]').forEach(element => {
+          const key = element.getAttribute('data-i18n')
+          if (key && key in translation) {
+            if (key === 'footerControls') {
+              // Special handling for character-aware footer
+              updateFooterControls()
+            } else {
+              element.textContent = translation[key]
+            }
+          }
+        })
+
+        // Update language button
+        const langBtn = document.getElementById('language-btn')
+        if (langBtn) {
+          const currentLang = languageManager.getCurrentLanguage()
+          langBtn.textContent = `🌍 ${currentLang.toUpperCase()}`
+        }
+
+        // Update character button
+        const charBtn = document.getElementById('character-btn')
+        if (charBtn) {
+          const characterName = characterManager.getCurrentCharacterName()
+          charBtn.textContent = `🐱 ${characterName}`
+        }
+
+        // Update page language attribute
+        document.documentElement.lang = languageManager.getCurrentLanguage()
+      }
+
+      // Update footer with current character name
+      function updateFooterControls() {
+        const footerElement = document.querySelector('[data-i18n="footerControls"]')
+        if (footerElement) {
+          const translation = languageManager.getTranslation()
+          const characterName = characterManager.getCurrentCharacterName()
+          footerElement.textContent = translation.footerControlsCharacter.replace('{character}', characterName)
+        }
+      }
+
+      // Set up language change listener
+      languageManager.onLanguageChange(updateTranslations)
+
+      // Set up character change listener
+      characterManager.onCharacterChange(() => {
+        updateFooterControls()
+        // Update character button text
+        const charBtn = document.getElementById('character-btn')
+        if (charBtn) {
+          const characterName = characterManager.getCurrentCharacterName()
+          charBtn.textContent = `🐱 ${characterName}`
+        }
+      })
+
+      // Initial translation update
+      updateTranslations()
+    }
 
     // GLOBAL FUNCTIONS FOR BUTTONS
     window.startNewGame = async function() {
@@ -737,61 +816,65 @@
 
       if (gamePaused) {
         game.scene.pause('GameScene')
-        document.querySelector('.btn:nth-child(2)').textContent = '▶️ Resume'
+        const t = languageManager.getTranslation()
+        document.querySelector('.btn:nth-child(2)').textContent = '▶️ ' + t.resume
         console.log('⏸️ Game paused')
       } else {
         game.scene.resume('GameScene')
-        document.querySelector('.btn:nth-child(2)').textContent = '⏸️ Pause'
+        const t = languageManager.getTranslation()
+        document.querySelector('.btn:nth-child(2)').textContent = '⏸️ ' + t.pause
         console.log('▶️ Game resumed')
       }
     }
 
     window.showInstructions = function() {
-      alert(`🎮 How to Play:
+      const t = languageManager.getTranslation()
+      alert(`${t.instructionsTitle}
 
-🎯 Objective: Catch falling bottles with your bucket!
+${t.instructionsObjective}
 
-🕹️ Controls:
-• Use ← → arrow keys to move
-• Or click and drag with mouse/touch
-• On mobile: Use touch controls at bottom
+${t.instructionsControls}
+${t.instructionsArrowKeys}
+${t.instructionsMouseDrag}
+${t.instructionsMobileTouch}
 
-🍶 Game Rules:
-• Brown bottles: +1 point each
-• Green bottles: Lose 1 life (unless All Good mode)
-• ⭐ Star power-ups: Activate All Good mode
-• 💗 You have 3 lives
-• ⏰ 60 seconds to play
+${t.instructionsRules}
+${t.instructionsBrownBottles}
+${t.instructionsGreenBottles}
+${t.instructionsStarPowerups}
+${t.instructionsLives}
+${t.instructionsTimer}
 
-🏆 Tips:
-• Catch star power-ups to avoid green bottle damage
-• All Good mode makes green bottles worth +1 point
-• Try to get the highest score possible!
+${t.instructionsTips}
+${t.instructionsCatchStars}
+${t.instructionsAllGoodMode}
+${t.instructionsHighScore}
 
-Good luck! 🎮`)
+${t.instructionsGoodLuck}`)
     }
 
     window.testAuth = function() {
       console.log('🧪 Testing auth flow...')
-      alert(`🔐 Auth System Demo
+      const t = languageManager.getTranslation()
+      alert(`${t.testAuthTitle}
 
-📱 AuthModal Features:
-✅ Google OAuth integration
-✅ Email OTP verification
-✅ Multi-step flow (Welcome → Email → Verify → Profile)
-✅ Marketing consent handling
-✅ Nickname setup
-✅ Mobile responsive design
-✅ Glassmorphism UI
+${t.testAuthFeatures}
 
-🎮 Integration:
-✅ Game requires auth before play
-✅ Profile management
-✅ Score submission ready
+${t.testAuthIntegration}
 
-The Auth system is 98% complete and ready for production testing!
+${t.testAuthReady}
 
-Click "New Game" to see auth requirement in action.`)
+${t.testAuthTryGame}`)
+    }
+
+    window.toggleLanguage = function() {
+      languageManager.toggleLanguage()
+      console.log(`🌍 Language toggled to: ${languageManager.getCurrentLanguage()}`)
+    }
+
+    window.cycleCharacter = function() {
+      characterManager.cycleCharacter()
+      console.log(`🐱 Character changed to: ${characterManager.getCurrentCharacterName()}`)
     }
 
     // Mobile touch controls
@@ -807,23 +890,27 @@ Click "New Game" to see auth requirement in action.`)
       if (!gameScene) return
 
       // Simulate keyboard input
-      if (touchLeftPressed && gameScene.bucket) {
+      if (touchLeftPressed && gameScene.character) {
         const { width } = gameScene.cameras.main
         const margin = Math.max(40, width * 0.05)
         const speed = Math.max(5, width * 0.006)
-        gameScene.bucket.x = Math.max(margin, gameScene.bucket.x - speed)
+        gameScene.character.x = Math.max(margin, gameScene.character.x - speed)
       }
-      if (touchRightPressed && gameScene.bucket) {
+      if (touchRightPressed && gameScene.character) {
         const { width } = gameScene.cameras.main
         const margin = Math.max(40, width * 0.05)
         const speed = Math.max(5, width * 0.006)
-        gameScene.bucket.x = Math.min(width - margin, gameScene.bucket.x + speed)
+        gameScene.character.x = Math.min(width - margin, gameScene.character.x + speed)
       }
     }
 
     // Auto-initialize when page loads
     document.addEventListener('DOMContentLoaded', function() {
       console.log('🚀 Etimuè Bottle Dropper v2.0.0 loaded!')
+
+      // Initialize language system
+      initializeLanguage()
+
       // DO NOT initialize game here - wait for user to click GIOCA
       // initializeGame() - REMOVED to fix double initialization bug
 

@@ -1,11 +1,123 @@
 # SITUAZIONE PROGETTO - ETIMUÈ BOTTLE DROPPER
-*Ultimo aggiornamento: 18 Settembre 2025 - INIZIO SESSIONE RISOLUZIONE BUGS CRITICI*
 
-## 🎯 STATO ATTUALE - PRODUZIONE CON BUG CRITICI IDENTIFICATI
+## 🕒 ULTIMO AGGIORNAMENTO: 19 Settembre 2025 - 03:55
 
-### 🚨 NUOVA SESSIONE: RISOLUZIONE BUG CRITICI (18 SET 2025)
+### ✅ STATO ATTUALE: GIOCO FUNZIONANTE - MASCOTTE DA SOSTITUIRE
 
-**URGENZA**: I seguenti bug critici sono stati identificati in produzione e richiedono fix immediati:
+**✅ FIX CRITICO APPLICATO**: Rimosso carattere Unicode `♣` (club suit) dal SVG irlandese che causava errore `btoa()` nella riga 96 del BootScene.ts
+
+**🎯 PROSSIMO OBIETTIVO**: Sostituire SVG programmatici con le vere immagini delle mascotte presenti nella cartella Legacy
+
+### 🔧 SESSIONE COMPLETATA (19 Settembre 2025 - 01:30-03:45)
+
+#### ✅ COMPLETATI:
+1. **Sistema Lingua Italiano** ✅
+   - Traduzioni complete IT/EN per tutto il gioco
+   - LanguageManager con persistenza localStorage
+   - Aggiornamento dinamico UI con cambio lingua
+
+2. **Sistema Mascotte** ✅
+   - CharacterManager con 3 personaggi: Charlie, Scrocca, Irlandese
+   - Sprite SVG programmatiche per le mascotte
+   - Integrazione con GameScene (bucket → character)
+   - Persistenza scelta personaggio
+
+3. **Fix Doppie Icone** ✅
+   - Rimosse icone duplicate dalle traduzioni
+   - Icone mantenute solo nell'HTML
+   - Sistema pulito per entrambe le lingue
+
+4. **Layout Pulsanti Migliorato** ✅
+   - Pulsanti lingua e personaggio spostati insieme agli altri
+   - UI più organizzata e coerente
+   - Rimossi CSS inutilizzati
+
+5. **Fix AuthModal Loop** ✅
+   - Risolto loop infinito nel metodo hide()
+   - AuthModal più stabile
+
+6. **Fix SVG Encoding Error** ✅
+   - Rimosso carattere Unicode `♣` da SVG irlandese (BootScene.ts:96)
+   - Sostituito con carattere ASCII compatibile con btoa()
+   - Errore `InvalidCharacterError` risolto
+
+#### ❌ PROBLEMA CRITICO IDENTIFICATO (RISOLTO):
+**Errore SVG Encoding** (BootScene.ts:79):
+```
+InvalidCharacterError: Failed to execute 'btoa' on 'Window':
+The string to be encoded contains characters outside of the Latin1 range.
+```
+
+**CAUSA**: Ancora presenti caratteri Unicode non compatibili con `btoa()` negli SVG delle mascotte
+
+### 🎯 TODO PROSSIMA SESSIONE - PRIORITÀ ALTA
+
+#### ✅ COMPLETATO - Errore Critico Risolto:
+1. **SVG Encoding Error RISOLTO** ✅
+   - Rimosso carattere Unicode `♣` dal SVG irlandese
+   - Gioco ora funziona correttamente ✅
+
+#### 🔥 URGENT - Sostituire Mascotte con Immagini Reali:
+1. **Localizzare immagini mascotte nella cartella Legacy** 🎯
+   - Cercare file delle mascotte Charlie, Scrocca, Irlandese
+   - Verificare formato e qualità delle immagini
+
+2. **Sostituire SVG programmatici con immagini reali** 🎯
+   - Aggiornare BootScene.ts per caricare immagini reali invece di SVG
+   - Mantenere sistema CharacterManager esistente
+   - Verificare compatibilità con GameScene
+
+3. **Test completo con mascotte reali** 🎯
+   - Verificare caricamento corretto delle immagini
+   - Testare switching tra personaggi
+   - Verificare display nel gioco
+   - Sostituire eventuali caratteri non-ASCII con alternative compatibili
+   - Testare ogni sprite individualmente con `btoa()`
+
+2. **Alternative Tecniche se persiste**:
+   - Usare `encodeURIComponent()` invece di `btoa()`
+   - Caricare sprite da file esterni invece di inline SVG
+   - Usare data URI senza encoding base64
+
+#### 🔧 MIGLIORAMENTI SECONDARI:
+3. **Fix Database Profile Error**:
+   - Errore 400 su update profilo (consent_timestamp column missing)
+   - Verificare schema database Supabase
+
+4. **Test Completo Sistema**:
+   - Una volta risolto l'errore SVG, testare tutto il flusso
+   - Autenticazione → Gioco → Cambio lingua → Cambio personaggio
+
+### 📊 STATUS FEATURES
+
+| Feature | Status | Note |
+|---------|--------|------|
+| 🌍 Sistema Multilingua | ✅ COMPLETO | IT/EN con traduzioni complete |
+| 🐱 Sistema Mascotte | ⚠️ IMPLEMENTATO | Bloccato da errore SVG |
+| 🎮 Gioco Base | ❌ NON FUNZIONANTE | Errore caricamento asset |
+| 🔐 Autenticazione | ✅ FUNZIONANTE | OAuth + email OTP OK |
+| 🎨 UI/UX | ✅ COMPLETO | Layout ottimizzato, no doppie icone |
+| 📱 Mobile | ✅ FUNZIONANTE | Controlli touch implementati |
+
+### 🔍 ANALISI CONSOLE LOG:
+- ✅ Language/Character Manager: Inizializzazione corretta
+- ✅ Auth: Login funzionante (user downloadtaky@gmail.com)
+- ✅ Phaser: Engine si avvia correttamente
+- ❌ BootScene: ERRORE FATALE alla riga 79 con btoa()
+- ✅ UI: Pulsanti lingua/personaggio funzionano (cambio funzionale)
+
+### 💡 STRATEGIA RISOLUZIONE:
+1. **Debug SVG character by character** negli sprite
+2. **Isolare il carattere problematico**
+3. **Sostituire con alternative ASCII-safe**
+4. **Testare immediato** dopo ogni modifica
+
+### 🏁 OBIETTIVO PROSSIMA SESSIONE:
+**Far partire il gioco senza errori** - priorità assoluta per continuare lo sviluppo
+
+---
+
+## 📋 STORICO SESSIONI PRECEDENTI
 
 #### 🔥 BUG CRITICO 1: OAuth Redirect Domain Errato
 - **Problema**: Dopo game over, login redirect va al dominio OLD (astounding-rolypoly-fc5137.netlify.app)

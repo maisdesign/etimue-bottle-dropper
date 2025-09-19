@@ -1,4 +1,5 @@
 import { authManager } from '../systems/AuthManager'
+import { languageManager } from '../i18n/LanguageManager'
 
 export class AuthModal {
   private element: HTMLElement
@@ -9,6 +10,7 @@ export class AuthModal {
   constructor() {
     this.element = this.createElement()
     this.setupEventListeners()
+    this.setupLanguageListener()
     document.body.appendChild(this.element)
   }
 
@@ -21,21 +23,22 @@ export class AuthModal {
   }
 
   private getModalHTML(): string {
+    const t = languageManager.getTranslation()
     return `
       <div class="auth-modal-backdrop">
         <div class="auth-modal-content">
           <!-- Welcome Step -->
           <div class="auth-step" id="auth-step-welcome">
-            <h2>🎮 Welcome to Etimuè Bottle Dropper!</h2>
-            <p>Sign in to play and compete for prizes</p>
+            <h2>${t.authWelcome}</h2>
+            <p>${t.authSignInToPlay}</p>
 
             <div class="auth-buttons">
               <button id="auth-google" class="auth-button auth-button-google">
-                <span>🔍</span> Continue with Google
+                <span>🔍</span> ${t.authContinueGoogle}
               </button>
 
               <button id="auth-email" class="auth-button auth-button-email">
-                <span>📧</span> Continue with Email
+                <span>📧</span> ${t.authContinueEmail}
               </button>
             </div>
 
@@ -44,57 +47,57 @@ export class AuthModal {
 
           <!-- Email Step -->
           <div class="auth-step hidden" id="auth-step-email">
-            <h2>📧 Sign in with Email</h2>
-            <p>We'll send you a verification code</p>
+            <h2>${t.authEmailTitle}</h2>
+            <p>${t.authEmailSubtitle}</p>
 
             <div class="auth-form">
               <input
                 type="email"
                 id="auth-email-input"
-                placeholder="your@email.com"
+                placeholder="${t.authEmailPlaceholder}"
                 class="auth-input"
               >
               <button id="auth-send-otp" class="auth-button auth-button-primary">
-                Send Code
+                ${t.authSendCode}
               </button>
               <button id="auth-back-welcome" class="auth-button auth-button-secondary">
-                ← Back
+                ${t.authBack}
               </button>
             </div>
           </div>
 
           <!-- Verify Step -->
           <div class="auth-step hidden" id="auth-step-verify">
-            <h2>🔐 Enter Verification Code</h2>
-            <p>Check your email for the 6-digit code</p>
+            <h2>${t.authVerifyTitle}</h2>
+            <p>${t.authVerifySubtitle}</p>
 
             <div class="auth-form">
               <input
                 type="text"
                 id="auth-otp-input"
-                placeholder="000000"
+                placeholder="${t.authOtpPlaceholder}"
                 class="auth-input auth-input-otp"
                 maxlength="6"
               >
               <button id="auth-verify-otp" class="auth-button auth-button-primary">
-                Verify
+                ${t.authVerify}
               </button>
               <button id="auth-back-email" class="auth-button auth-button-secondary">
-                ← Back
+                ${t.authBack}
               </button>
             </div>
           </div>
 
           <!-- Profile Setup Step -->
           <div class="auth-step hidden" id="auth-step-profile">
-            <h2>👤 Setup Your Profile</h2>
-            <p>Choose a nickname for the leaderboard</p>
+            <h2>${t.authProfileTitle}</h2>
+            <p>${t.authProfileSubtitle}</p>
 
             <div class="auth-form">
               <input
                 type="text"
                 id="auth-nickname-input"
-                placeholder="Your nickname"
+                placeholder="${t.authNicknamePlaceholder}"
                 class="auth-input"
                 maxlength="20"
               >
@@ -102,12 +105,12 @@ export class AuthModal {
               <div class="consent-checkbox">
                 <label>
                   <input type="checkbox" id="marketing-consent" class="auth-checkbox">
-                  I want to receive updates and compete for prizes
+                  ${t.authMarketingConsent}
                 </label>
               </div>
 
               <button id="auth-complete" class="auth-button auth-button-primary">
-                Start Playing!
+                ${t.authStartPlaying}
               </button>
             </div>
           </div>
@@ -115,7 +118,7 @@ export class AuthModal {
           <!-- Loading overlay -->
           <div class="auth-loading hidden" id="auth-loading">
             <div class="spinner"></div>
-            <p>Processing...</p>
+            <p>${t.authProcessing}</p>
           </div>
         </div>
       </div>
@@ -178,6 +181,17 @@ export class AuthModal {
     })
   }
 
+  private setupLanguageListener(): void {
+    languageManager.onLanguageChange(() => {
+      // Recreate modal content with new translations
+      this.element.innerHTML = this.getModalHTML()
+      // Re-setup event listeners since we recreated the HTML
+      this.setupEventListeners()
+      // Restore current step
+      this.showStep(this.currentStep)
+    })
+  }
+
   private async handleGoogleSignIn(): Promise<void> {
     this.showLoading(true)
 
@@ -188,12 +202,14 @@ export class AuthModal {
         // Google OAuth will redirect, so we just wait
         console.log('Google sign in initiated')
       } else {
-        this.showError(result.error || 'Google sign in failed')
+        const t = languageManager.getTranslation()
+        this.showError(result.error || t.authGoogleFailed)
         this.showLoading(false)
       }
     } catch (error) {
       console.error('Google sign in error:', error)
-      this.showError('Unexpected error during Google sign in')
+      const t = languageManager.getTranslation()
+      this.showError(t.authUnexpectedError)
       this.showLoading(false)
     }
   }
@@ -203,7 +219,8 @@ export class AuthModal {
     const email = emailInput?.value.trim()
 
     if (!email || !email.includes('@')) {
-      this.showError('Please enter a valid email address')
+      const t = languageManager.getTranslation()
+      this.showError(t.authInvalidEmail)
       return
     }
 
@@ -215,13 +232,16 @@ export class AuthModal {
 
       if (result.success) {
         this.showStep('verify')
-        this.showSuccess('Verification code sent to your email!')
+        const t = languageManager.getTranslation()
+        this.showSuccess(t.authCodeSent)
       } else {
-        this.showError(result.error || 'Failed to send verification code')
+        const t = languageManager.getTranslation()
+        this.showError(result.error || t.authSendFailed)
       }
     } catch (error) {
       console.error('Send OTP error:', error)
-      this.showError('Unexpected error sending verification code')
+      const t = languageManager.getTranslation()
+      this.showError(t.authUnexpectedError)
     } finally {
       this.showLoading(false)
     }
@@ -232,7 +252,8 @@ export class AuthModal {
     const token = otpInput?.value.trim()
 
     if (!token || token.length !== 6) {
-      this.showError('Please enter the 6-digit verification code')
+      const t = languageManager.getTranslation()
+      this.showError(t.authCodeLength)
       return
     }
 
@@ -255,14 +276,17 @@ export class AuthModal {
             this.showStep('profile')
           }
         } else {
-          this.showError('Authentication failed, please try again')
+          const t = languageManager.getTranslation()
+          this.showError(t.authFailed)
         }
       } else {
-        this.showError(result.error || 'Invalid verification code')
+        const t = languageManager.getTranslation()
+        this.showError(result.error || t.authInvalidCode)
       }
     } catch (error) {
       console.error('Verify OTP error:', error)
-      this.showError('Unexpected error during verification')
+      const t = languageManager.getTranslation()
+      this.showError(t.authVerifyFailed)
     } finally {
       this.showLoading(false)
     }
@@ -287,7 +311,8 @@ export class AuthModal {
       this.completeAuth(true)
     } catch (error) {
       console.error('Profile update error:', error)
-      this.showError('Failed to update profile')
+      const t = languageManager.getTranslation()
+      this.showError(t.authProfileFailed)
       this.showLoading(false)
     }
   }
@@ -388,7 +413,7 @@ export class AuthModal {
 
   public hide(): void {
     this.element.classList.add('hidden')
-    this.completeAuth(false)
+    // Don't call completeAuth here to avoid infinite loop
   }
 
   public onAuth(callback: (success: boolean) => void): void {

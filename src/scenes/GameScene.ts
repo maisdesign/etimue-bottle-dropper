@@ -1,7 +1,9 @@
 import { Scene } from 'phaser'
+import { languageManager } from '../i18n/LanguageManager'
+import { characterManager } from '../systems/CharacterManager'
 
 export class GameScene extends Scene {
-  private bucket!: Phaser.Physics.Arcade.Image
+  private character!: Phaser.Physics.Arcade.Image
   private bottles!: Phaser.Physics.Arcade.Group
   private powerups!: Phaser.Physics.Arcade.Group
   private score: number = 0
@@ -45,23 +47,24 @@ export class GameScene extends Scene {
 
   private setupUI(): void {
     const { width, height } = this.cameras.main
+    const t = languageManager.getTranslation()
 
     // Score display
-    this.scoreText = this.add.text(16, 16, 'Score: 0', {
+    this.scoreText = this.add.text(16, 16, `${t.score}: 0`, {
       fontSize: '24px',
       color: '#000000',
       fontFamily: 'Arial'
     })
 
     // Lives display
-    this.livesText = this.add.text(16, 50, 'Lives: ❤️❤️❤️', {
+    this.livesText = this.add.text(16, 50, `${t.lives}: ❤️❤️❤️`, {
       fontSize: '20px',
       color: '#000000',
       fontFamily: 'Arial'
     })
 
     // Timer display
-    this.timerText = this.add.text(width / 2, 16, 'Time: 60s', {
+    this.timerText = this.add.text(width / 2, 16, `${t.time}: 60s`, {
       fontSize: '24px',
       color: '#000000',
       fontFamily: 'Arial'
@@ -75,13 +78,13 @@ export class GameScene extends Scene {
     })
 
     // Instructions
-    this.add.text(width / 2, height * 0.12, 'Use arrow keys or drag to move the bucket!', {
+    this.add.text(width / 2, height * 0.12, t.gameInstructions, {
       fontSize: Math.min(18, width * 0.025) + 'px',
       color: '#000000',
       fontFamily: 'Arial'
     }).setOrigin(0.5)
 
-    this.add.text(width / 2, height * 0.16, '🍶 Catch brown bottles: +1pt | 🟢 Avoid green bottles: -1 life | ⭐ Star: All Good!', {
+    this.add.text(width / 2, height * 0.16, t.gameRules, {
       fontSize: Math.min(14, width * 0.018) + 'px',
       color: '#333333',
       fontFamily: 'Arial'
@@ -91,10 +94,19 @@ export class GameScene extends Scene {
   private setupGameObjects(): void {
     const { width, height } = this.cameras.main
 
-    // Create bucket
-    this.bucket = this.physics.add.image(width / 2, height - 80, 'bucket')
-    this.bucket.setCollideWorldBounds(true)
-    this.bucket.setImmovable(true)
+    // Create character (use current selected character)
+    const currentCharacter = characterManager.getCurrentCharacter()
+    this.character = this.physics.add.image(width / 2, height - 80, currentCharacter)
+    this.character.setCollideWorldBounds(true)
+    this.character.setImmovable(true)
+
+    // Listen for character changes
+    characterManager.onCharacterChange((newCharacter) => {
+      if (this.character) {
+        this.character.setTexture(newCharacter)
+        console.log(`🐱 Character sprite updated to: ${newCharacter}`)
+      }
+    })
 
     // Create bottles group
     this.bottles = this.physics.add.group({
@@ -121,7 +133,7 @@ export class GameScene extends Scene {
       if (pointer.isDown) {
         const { width } = this.cameras.main
         const margin = Math.max(40, width * 0.05) // 5% margin or minimum 40px
-        this.bucket.x = Phaser.Math.Clamp(pointer.x, margin, width - margin)
+        this.character.x = Phaser.Math.Clamp(pointer.x, margin, width - margin)
       }
     })
 
@@ -135,7 +147,7 @@ export class GameScene extends Scene {
 
   private setupCollisions(): void {
     this.physics.add.overlap(
-      this.bucket,
+      this.character,
       this.bottles,
       this.catchBottle,
       undefined,
@@ -143,7 +155,7 @@ export class GameScene extends Scene {
     )
 
     this.physics.add.overlap(
-      this.bucket,
+      this.character,
       this.powerups,
       this.catchPowerup,
       undefined,
@@ -168,8 +180,9 @@ export class GameScene extends Scene {
 
     // Update UI
     this.updateLivesDisplay()
-    this.scoreText.setText(`Score: ${this.score}`)
-    this.timerText.setText(`Time: ${this.timeLeft}s`)
+    const t = languageManager.getTranslation()
+    this.scoreText.setText(`${t.score}: ${this.score}`)
+    this.timerText.setText(`${t.time}: ${this.timeLeft}s`)
     this.powerupText.setText('')
 
     this.gameStarted = true
@@ -316,7 +329,8 @@ export class GameScene extends Scene {
     } else {
       // Normal bottle or All Good mode active = gain points
       this.score += 1
-      this.scoreText.setText(`Score: ${this.score}`)
+      const t = languageManager.getTranslation()
+      this.scoreText.setText(`${t.score}: ${this.score}`)
       console.log(`✅ ${isGreen ? 'Green bottle (All Good active)' : 'Brown bottle'} caught! +1 point. Score: ${this.score}`)
     }
   }
@@ -362,14 +376,16 @@ export class GameScene extends Scene {
 
   private updateLivesDisplay(): void {
     const hearts = '❤️'.repeat(this.lives)
-    this.livesText.setText(`Lives: ${hearts}`)
+    const t = languageManager.getTranslation()
+    this.livesText.setText(`${t.lives}: ${hearts}`)
   }
 
   private updateTimer(): void {
     if (this.gameOver) return
 
     this.timeLeft -= 1
-    this.timerText.setText(`Time: ${this.timeLeft}s`)
+    const t = languageManager.getTranslation()
+    this.timerText.setText(`${t.time}: ${this.timeLeft}s`)
 
     if (this.timeLeft <= 0) {
       this.endGame()
@@ -381,7 +397,8 @@ export class GameScene extends Scene {
     this.allGoodTimeLeft = 10
 
     // Update UI
-    this.powerupText.setText(`⭐ ALL GOOD: ${this.allGoodTimeLeft}s`)
+    const t = languageManager.getTranslation()
+    this.powerupText.setText(`⭐ ${t.allGood}: ${this.allGoodTimeLeft}s`)
 
     // Start countdown timer
     if (this.allGoodTimer) {
@@ -400,7 +417,8 @@ export class GameScene extends Scene {
     if (!this.allGoodMode) return
 
     this.allGoodTimeLeft -= 1
-    this.powerupText.setText(`⭐ ALL GOOD: ${this.allGoodTimeLeft}s`)
+    const t = languageManager.getTranslation()
+    this.powerupText.setText(`⭐ ${t.allGood}: ${this.allGoodTimeLeft}s`)
 
     if (this.allGoodTimeLeft <= 0) {
       this.deactivateAllGoodMode()
@@ -434,20 +452,21 @@ export class GameScene extends Scene {
 
     // Show game over message
     const { width, height } = this.cameras.main
+    const t = languageManager.getTranslation()
 
-    const gameOverText = this.add.text(width / 2, height / 2, 'GAME OVER!', {
+    const gameOverText = this.add.text(width / 2, height / 2, t.gameOver, {
       fontSize: Math.min(48, width * 0.06) + 'px',
       color: '#ff0000',
       fontFamily: 'Arial'
     }).setOrigin(0.5)
 
-    const finalScoreText = this.add.text(width / 2, height / 2 + 50, `Final Score: ${this.score}`, {
+    const finalScoreText = this.add.text(width / 2, height / 2 + 50, `${t.finalScore}: ${this.score}`, {
       fontSize: Math.min(24, width * 0.03) + 'px',
       color: '#000000',
       fontFamily: 'Arial'
     }).setOrigin(0.5)
 
-    const restartText = this.add.text(width / 2, height / 2 + 100, 'Click "New Game" to restart', {
+    const restartText = this.add.text(width / 2, height / 2 + 100, t.restartMessage, {
       fontSize: Math.min(18, width * 0.025) + 'px',
       color: '#666666',
       fontFamily: 'Arial'
@@ -470,9 +489,9 @@ export class GameScene extends Scene {
       const margin = Math.max(40, width * 0.05) // 5% margin or minimum 40px
       const speed = Math.max(5, width * 0.006) // Responsive speed based on screen width
       if (cursors.left?.isDown) {
-        this.bucket.x = Math.max(margin, this.bucket.x - speed)
+        this.character.x = Math.max(margin, this.character.x - speed)
       } else if (cursors.right?.isDown) {
-        this.bucket.x = Math.min(width - margin, this.bucket.x + speed)
+        this.character.x = Math.min(width - margin, this.character.x + speed)
       }
     }
 
