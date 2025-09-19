@@ -100,6 +100,9 @@ export class GameScene extends Scene {
     this.character.setCollideWorldBounds(true)
     this.character.setImmovable(true)
 
+    // Scale character appropriately for gameplay
+    this.character.setScale(0.6) // Reduce size to 60%
+
     // Listen for character changes
     characterManager.onCharacterChange((newCharacter) => {
       if (this.character) {

@@ -38,7 +38,7 @@ export class BootScene extends Scene {
     // Character sprites - Load real mascot images
     this.load.image('charlie', '/characters/charlie.png')
     this.load.image('scrocca', '/characters/scrocca.png')
-    this.load.image('irlandese', '/characters/irlandese.png')
+    this.load.image('leprecauno', '/characters/leprecauno.png')
 
     this.load.image('bucket', 'data:image/svg+xml;base64,' + btoa(`
       <svg width="80" height="60" xmlns="http://www.w3.org/2000/svg">

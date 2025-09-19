@@ -85,7 +85,7 @@ export interface Translation {
   footerControlsCharacter: string
   characterCharlie: string
   characterScrocca: string
-  characterIrlandese: string
+  characterLeprecauno: string
 }
 
 export const translations = {
@@ -176,7 +176,7 @@ export const translations = {
     footerControlsCharacter: 'Use arrow keys or mouse to control {character}',
     characterCharlie: 'Charlie',
     characterScrocca: 'Scrocca',
-    characterIrlandese: 'Irlandese'
+    characterLeprecauno: 'Leprechaun'
   } as Translation,
 
   it: {
@@ -266,7 +266,7 @@ export const translations = {
     footerControlsCharacter: 'Usa le frecce o il mouse per controllare {character}',
     characterCharlie: 'Charlie',
     characterScrocca: 'Scrocca',
-    characterIrlandese: 'Irlandese'
+    characterLeprecauno: 'Leprecauno'
   } as Translation
 }
 

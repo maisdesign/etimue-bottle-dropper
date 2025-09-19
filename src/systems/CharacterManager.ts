@@ -1,6 +1,6 @@
 import { languageManager } from '../i18n/LanguageManager'
 
-export type Character = 'charlie' | 'scrocca' | 'irlandese'
+export type Character = 'charlie' | 'scrocca' | 'leprecauno'
 
 export interface CharacterInfo {
   id: Character
@@ -15,8 +15,16 @@ export class CharacterManager {
   private callbacks: Set<(character: Character) => void> = new Set()
 
   private constructor() {
-    // Load from localStorage
-    const savedCharacter = localStorage.getItem('etimue-character') as Character
+    // Load from localStorage with migration support
+    let savedCharacter = localStorage.getItem('etimue-character') as Character
+
+    // Migration: convert old 'irlandese' to new 'leprecauno'
+    if (savedCharacter === 'irlandese' as any) {
+      savedCharacter = 'leprecauno'
+      localStorage.setItem('etimue-character', savedCharacter)
+      console.log(`🔄 Migrated character from 'irlandese' to 'leprecauno'`)
+    }
+
     if (savedCharacter && this.isValidCharacter(savedCharacter)) {
       this.currentCharacter = savedCharacter
     }
@@ -32,7 +40,7 @@ export class CharacterManager {
   }
 
   private isValidCharacter(character: string): character is Character {
-    return ['charlie', 'scrocca', 'irlandese'].includes(character)
+    return ['charlie', 'scrocca', 'leprecauno'].includes(character)
   }
 
   public getCurrentCharacter(): Character {
@@ -70,12 +78,12 @@ export class CharacterManager {
           sprite: 'scrocca',
           description: 'Party cat who loves fun'
         }
-      case 'irlandese':
+      case 'leprecauno':
         return {
-          id: 'irlandese',
-          name: t.characterIrlandese,
-          sprite: 'irlandese',
-          description: 'Lucky Irish cat'
+          id: 'leprecauno',
+          name: t.characterLeprecauno,
+          sprite: 'leprecauno',
+          description: 'Lucky Irish leprechaun cat'
         }
       default:
         return this.getCharacterInfo('charlie')
@@ -87,7 +95,7 @@ export class CharacterManager {
   }
 
   public getAllCharacters(): CharacterInfo[] {
-    return ['charlie', 'scrocca', 'irlandese'].map(char => this.getCharacterInfo(char as Character))
+    return ['charlie', 'scrocca', 'leprecauno'].map(char => this.getCharacterInfo(char as Character))
   }
 
   public onCharacterChange(callback: (character: Character) => void): void {
@@ -99,7 +107,7 @@ export class CharacterManager {
   }
 
   public cycleCharacter(): void {
-    const characters: Character[] = ['charlie', 'scrocca', 'irlandese']
+    const characters: Character[] = ['charlie', 'scrocca', 'leprecauno']
     const currentIndex = characters.indexOf(this.currentCharacter)
     const nextIndex = (currentIndex + 1) % characters.length
     this.setCharacter(characters[nextIndex])
