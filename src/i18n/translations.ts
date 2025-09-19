@@ -7,7 +7,6 @@ export interface Translation {
   pause: string
   resume: string
   instructions: string
-  testAuth: string
   footerMadeBy: string
   footerControls: string
 
@@ -74,12 +73,6 @@ export interface Translation {
   authVerifyFailed: string
   authProfileFailed: string
 
-  // Test Auth
-  testAuthTitle: string
-  testAuthFeatures: string
-  testAuthIntegration: string
-  testAuthReady: string
-  testAuthTryGame: string
 
   // Character System
   footerControlsCharacter: string
@@ -98,7 +91,6 @@ export const translations = {
     pause: 'Pause',
     resume: 'Resume',
     instructions: 'Instructions',
-    testAuth: 'Test Auth',
     footerMadeBy: 'Made with ❤️ by Etimuè',
     footerControls: 'Use arrow keys or mouse to control the bucket',
 
@@ -165,12 +157,6 @@ export const translations = {
     authVerifyFailed: 'Unexpected error during verification',
     authProfileFailed: 'Failed to update profile',
 
-    // Test Auth
-    testAuthTitle: '🔐 Auth System Demo',
-    testAuthFeatures: '📱 AuthModal Features:\n✅ Google OAuth integration\n✅ Email OTP verification\n✅ Multi-step flow (Welcome → Email → Verify → Profile)\n✅ Marketing consent handling\n✅ Nickname setup\n✅ Mobile responsive design\n✅ Glassmorphism UI',
-    testAuthIntegration: '🎮 Integration:\n✅ Game requires auth before play\n✅ Profile management\n✅ Score submission ready',
-    testAuthReady: 'The Auth system is 98% complete and ready for production testing!',
-    testAuthTryGame: 'Click "New Game" to see auth requirement in action.',
 
     // Character System
     footerControlsCharacter: 'Use arrow keys or mouse to control {character}',
@@ -188,7 +174,6 @@ export const translations = {
     pause: 'Pausa',
     resume: 'Riprendi',
     instructions: 'Istruzioni',
-    testAuth: 'Test Auth',
     footerMadeBy: 'Fatto con ❤️ da Etimuè',
     footerControls: 'Usa le frecce o il mouse per controllare il secchio',
 
@@ -255,12 +240,6 @@ export const translations = {
     authVerifyFailed: 'Errore imprevisto durante la verifica',
     authProfileFailed: 'Aggiornamento del profilo fallito',
 
-    // Test Auth
-    testAuthTitle: '🔐 Demo Sistema Auth',
-    testAuthFeatures: '📱 Funzionalità AuthModal:\n✅ Integrazione Google OAuth\n✅ Verifica Email OTP\n✅ Flusso multi-step (Benvenuto → Email → Verifica → Profilo)\n✅ Gestione consenso marketing\n✅ Configurazione nickname\n✅ Design responsive mobile\n✅ UI Glassmorphism',
-    testAuthIntegration: '🎮 Integrazione:\n✅ Il gioco richiede auth prima di giocare\n✅ Gestione profilo\n✅ Invio punteggio pronto',
-    testAuthReady: 'Il sistema Auth è completo al 98% e pronto per i test di produzione!',
-    testAuthTryGame: 'Clicca "Nuova Partita" per vedere l\'autenticazione in azione.',
 
     // Character System
     footerControlsCharacter: 'Usa le frecce o il mouse per controllare {character}',
