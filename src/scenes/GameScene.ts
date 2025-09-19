@@ -13,6 +13,9 @@ export class GameScene extends Scene {
   private livesText!: Phaser.GameObjects.Text
   private timerText!: Phaser.GameObjects.Text
   private powerupText!: Phaser.GameObjects.Text
+  private instructionsText!: Phaser.GameObjects.Text
+  private rulesText!: Phaser.GameObjects.Text
+  private languageChangeCallback?: (language: any) => void
   private spawnTimer!: Phaser.Time.TimerEvent
   private powerupTimer!: Phaser.Time.TimerEvent
   private gameTimer!: Phaser.Time.TimerEvent
@@ -70,25 +73,54 @@ export class GameScene extends Scene {
       fontFamily: 'Arial'
     }).setOrigin(0.5)
 
-    // Power-up indicator
-    this.powerupText = this.add.text(width - 150, 16, '', {
+    // Power-up indicator - positioned from right edge with right alignment
+    this.powerupText = this.add.text(width - 16, 16, '', {
       fontSize: '18px',
       color: '#FFD700',
       fontFamily: 'Arial'
-    })
+    }).setOrigin(1, 0) // Right-aligned
 
     // Instructions
-    this.add.text(width / 2, height * 0.12, t.gameInstructions, {
+    this.instructionsText = this.add.text(width / 2, height * 0.12, t.gameInstructions, {
       fontSize: Math.min(18, width * 0.025) + 'px',
       color: '#000000',
       fontFamily: 'Arial'
     }).setOrigin(0.5)
 
-    this.add.text(width / 2, height * 0.16, t.gameRules, {
+    this.rulesText = this.add.text(width / 2, height * 0.16, t.gameRules, {
       fontSize: Math.min(14, width * 0.018) + 'px',
       color: '#333333',
       fontFamily: 'Arial'
     }).setOrigin(0.5)
+
+    // Listen for language changes and update UI texts
+    this.languageChangeCallback = () => {
+      this.updateUITexts()
+    }
+    languageManager.onLanguageChange(this.languageChangeCallback)
+  }
+
+  private updateUITexts(): void {
+    const t = languageManager.getTranslation()
+
+    // Update score text
+    this.scoreText.setText(`${t.score}: ${this.score}`)
+
+    // Update lives text
+    const hearts = '❤️'.repeat(this.lives)
+    this.livesText.setText(`${t.lives}: ${hearts}`)
+
+    // Update timer text
+    this.timerText.setText(`${t.time}: ${this.timeLeft}s`)
+
+    // Update instructions and rules
+    this.instructionsText.setText(t.gameInstructions)
+    this.rulesText.setText(t.gameRules)
+
+    // Update All Good text if active
+    if (this.allGoodMode) {
+      this.powerupText.setText(`⭐ ${t.allGood}: ${this.allGoodTimeLeft}s`)
+    }
   }
 
   private setupGameObjects(): void {
@@ -545,6 +577,11 @@ export class GameScene extends Scene {
     }
     if (this.allGoodTimer) {
       this.allGoodTimer.destroy()
+    }
+
+    // Cleanup language listener
+    if (this.languageChangeCallback) {
+      languageManager.offLanguageChange(this.languageChangeCallback)
     }
   }
 }
