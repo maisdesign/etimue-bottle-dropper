@@ -135,15 +135,10 @@ export class GameScene extends Scene {
     // Scale character appropriately for gameplay
     this.character.setScale(0.6) // Reduce size to 60%
 
-    // Align all characters at the bottom (feet level) for consistent positioning
-    this.character.setOrigin(0.5, 1) // Center horizontally, bottom vertically
-
     // Listen for character changes
     characterManager.onCharacterChange((newCharacter) => {
       if (this.character) {
         this.character.setTexture(newCharacter)
-        // Ensure consistent positioning after texture change
-        this.character.setOrigin(0.5, 1) // Maintain bottom alignment
         console.log(`🐱 Character sprite updated to: ${newCharacter}`)
       }
     })
