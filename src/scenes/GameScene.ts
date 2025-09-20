@@ -559,10 +559,11 @@ export class GameScene extends Scene {
       }
     })
 
-    // Auto-start game after a few seconds if not started
-    if (!this.gameStarted && !this.gameOver && this.time.now > 3000) {
-      this.startGame()
-    }
+    // Auto-start is DISABLED to prevent confusion
+    // Users must explicitly click to start the game
+    // if (!this.gameStarted && !this.gameOver && this.time.now > 3000) {
+    //   this.startGame()
+    // }
   }
 
   shutdown(): void {

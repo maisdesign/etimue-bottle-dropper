@@ -33,19 +33,34 @@ const config: Types.Core.GameConfig = {
 
 // Initialize game
 let game: Game | null = null
+let isInitializing = false
 
 export function initializeGame(): Game {
-  if (game) {
-    game.destroy(true)
+  if (isInitializing) {
+    console.warn('🔄 Game initialization already in progress, returning existing instance')
+    return game!
   }
 
+  if (game) {
+    console.log('🔄 Destroying existing game instance before creating new one')
+    isInitializing = true
+    game.destroy(true)
+    // Wait a frame for cleanup
+    setTimeout(() => {
+      isInitializing = false
+    }, 100)
+  }
+
+  isInitializing = true
   game = new Game(config)
+  isInitializing = false
 
   // Development helper - only expose in dev mode
   if (import.meta.env?.MODE === 'development') {
     (window as any).game = game
   }
 
+  console.log('✅ Game initialized successfully')
   return game
 }
 

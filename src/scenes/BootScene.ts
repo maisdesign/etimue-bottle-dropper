@@ -35,10 +35,19 @@ export class BootScene extends Scene {
       </svg>
     `))
 
-    // Character sprites - Load real mascot images
+    // Character sprites - Load real mascot images with error handling
     this.load.image('charlie', '/characters/charlie.png')
     this.load.image('scrocca', '/characters/scrocca.png')
     this.load.image('leprecauno', '/characters/leprecauno.png')
+
+    // Add error handling for asset loading
+    this.load.on('loaderror', (file: any) => {
+      console.error('❌ Asset loading error:', file.key, file.src)
+      if (file.key.startsWith('charlie') || file.key.startsWith('scrocca') || file.key.startsWith('leprecauno')) {
+        console.warn('⚠️ Character asset failed, creating fallback sprite')
+        this.createFallbackCharacterSprite(file.key)
+      }
+    })
 
     this.load.image('bucket', 'data:image/svg+xml;base64,' + btoa(`
       <svg width="80" height="60" xmlns="http://www.w3.org/2000/svg">
@@ -100,5 +109,37 @@ export class BootScene extends Scene {
       progressBar.clear()
       progressBg.clear()
     })
+  }
+
+  private createFallbackCharacterSprite(characterKey: string): void {
+    // Create fallback character sprites as SVG data URLs
+    const fallbackSprites: { [key: string]: string } = {
+      charlie: `<svg width="64" height="64" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="32" cy="32" r="25" fill="#FF6B6B" stroke="#000" stroke-width="2"/>
+        <circle cx="25" cy="25" r="3" fill="#000"/>
+        <circle cx="39" cy="25" r="3" fill="#000"/>
+        <path d="M25,40 Q32,45 39,40" stroke="#000" stroke-width="2" fill="none"/>
+        <text x="32" y="55" text-anchor="middle" font-size="8" fill="#000">Charlie</text>
+      </svg>`,
+      scrocca: `<svg width="64" height="64" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="32" cy="32" r="25" fill="#4ECDC4" stroke="#000" stroke-width="2"/>
+        <circle cx="25" cy="25" r="3" fill="#000"/>
+        <circle cx="39" cy="25" r="3" fill="#000"/>
+        <path d="M25,40 Q32,45 39,40" stroke="#000" stroke-width="2" fill="none"/>
+        <text x="32" y="55" text-anchor="middle" font-size="8" fill="#000">Scrocca</text>
+      </svg>`,
+      leprecauno: `<svg width="64" height="64" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="32" cy="32" r="25" fill="#32CD32" stroke="#000" stroke-width="2"/>
+        <circle cx="25" cy="25" r="3" fill="#000"/>
+        <circle cx="39" cy="25" r="3" fill="#000"/>
+        <path d="M25,40 Q32,45 39,40" stroke="#000" stroke-width="2" fill="none"/>
+        <text x="32" y="55" text-anchor="middle" font-size="6" fill="#000">Leprecauno</text>
+      </svg>`
+    }
+
+    if (fallbackSprites[characterKey]) {
+      const svgDataUrl = 'data:image/svg+xml;base64,' + btoa(fallbackSprites[characterKey])
+      this.load.image(characterKey, svgDataUrl)
+    }
   }
 }
