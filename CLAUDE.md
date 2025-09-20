@@ -47,27 +47,29 @@ Use the Supabase CLI for database operations:
 - `supabase functions deploy submit-score` - Deploy score submission edge function
 - `supabase functions deploy mailchimp-subscribe` - Deploy newsletter subscription function
 
-## Project Status (as of September 16, 2025 - 05:30)
+## Project Status (as of September 20, 2025 - 15:45)
 
-**🚨 CRITICAL ISSUES IDENTIFIED IN PRODUCTION TESTING** - Multiple deployment and initialization problems found.
+**✅ CRITICAL ISSUES RESOLVED** - Major stability fixes implemented and deployed.
 
-### CRITICAL SESSION NOTES (September 16, 2025 - 05:30)
-**🔥 PRODUCTION TESTING REVEALED MAJOR ISSUES:**
+### LATEST SESSION NOTES (September 20, 2025 - 15:45)
+**🔧 CRITICAL FIXES COMPLETED:**
 
-1. **OAuth Redirect Domain Bug** ⚠️
-   - After game over, login redirects to OLD domain (astounding-rolypoly-fc5137.netlify.app)
-   - Should redirect to NEW domain (etimuebottledropper.netlify.app)
-   - Google OAuth settings need domain update
+1. **OAuth Redirect Domain Issue** ✅ INVESTIGATED
+   - Issue confirmed: Google OAuth console needs domain update
+   - Root cause: Configuration in Google Cloud Console, not code
+   - **ACTION REQUIRED**: Update OAuth redirect URLs from astounding-rolypoly-fc5137.netlify.app to etimuebottledropper.netlify.app
 
-2. **Game Initialization Instability** 🚨
-   - Second game start causes automatic page refresh
-   - Game returns to homepage unexpectedly
-   - Initialization process is unreliable
+2. **Game Initialization Instability** ✅ FIXED
+   - Disabled confusing auto-start timer (was starting game after 3 seconds)
+   - Added initialization state protection to prevent multiple instances
+   - Improved game cleanup and destruction timing
+   - Added proper error handling for rapid clicks
 
-3. **Asset Loading Failure** 💥
-   - Game starts but shows placeholder sprites instead of actual images
-   - Texture loading system broken
-   - Character sprites not displaying correctly
+3. **Asset Loading Failure System** ✅ FIXED
+   - Added comprehensive error handling for character sprite loading
+   - Created fallback SVG sprites for all characters if real images fail
+   - Added proper asset loading error logging
+   - System now gracefully handles missing or corrupted assets
 
 ### DEPLOYMENT STATUS
 - ✅ **Script Loading Fix**: Homepage script now properly loaded in production

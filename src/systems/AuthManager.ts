@@ -185,8 +185,23 @@ export class AuthManager {
 
   public async signInWithGoogle(): Promise<{ success: boolean, error?: string }> {
     try {
+      // Get current origin for redirect
+      const currentOrigin = window.location.origin
+      const redirectTo = currentOrigin === 'http://localhost:3000'
+        ? 'http://localhost:3000'
+        : 'https://etimuebottledropper.netlify.app'
+
+      console.log('🔐 Starting Google OAuth with redirect to:', redirectTo)
+
       const { error } = await supabase.auth.signInWithOAuth({
-        provider: 'google'
+        provider: 'google',
+        options: {
+          redirectTo: redirectTo,
+          queryParams: {
+            access_type: 'offline',
+            prompt: 'consent'
+          }
+        }
       })
 
       if (error) {
