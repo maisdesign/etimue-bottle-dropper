@@ -7,7 +7,13 @@ export default defineConfig({
     VitePWA({
       registerType: 'autoUpdate',
       workbox: {
+        skipWaiting: true,
+        clientsClaim: true,
         cleanupOutdatedCaches: true,
+        additionalManifestEntries: [{
+          url: '/cache-emergency-bust-' + Date.now(),
+          revision: Date.now().toString()
+        }],
         runtimeCaching: [
           {
             urlPattern: /^https:\/\/.*\.supabase\.co\/.*$/,

@@ -105,6 +105,9 @@ define(['./workbox-e7681877'], (function (workbox) { 'use strict';
     "url": "registerSW.js",
     "revision": "1872c500de691dce40960bb85481de07"
   }, {
+    "url": "/cache-emergency-bust-1758492814745",
+    "revision": "1758492814745"
+  }, {
     "url": "manifest.webmanifest",
     "revision": "e5d0b4ca49c21236342716dcf0f313a8"
   }], {});
