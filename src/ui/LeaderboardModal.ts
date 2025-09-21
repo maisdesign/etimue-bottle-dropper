@@ -166,15 +166,23 @@ export class LeaderboardModal {
   private async getWeeklyLeaderboard(): Promise<LeaderboardEntry[]> {
     // Simplified version - get scores directly from scores table
     // TODO: Add proper join with profiles when nickname column is available
-    const entries = await scoreService.getWeeklyLeaderboard(50)
-    return entries.map(entry => ({
-      id: entry.id,
-      score: entry.score,
-      run_seconds: entry.run_seconds,
-      created_at: entry.created_at,
-      nickname: entry.nickname || 'Anonimo',
-      user_id: entry.user_id
-    }))
+    console.log('📞 Calling scoreService.getWeeklyLeaderboard(50)...')
+
+    try {
+      const entries = await scoreService.getWeeklyLeaderboard(50)
+      console.log('✅ scoreService.getWeeklyLeaderboard completed with:', entries?.length, 'entries')
+      return entries.map(entry => ({
+        id: entry.id,
+        score: entry.score,
+        run_seconds: entry.run_seconds,
+        created_at: entry.created_at,
+        nickname: entry.nickname || 'Anonimo',
+        user_id: entry.user_id
+      }))
+    } catch (error) {
+      console.error('❌ scoreService.getWeeklyLeaderboard failed:', error)
+      throw error
+    }
   }
 
   private async getMonthlyLeaderboard(): Promise<LeaderboardEntry[]> {

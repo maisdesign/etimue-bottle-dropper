@@ -241,6 +241,24 @@ export const scoreService = {
 
   async getWeeklyLeaderboard(limit: number = 50): Promise<Array<Score & { nickname: string }>> {
     try {
+      console.log('🏆 Starting weekly leaderboard query...')
+      console.log('🔌 Supabase client status:', { url: supabaseUrl, connected: true })
+
+      // Test Supabase connection first
+      console.log('🧪 Testing Supabase connection...')
+      try {
+        const connectionTestPromise = supabase.from('scores').select('count', { count: 'exact', head: true })
+        const timeoutPromise = new Promise<never>((_, reject) =>
+          setTimeout(() => reject(new Error('Connection test timeout')), 5000)
+        )
+
+        await Promise.race([connectionTestPromise, timeoutPromise])
+        console.log('✅ Supabase connection test passed')
+      } catch (error) {
+        console.error('❌ Supabase connection test failed:', error)
+        throw new Error('Database connection failed')
+      }
+
       // Calculate start of current week (Monday 00:00)
       const now = new Date()
       const dayOfWeek = now.getDay() || 7 // Make Sunday = 7
@@ -248,14 +266,25 @@ export const scoreService = {
       startOfWeek.setDate(now.getDate() - dayOfWeek + 1)
       startOfWeek.setHours(0, 0, 0, 0)
 
+      console.log(`📅 Week range: ${startOfWeek.toISOString()} to ${now.toISOString()}`)
+
       // Simplified approach: Get scores only for now
-      const { data, error } = await supabase
+      console.log(`📋 Querying weekly scores since: ${startOfWeek.toISOString()}`)
+
+      // Add timeout to database query
+      const queryPromise = supabase
         .from('scores')
         .select('*')
         .gte('created_at', startOfWeek.toISOString())
         .order('score', { ascending: false })
         .order('created_at', { ascending: true })
         .limit(limit)
+
+      const timeoutPromise = new Promise<never>((_, reject) =>
+        setTimeout(() => reject(new Error('Database query timeout')), 10000)
+      )
+
+      const { data, error } = await Promise.race([queryPromise, timeoutPromise])
 
       if (error) {
         console.error('Error fetching weekly leaderboard:', error)
@@ -307,13 +336,22 @@ export const scoreService = {
       const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1)
 
       // Simplified approach: Get scores only for now
-      const { data, error } = await supabase
+      console.log(`📋 Querying monthly scores since: ${startOfMonth.toISOString()}`)
+
+      // Add timeout to database query
+      const queryPromise = supabase
         .from('scores')
         .select('*')
         .gte('created_at', startOfMonth.toISOString())
         .order('score', { ascending: false })
         .order('created_at', { ascending: true })
         .limit(limit)
+
+      const timeoutPromise = new Promise<never>((_, reject) =>
+        setTimeout(() => reject(new Error('Database query timeout')), 10000)
+      )
+
+      const { data, error } = await Promise.race([queryPromise, timeoutPromise])
 
       if (error) {
         console.error('Error fetching monthly leaderboard:', error)
