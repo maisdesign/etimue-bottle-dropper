@@ -1392,17 +1392,27 @@
       // Initialize game and auto-start it
       const newGame = initializeGame()
 
-      // Wait for game to be ready, then auto-start
-      setTimeout(() => {
+      // Wait for game to be ready with polling, then auto-start
+      let autoStartAttempts = 0
+      const maxAutoStartAttempts = 20 // Max 4 seconds
+
+      const tryAutoStart = () => {
+        autoStartAttempts++
         const gameScene = newGame.scene.getScene('GameScene')
-        if (gameScene && gameScene.scene.isActive('GameScene')) {
-          console.log('🚀 Auto-starting game after authentication')
+
+        if (gameScene && gameScene.scene.isActive('GameScene') && gameScene.character) {
+          console.log('🚀 Auto-starting game after authentication (attempt ' + autoStartAttempts + ')')
           // Simulate the click that would normally start the game
           gameScene.input.emit('pointerdown', { isDown: true })
+        } else if (autoStartAttempts < maxAutoStartAttempts) {
+          console.log(`⏳ GameScene not ready yet, retrying... (attempt ${autoStartAttempts}/${maxAutoStartAttempts})`)
+          setTimeout(tryAutoStart, 200) // Try again in 200ms
         } else {
-          console.warn('⚠️ GameScene not ready for auto-start')
+          console.warn('⚠️ GameScene auto-start timeout after ' + (autoStartAttempts * 200) + 'ms')
         }
-      }, 500) // Wait 500ms for scene to be ready
+      }
+
+      setTimeout(tryAutoStart, 300) // Start trying after 300ms
     }
 
     window.togglePause = function() {
