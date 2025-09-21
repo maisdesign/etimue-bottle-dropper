@@ -15,6 +15,16 @@ export interface Translation {
   gameStartSubtitle: string
   gameStartButton: string
 
+  // Leaderboard
+  leaderboard: string
+  leaderboardTitle: string
+  leaderboardWeekly: string
+  leaderboardMonthly: string
+  leaderboardLoading: string
+  leaderboardEmpty: string
+  leaderboardEncourage: string
+  leaderboardInfo: string
+
   // Instructions
   instructionsTitle: string
   instructionsObjective: string
@@ -104,6 +114,16 @@ export const translations = {
     gameStartSubtitle: 'Ready to catch some bottles?',
     gameStartButton: '▶️ New Game',
 
+    // Leaderboard
+    leaderboard: 'Leaderboard',
+    leaderboardTitle: '🏆 Leaderboard',
+    leaderboardWeekly: '📅 Weekly',
+    leaderboardMonthly: '📆 Monthly',
+    leaderboardLoading: 'Loading leaderboard...',
+    leaderboardEmpty: 'No scores recorded yet!',
+    leaderboardEncourage: 'Be the first to play and set the record!',
+    leaderboardInfo: '💡 Sign in to compete for weekly and monthly prizes!',
+
     // Instructions
     instructionsTitle: '🎮 How to Play:',
     instructionsObjective: '🎯 Objective: Catch falling bottles with your bucket!',
@@ -191,6 +211,16 @@ export const translations = {
     gameStartTitle: '🎮 Etimuè Bottle Dropper',
     gameStartSubtitle: 'Pronto per catturare le bottiglie?',
     gameStartButton: '▶️ Nuova Partita',
+
+    // Leaderboard
+    leaderboard: 'Classifica',
+    leaderboardTitle: '🏆 Classifica',
+    leaderboardWeekly: '📅 Settimanale',
+    leaderboardMonthly: '📆 Mensile',
+    leaderboardLoading: 'Caricamento classifica...',
+    leaderboardEmpty: 'Nessun punteggio ancora registrato!',
+    leaderboardEncourage: 'Sii il primo a giocare e stabilire il record!',
+    leaderboardInfo: '💡 Accedi per competere per i premi settimanali e mensili!',
 
     // Instructions
     instructionsTitle: '🎮 Come Giocare:',

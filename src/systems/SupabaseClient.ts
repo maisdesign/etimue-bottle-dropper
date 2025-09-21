@@ -248,12 +248,10 @@ export const scoreService = {
       startOfWeek.setDate(now.getDate() - dayOfWeek + 1)
       startOfWeek.setHours(0, 0, 0, 0)
 
+      // Simplified approach: Get scores only for now
       const { data, error } = await supabase
         .from('scores')
-        .select(`
-          *,
-          profiles (nickname)
-        `)
+        .select('*')
         .gte('created_at', startOfWeek.toISOString())
         .order('score', { ascending: false })
         .order('created_at', { ascending: true })
@@ -264,10 +262,18 @@ export const scoreService = {
         return []
       }
 
-      return (data as any[]).map(item => ({
-        ...item,
-        nickname: item.profiles?.nickname || 'Anonymous'
-      }))
+      // For each score, try to get the profile separately
+      const scoresWithNicknames = await Promise.all(
+        (data as Score[]).map(async (score) => {
+          const profile = await profileService.getProfile(score.user_id)
+          return {
+            ...score,
+            nickname: profile?.nickname || 'Anonimo'
+          }
+        })
+      )
+
+      return scoresWithNicknames
     } catch (error) {
       console.error('Weekly leaderboard exception:', error)
       return []
@@ -280,12 +286,10 @@ export const scoreService = {
       const now = new Date()
       const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1)
 
+      // Simplified approach: Get scores only for now
       const { data, error } = await supabase
         .from('scores')
-        .select(`
-          *,
-          profiles (nickname)
-        `)
+        .select('*')
         .gte('created_at', startOfMonth.toISOString())
         .order('score', { ascending: false })
         .order('created_at', { ascending: true })
@@ -296,10 +300,18 @@ export const scoreService = {
         return []
       }
 
-      return (data as any[]).map(item => ({
-        ...item,
-        nickname: item.profiles?.nickname || 'Anonymous'
-      }))
+      // For each score, try to get the profile separately
+      const scoresWithNicknames = await Promise.all(
+        (data as Score[]).map(async (score) => {
+          const profile = await profileService.getProfile(score.user_id)
+          return {
+            ...score,
+            nickname: profile?.nickname || 'Anonimo'
+          }
+        })
+      )
+
+      return scoresWithNicknames
     } catch (error) {
       console.error('Monthly leaderboard exception:', error)
       return []
