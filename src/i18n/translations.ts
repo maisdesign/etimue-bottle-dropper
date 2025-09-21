@@ -10,6 +10,11 @@ export interface Translation {
   footerMadeBy: string
   footerControls: string
 
+  // Game Start Overlay
+  gameStartTitle: string
+  gameStartSubtitle: string
+  gameStartButton: string
+
   // Instructions
   instructionsTitle: string
   instructionsObjective: string
@@ -94,6 +99,11 @@ export const translations = {
     footerMadeBy: 'Made with ❤️ by Etimuè',
     footerControls: 'Use arrow keys or mouse to control the bucket',
 
+    // Game Start Overlay
+    gameStartTitle: '🎮 Etimuè Bottle Dropper',
+    gameStartSubtitle: 'Ready to catch some bottles?',
+    gameStartButton: '▶️ New Game',
+
     // Instructions
     instructionsTitle: '🎮 How to Play:',
     instructionsObjective: '🎯 Objective: Catch falling bottles with your bucket!',
@@ -176,6 +186,11 @@ export const translations = {
     instructions: 'Istruzioni',
     footerMadeBy: 'Fatto con ❤️ da Etimuè',
     footerControls: 'Usa le frecce o il mouse per controllare il secchio',
+
+    // Game Start Overlay
+    gameStartTitle: '🎮 Etimuè Bottle Dropper',
+    gameStartSubtitle: 'Pronto per catturare le bottiglie?',
+    gameStartButton: '▶️ Nuova Partita',
 
     // Instructions
     instructionsTitle: '🎮 Come Giocare:',
