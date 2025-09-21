@@ -244,8 +244,8 @@ export const scoreService = {
       console.log('🏆 Starting weekly leaderboard query...')
       console.log('🔌 Supabase client status:', { url: supabaseUrl, connected: true })
 
-      // FIXED: Removed connection test that was timing out and blocking leaderboard [CACHE BUST 2025-09-22]
-      console.log('🚀 LEADERBOARD CACHE BUST FIX: Proceeding with 3-day query + 30s timeout...')
+      // FIXED: Removed connection test that was timing out and blocking leaderboard [FINAL FIX - NO CACHE]
+      console.log('🚀 FINAL LEADERBOARD FIX: Direct 3-day query + 30s timeout [NO SERVICE WORKER]')
 
       // Calculate start of current week (Monday 00:00) - OPTIMIZED: Only last 3 days for faster query
       const now = new Date()
