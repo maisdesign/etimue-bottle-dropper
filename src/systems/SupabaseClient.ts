@@ -244,20 +244,8 @@ export const scoreService = {
       console.log('🏆 Starting weekly leaderboard query...')
       console.log('🔌 Supabase client status:', { url: supabaseUrl, connected: true })
 
-      // Test Supabase connection first
-      console.log('🧪 Testing Supabase connection...')
-      try {
-        const connectionTestPromise = supabase.from('scores').select('count', { count: 'exact', head: true })
-        const timeoutPromise = new Promise<never>((_, reject) =>
-          setTimeout(() => reject(new Error('Connection test timeout')), 5000)
-        )
-
-        await Promise.race([connectionTestPromise, timeoutPromise])
-        console.log('✅ Supabase connection test passed')
-      } catch (error) {
-        console.error('❌ Supabase connection test failed:', error)
-        throw new Error('Database connection failed')
-      }
+      // Skip aggressive connection test that was causing false failures
+      console.log('🧪 Proceeding directly to leaderboard query...')
 
       // Calculate start of current week (Monday 00:00) - OPTIMIZED: Only last 3 days for faster query
       const now = new Date()
