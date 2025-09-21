@@ -187,9 +187,21 @@ export class AuthManager {
     try {
       // Get current origin for redirect
       const currentOrigin = window.location.origin
-      const redirectTo = currentOrigin === 'http://localhost:3000'
-        ? 'http://localhost:3000'
-        : 'https://etimuebottledropper.netlify.app'
+      let redirectTo = currentOrigin
+
+      // For production, use the domain that's configured in Google Cloud Console
+      if (currentOrigin.includes('etimuebottledropper.netlify.app')) {
+        // If using new domain but Google Cloud Console still has old domain configured
+        // Fall back to old domain for OAuth redirect to avoid 400 error
+        redirectTo = 'https://astounding-rolypoly-fc5137.netlify.app'
+        console.warn('⚠️ Using fallback domain for OAuth due to Google Cloud Console configuration')
+      } else if (currentOrigin.includes('astounding-rolypoly-fc5137.netlify.app')) {
+        redirectTo = 'https://astounding-rolypoly-fc5137.netlify.app'
+      } else if (currentOrigin === 'http://localhost:3000') {
+        redirectTo = 'http://localhost:3000'
+      } else {
+        redirectTo = 'https://etimuebottledropper.netlify.app'
+      }
 
       console.log('🔐 Starting Google OAuth with redirect to:', redirectTo)
 

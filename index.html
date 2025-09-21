@@ -1292,7 +1292,7 @@
 
   <script type="module">
     import { initializeGame, getGame, destroyGame } from './src/main.ts'
-    import { requireAuth } from './src/systems/AuthManager.ts'
+    import { requireAuth, authManager } from './src/systems/AuthManager.ts'
     import { languageManager } from './src/i18n/LanguageManager.ts'
     import { characterManager } from './src/systems/CharacterManager.ts'
 
@@ -1388,7 +1388,21 @@
         console.log('🔄 Destroying existing game instance')
         destroyGame()
       }
-      initializeGame()
+
+      // Initialize game and auto-start it
+      const newGame = initializeGame()
+
+      // Wait for game to be ready, then auto-start
+      setTimeout(() => {
+        const gameScene = newGame.scene.getScene('GameScene')
+        if (gameScene && gameScene.scene.isActive('GameScene')) {
+          console.log('🚀 Auto-starting game after authentication')
+          // Simulate the click that would normally start the game
+          gameScene.input.emit('pointerdown', { isDown: true })
+        } else {
+          console.warn('⚠️ GameScene not ready for auto-start')
+        }
+      }, 500) // Wait 500ms for scene to be ready
     }
 
     window.togglePause = function() {
