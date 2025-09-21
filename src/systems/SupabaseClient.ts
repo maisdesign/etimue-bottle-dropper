@@ -262,17 +262,37 @@ export const scoreService = {
         return []
       }
 
-      // For each score, try to get the profile separately
+      console.log(`📊 Found ${data?.length || 0} weekly scores, fetching nicknames...`)
+
+      // For each score, try to get the profile separately with timeout
       const scoresWithNicknames = await Promise.all(
-        (data as Score[]).map(async (score) => {
-          const profile = await profileService.getProfile(score.user_id)
-          return {
-            ...score,
-            nickname: profile?.nickname || 'Anonimo'
+        (data as Score[]).map(async (score, index) => {
+          try {
+            console.log(`📝 Fetching profile ${index + 1}/${data.length} for user ${score.user_id}`)
+
+            // Add timeout to profile fetch
+            const profilePromise = profileService.getProfile(score.user_id)
+            const timeoutPromise = new Promise<null>((_, reject) =>
+              setTimeout(() => reject(new Error('Profile fetch timeout')), 5000)
+            )
+
+            const profile = await Promise.race([profilePromise, timeoutPromise])
+
+            return {
+              ...score,
+              nickname: profile?.nickname || 'Anonimo'
+            }
+          } catch (error) {
+            console.warn(`⚠️ Failed to fetch profile for user ${score.user_id}:`, error)
+            return {
+              ...score,
+              nickname: 'Anonimo'
+            }
           }
         })
       )
 
+      console.log(`✅ Weekly leaderboard loaded: ${scoresWithNicknames.length} entries`)
       return scoresWithNicknames
     } catch (error) {
       console.error('Weekly leaderboard exception:', error)
@@ -300,17 +320,37 @@ export const scoreService = {
         return []
       }
 
-      // For each score, try to get the profile separately
+      console.log(`📊 Found ${data?.length || 0} monthly scores, fetching nicknames...`)
+
+      // For each score, try to get the profile separately with timeout
       const scoresWithNicknames = await Promise.all(
-        (data as Score[]).map(async (score) => {
-          const profile = await profileService.getProfile(score.user_id)
-          return {
-            ...score,
-            nickname: profile?.nickname || 'Anonimo'
+        (data as Score[]).map(async (score, index) => {
+          try {
+            console.log(`📝 Fetching profile ${index + 1}/${data.length} for user ${score.user_id}`)
+
+            // Add timeout to profile fetch
+            const profilePromise = profileService.getProfile(score.user_id)
+            const timeoutPromise = new Promise<null>((_, reject) =>
+              setTimeout(() => reject(new Error('Profile fetch timeout')), 5000)
+            )
+
+            const profile = await Promise.race([profilePromise, timeoutPromise])
+
+            return {
+              ...score,
+              nickname: profile?.nickname || 'Anonimo'
+            }
+          } catch (error) {
+            console.warn(`⚠️ Failed to fetch profile for user ${score.user_id}:`, error)
+            return {
+              ...score,
+              nickname: 'Anonimo'
+            }
           }
         })
       )
 
+      console.log(`✅ Monthly leaderboard loaded: ${scoresWithNicknames.length} entries`)
       return scoresWithNicknames
     } catch (error) {
       console.error('Monthly leaderboard exception:', error)
