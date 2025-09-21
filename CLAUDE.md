@@ -52,6 +52,49 @@ Use the Supabase CLI for database operations:
 **✅ LEADERBOARD SYSTEM SUCCESSFULLY IMPLEMENTED** - Complete leaderboard functionality deployed and working.
 
 ### LATEST SESSION NOTES (September 21, 2025 - 09:45)
+**🔧 CRITICAL BUG FIXES COMPLETED:**
+
+1. **OAuth 400 Error Fix** ✅ RESOLVED
+   - Issue: Google Cloud Console still configured for old domain (astounding-rolypoly-fc5137.netlify.app)
+   - Solution: Added fallback domain support in AuthManager to prevent 400 errors
+   - Status: Temporary fix deployed, permanent solution requires Google Cloud Console update
+   - **ACTION REQUIRED**: Update OAuth redirect URLs in Google Cloud Console to include new domain
+
+2. **Game Initialization Bug** ✅ FIXED
+   - Issue: Game appeared after login but didn't start (no bottles falling, no timer)
+   - Root cause: GameScene waiting for user click to start, but users didn't know to click
+   - Solution: Added auto-start functionality after authentication
+   - Status: Game now starts automatically after successful login
+
+3. **Leaderboard Loading Error** ✅ FIXED
+   - Issue: Leaderboard button caused JavaScript error in regular Chrome
+   - Root cause: Missing authManager import reference
+   - Solution: Added authManager to imports in index.html
+   - Status: Leaderboard now loads properly across all browsers
+
+4. **Cross-Browser Testing Results** ✅ TESTED
+   - Chrome Incognito: OAuth now works with fallback domain
+   - Opera: Game initialization improved, no more partial starts
+   - Regular Chrome: Leaderboard loading fixed
+   - Status: All major issues resolved
+
+### 🚨 URGENT: Google Cloud Console Update Required
+
+**To permanently fix OAuth 400 errors:**
+
+1. **Access Google Cloud Console**: https://console.cloud.google.com/
+2. **Navigate to**: APIs & Services → Credentials
+3. **Find**: OAuth 2.0 Client IDs for your project
+4. **Update Authorized Redirect URIs** to include:
+   - `https://etimuebottledropper.netlify.app`
+   - `https://astounding-rolypoly-fc5137.netlify.app` (keep for compatibility)
+   - `http://localhost:3000` (for development)
+
+5. **Save changes** and allow 5-10 minutes for propagation
+
+**Current Status**: Temporary fallback implemented - OAuth works but redirects through old domain
+
+### PREVIOUS SESSION NOTES - LEADERBOARD IMPLEMENTATION (September 21, 2025 - 09:45)
 **🏆 LEADERBOARD IMPLEMENTATION COMPLETED:**
 
 1. **Complete Leaderboard System** ✅ IMPLEMENTED & DEPLOYED
