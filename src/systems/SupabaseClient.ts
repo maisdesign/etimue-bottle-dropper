@@ -244,8 +244,8 @@ export const scoreService = {
       console.log('🏆 Starting weekly leaderboard query...')
       console.log('🔌 Supabase client status:', { url: supabaseUrl, connected: true })
 
-      // Skip aggressive connection test that was causing false failures
-      console.log('🧪 Proceeding directly to leaderboard query...')
+      // FIXED: Removed connection test that was timing out and blocking leaderboard
+      console.log('🚀 LEADERBOARD OPTIMIZED: Proceeding with 3-day query + 30s timeout...')
 
       // Calculate start of current week (Monday 00:00) - OPTIMIZED: Only last 3 days for faster query
       const now = new Date()
