@@ -78,13 +78,13 @@ define(['./workbox-f761fa4f'], (function (workbox) { 'use strict';
    * See https://goo.gl/S9QRab
    */
   workbox.precacheAndRoute([{
-    "url": "assets/AuthModal-a2db430f.js",
+    "url": "assets/AuthModal-8f594c27.js",
     "revision": null
   }, {
-    "url": "assets/index-fc920087.js",
+    "url": "assets/index-a7dd0995.js",
     "revision": null
   }, {
-    "url": "assets/LeaderboardModal-c3389711.js",
+    "url": "assets/LeaderboardModal-1941094b.js",
     "revision": null
   }, {
     "url": "assets/phaser-f8c8a439.js",
@@ -94,7 +94,7 @@ define(['./workbox-f761fa4f'], (function (workbox) { 'use strict';
     "revision": null
   }, {
     "url": "index.html",
-    "revision": "92ccc5e03fd4b0e69380681662766d2a"
+    "revision": "e33c4962b34796c52d4433229ec6a30c"
   }, {
     "url": "registerSW.js",
     "revision": "1872c500de691dce40960bb85481de07"

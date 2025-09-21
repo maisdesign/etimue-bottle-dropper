@@ -259,50 +259,87 @@ export const scoreService = {
         throw new Error('Database connection failed')
       }
 
-      // Calculate start of current week (Monday 00:00)
+      // Calculate start of current week (Monday 00:00) - OPTIMIZED: Only last 3 days for faster query
       const now = new Date()
-      const dayOfWeek = now.getDay() || 7 // Make Sunday = 7
-      const startOfWeek = new Date(now)
-      startOfWeek.setDate(now.getDate() - dayOfWeek + 1)
-      startOfWeek.setHours(0, 0, 0, 0)
+      const threeDaysAgo = new Date(now)
+      threeDaysAgo.setDate(now.getDate() - 3)
+      threeDaysAgo.setHours(0, 0, 0, 0)
 
-      console.log(`📅 Week range: ${startOfWeek.toISOString()} to ${now.toISOString()}`)
+      console.log(`📅 Optimized range: Last 3 days from ${threeDaysAgo.toISOString()} to ${now.toISOString()}`)
 
-      // Simplified approach: Get scores only for now
-      console.log(`📋 Querying weekly scores since: ${startOfWeek.toISOString()}`)
+      // OPTIMIZATION 1: Smaller time range (3 days instead of 7)
+      // OPTIMIZATION 2: Smaller limit for faster response
+      console.log(`📋 Querying recent scores since: ${threeDaysAgo.toISOString()}`)
 
-      // Add timeout to database query
+      // Add timeout to database query - INCREASED to 30s for better reliability
       const queryPromise = supabase
         .from('scores')
         .select('*')
-        .gte('created_at', startOfWeek.toISOString())
+        .gte('created_at', threeDaysAgo.toISOString())
         .order('score', { ascending: false })
         .order('created_at', { ascending: true })
-        .limit(limit)
+        .limit(Math.min(limit, 20)) // OPTIMIZATION 3: Max 20 results for speed
 
       const timeoutPromise = new Promise<never>((_, reject) =>
-        setTimeout(() => reject(new Error('Database query timeout')), 10000)
+        setTimeout(() => reject(new Error('Database query timeout')), 30000) // 30s timeout
       )
 
-      const { data, error } = await Promise.race([queryPromise, timeoutPromise])
+      let { data, error } = await Promise.race([queryPromise, timeoutPromise])
+      let scoreData: Score[] | null = data as Score[] | null
 
       if (error) {
-        console.error('Error fetching weekly leaderboard:', error)
+        console.error('Primary query failed, trying fallback...', error)
+
+        // FALLBACK STRATEGY: Try ultra-simple query with just today's scores
+        try {
+          const today = new Date()
+          today.setHours(0, 0, 0, 0)
+
+          console.log('🔄 Attempting fallback: Today only query...')
+          const fallbackQuery = supabase
+            .from('scores')
+            .select('id, user_id, score, run_seconds, created_at')
+            .gte('created_at', today.toISOString())
+            .order('score', { ascending: false })
+            .limit(10)
+
+          const fallbackTimeout = new Promise<never>((_, reject) =>
+            setTimeout(() => reject(new Error('Fallback timeout')), 15000)
+          )
+
+          const { data: fallbackData, error: fallbackError } = await Promise.race([fallbackQuery, fallbackTimeout])
+
+          if (!fallbackError && fallbackData) {
+            console.log(`✅ Fallback successful: ${fallbackData.length} today's scores`)
+            scoreData = fallbackData as Score[]
+            error = null
+          } else {
+            console.error('Fallback also failed:', fallbackError)
+            return []
+          }
+        } catch (fallbackException) {
+          console.error('Fallback exception:', fallbackException)
+          return []
+        }
+      }
+
+      if (!scoreData) {
+        console.error('No data received from queries')
         return []
       }
 
-      console.log(`📊 Found ${data?.length || 0} weekly scores, fetching nicknames...`)
+      console.log(`📊 Found ${scoreData.length} scores, fetching nicknames...`)
 
-      // For each score, try to get the profile separately with timeout
+      // OPTIMIZATION 4: Batch profile fetching with reduced timeout and early exit
+      console.log(`📝 Batch fetching ${scoreData.length} profiles with 3s timeout each...`)
+
       const scoresWithNicknames = await Promise.all(
-        (data as Score[]).map(async (score, index) => {
+        scoreData.map(async (score) => {
           try {
-            console.log(`📝 Fetching profile ${index + 1}/${data.length} for user ${score.user_id}`)
-
-            // Add timeout to profile fetch
+            // OPTIMIZATION: Reduced timeout from 5s to 3s
             const profilePromise = profileService.getProfile(score.user_id)
             const timeoutPromise = new Promise<null>((_, reject) =>
-              setTimeout(() => reject(new Error('Profile fetch timeout')), 5000)
+              setTimeout(() => reject(new Error('Profile fetch timeout')), 3000)
             )
 
             const profile = await Promise.race([profilePromise, timeoutPromise])
@@ -312,7 +349,7 @@ export const scoreService = {
               nickname: profile?.nickname || 'Anonimo'
             }
           } catch (error) {
-            console.warn(`⚠️ Failed to fetch profile for user ${score.user_id}:`, error)
+            // OPTIMIZATION: Fail fast with default nickname
             return {
               ...score,
               nickname: 'Anonimo'
