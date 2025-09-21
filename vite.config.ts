@@ -1,54 +1,26 @@
 import { defineConfig } from 'vite'
-import { VitePWA } from 'vite-plugin-pwa'
+// import { VitePWA } from 'vite-plugin-pwa'  // DISABLED due to cache corruption
 import path from 'path'
 
 export default defineConfig({
   plugins: [
-    VitePWA({
-      registerType: 'autoUpdate',
-      workbox: {
-        skipWaiting: true,
-        clientsClaim: true,
-        cleanupOutdatedCaches: true,
-        additionalManifestEntries: [{
-          url: '/cache-emergency-bust-' + Date.now(),
-          revision: Date.now().toString()
-        }],
-        runtimeCaching: [
-          {
-            urlPattern: /^https:\/\/.*\.supabase\.co\/.*$/,
-            handler: 'NetworkFirst',
-            options: {
-              cacheName: 'supabase-cache',
-              expiration: {
-                maxEntries: 50,
-                maxAgeSeconds: 60 * 60 * 24 // 24 hours
-              }
-            }
-          }
-        ]
-      },
-      manifest: {
-        name: 'Etimuè Bottle Dropper',
-        short_name: 'Bottle Dropper',
-        description: 'Fun bottle dropping game by Etimuè',
-        theme_color: '#1a1a1a',
-        background_color: '#ffffff',
-        display: 'standalone',
-        icons: [
-          {
-            src: 'pwa-192x192.png',
-            sizes: '192x192',
-            type: 'image/png'
-          },
-          {
-            src: 'pwa-512x512.png',
-            sizes: '512x512',
-            type: 'image/png'
-          }
-        ]
-      }
-    })
+    // TEMPORARILY DISABLED PWA/Service Worker due to catastrophic cache corruption
+    // VitePWA({
+    //   registerType: 'autoUpdate',
+    //   workbox: {
+    //     skipWaiting: true,
+    //     clientsClaim: true,
+    //     cleanupOutdatedCaches: true
+    //   },
+    //   manifest: {
+    //     name: 'Etimuè Bottle Dropper',
+    //     short_name: 'Bottle Dropper',
+    //     description: 'Fun bottle dropping game by Etimuè',
+    //     theme_color: '#1a1a1a',
+    //     background_color: '#ffffff',
+    //     display: 'standalone'
+    //   }
+    // })
   ],
   resolve: {
     alias: {
