@@ -1186,10 +1186,10 @@
     }
   </style>
   
-  <link rel="modulepreload" crossorigin href="/assets/phaser-f8c8a439-1758559292375-6b782db9.js">
-  <link rel="modulepreload" crossorigin href="/assets/supabase-2481e69c-1758559292375-11b3f456.js">
-<link rel="manifest" href="/manifest.webmanifest"><script id="vite-plugin-pwa:register-sw" src="/registerSW.js"></script>  <script type="module" crossorigin src="/assets/index-1758559292375-43175eec.js"></script>
-  <link rel="modulepreload" crossorigin href="/assets/supabase-1758559292375-cf010ec4.js">
+  <link rel="modulepreload" crossorigin href="/assets/phaser-f8c8a439-1758559903082-6b782db9.js">
+  <link rel="modulepreload" crossorigin href="/assets/supabase-2481e69c-1758559903082-11b3f456.js">
+<link rel="manifest" href="/manifest.webmanifest"><script id="vite-plugin-pwa:register-sw" src="/registerSW.js"></script>  <script type="module" crossorigin src="/assets/index-1758559903082-739a837b.js"></script>
+  <link rel="modulepreload" crossorigin href="/assets/supabase-1758559903082-cf010ec4.js">
 </head>
 <body>
   <div class="container">
@@ -1227,7 +1227,7 @@
       <button class="btn" onclick="showLeaderboard()" data-i18n="leaderboard">
         🏆 Classifica
       </button>
-      <button class="btn" onclick="togglePause()" data-i18n="pause">
+      <button id="pause-btn" class="btn" onclick="togglePause()" data-i18n="pause">
         ⏸️ Pause
       </button>
       <button class="btn" onclick="showInstructions()" data-i18n="instructions">
@@ -1295,6 +1295,64 @@
     </div>
   </div>
 
-  
+<script>
+// 🔧 PAUSE BUTTON FIX - Override togglePause to use correct button selector
+console.log('🔧 PAUSE BUTTON FIX: Loading corrected togglePause function...');
+
+// Store original togglePause function (from compiled JS)
+const originalTogglePause = window.togglePause;
+
+// Override with fixed version
+window.togglePause = function() {
+  console.log('🔧 PAUSE BUTTON FIX: Using corrected togglePause function');
+
+  // Get the game instance from the compiled code
+  const gameInstance = window.getGame ? window.getGame() : null;
+
+  if (!gameInstance) {
+    console.warn('⚠️ No game instance found for pause');
+    return;
+  }
+
+  // Toggle pause state (assuming the global isPaused variable exists)
+  if (typeof window.isPaused === 'undefined') {
+    window.isPaused = false;
+  }
+
+  window.isPaused = !window.isPaused;
+
+  // Get the pause button by its ID (not CSS selector!)
+  const pauseBtn = document.getElementById('pause-btn');
+
+  if (!pauseBtn) {
+    console.error('❌ PAUSE BUTTON FIX: Could not find pause button with ID pause-btn');
+    return;
+  }
+
+  if (window.isPaused) {
+    // Pause the game
+    gameInstance.scene.pause('GameScene');
+
+    // Get translations (assuming they exist)
+    const translations = window.getTranslation ? window.getTranslation() : { resume: 'Resume', pause: 'Pause' };
+
+    // Update the CORRECT button text
+    pauseBtn.textContent = '▶️ ' + (translations.resume || 'Resume');
+    console.log('⏸️ Game paused');
+  } else {
+    // Resume the game
+    gameInstance.scene.resume('GameScene');
+
+    // Get translations
+    const translations = window.getTranslation ? window.getTranslation() : { resume: 'Resume', pause: 'Pause' };
+
+    // Update the CORRECT button text
+    pauseBtn.textContent = '⏸️ ' + (translations.pause || 'Pause');
+    console.log('▶️ Game resumed');
+  }
+};
+
+console.log('✅ PAUSE BUTTON FIX: togglePause function successfully overridden');
+</script>
 </body>
 </html>
