@@ -1,6 +1,7 @@
 import { Game, Types } from 'phaser'
 import { BootScene } from '@/scenes/BootScene'
 import { GameScene } from '@/scenes/GameScene'
+import '@/ui/GlobalFunctions' // Import global functions to attach to window
 
 // Game configuration
 const config: Types.Core.GameConfig = {
