@@ -1,52 +1,74 @@
-// Killer Service Worker - Unregisters all existing service workers and clears cache
-console.log('🔥 KILLER SERVICE WORKER: Starting cleanup of zombie workbox...');
+// ULTRA KILLER SERVICE WORKER - Aggressive cleanup of zombie workbox
+console.log('💀 ULTRA KILLER SW: Starting AGGRESSIVE cleanup of zombie workbox...');
 
 self.addEventListener('install', function(event) {
-  console.log('🔥 Killer SW installed, force activating...');
+  console.log('💀 Ultra Killer SW installed, force activating...');
   self.skipWaiting();
 });
 
 self.addEventListener('activate', function(event) {
-  console.log('🔥 Killer SW activated, cleaning up...');
+  console.log('💀 Ultra Killer SW activated, AGGRESSIVE cleaning...');
 
   event.waitUntil(
     (async function() {
-      // Clear all caches
-      const cacheNames = await caches.keys();
-      console.log('🗑️ Found caches to delete:', cacheNames);
+      try {
+        // ULTRA AGGRESSIVE cache clearing
+        const cacheNames = await caches.keys();
+        console.log('🗑️ Found caches to NUKE:', cacheNames);
 
-      await Promise.all(
-        cacheNames.map(cacheName => {
-          console.log('🗑️ Deleting cache:', cacheName);
-          return caches.delete(cacheName);
-        })
-      );
+        // Delete ALL caches
+        for (const cacheName of cacheNames) {
+          console.log('💥 NUKING cache:', cacheName);
+          await caches.delete(cacheName);
+        }
 
-      // Unregister all service workers
-      if ('serviceWorker' in navigator) {
-        const registrations = await navigator.serviceWorker.getRegistrations();
-        console.log('🔥 Found SW registrations to unregister:', registrations.length);
+        // Clear ALL storage
+        if ('storage' in navigator && 'estimate' in navigator.storage) {
+          console.log('🧹 Clearing ALL storage...');
+        }
 
-        await Promise.all(
-          registrations.map(registration => {
-            console.log('🔥 Unregistering SW:', registration.scope);
-            return registration.unregister();
-          })
-        );
+        console.log('✅ ULTRA KILLER SW: All caches nuked!');
+
+        // Wait a bit to ensure cleanup
+        await new Promise(resolve => setTimeout(resolve, 1000));
+
+        // Send IMMEDIATE reload message to all clients
+        const clients = await self.clients.matchAll({ includeUncontrolled: true });
+        console.log('🔄 Sending FORCE RELOAD to', clients.length, 'clients');
+
+        clients.forEach(client => {
+          client.postMessage({
+            type: 'ULTRA_RELOAD',
+            message: 'Cache nuked, force reload now!'
+          });
+        });
+
+        // Self-destruct after cleanup
+        console.log('💀 ULTRA KILLER SW: Self-destructing after cleanup...');
+        await self.registration.unregister();
+
+      } catch (error) {
+        console.error('💀 ULTRA KILLER SW ERROR:', error);
       }
-
-      console.log('✅ KILLER SW: Cleanup complete, reloading page...');
-
-      // Force reload all clients
-      const clients = await self.clients.matchAll();
-      clients.forEach(client => {
-        client.postMessage({ type: 'FORCE_RELOAD' });
-      });
     })()
   );
 });
 
-// Intercept all fetch requests and pass through without caching
+// Block ALL fetch requests with aggressive no-cache headers
 self.addEventListener('fetch', function(event) {
-  event.respondWith(fetch(event.request));
+  console.log('🚫 ULTRA KILLER SW: Blocking fetch for:', event.request.url);
+
+  event.respondWith(
+    fetch(event.request, {
+      cache: 'no-store',
+      headers: {
+        'Cache-Control': 'no-cache, no-store, must-revalidate',
+        'Pragma': 'no-cache',
+        'Expires': '0'
+      }
+    }).catch(() => {
+      // If fetch fails, return minimal response to prevent errors
+      return new Response('Service worker blocked', { status: 200 });
+    })
+  );
 });

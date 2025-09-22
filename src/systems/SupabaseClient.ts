@@ -241,103 +241,52 @@ export const scoreService = {
 
   async getWeeklyLeaderboard(limit: number = 50): Promise<Array<Score & { nickname: string }>> {
     try {
-      console.log('🏆 Starting weekly leaderboard query...')
-      console.log('🔌 Supabase client status:', { url: supabaseUrl, connected: true })
+      console.log('🏆 Starting optimized weekly leaderboard query...')
 
-      // FIXED: Removed connection test that was timing out and blocking leaderboard [FINAL FIX - NO CACHE]
-      console.log('🚀 FINAL LEADERBOARD FIX: Direct 3-day query + 30s timeout [NO SERVICE WORKER]')
-
-      // Calculate start of current week (Monday 00:00) - OPTIMIZED: Only last 3 days for faster query
-      const now = new Date()
-      const threeDaysAgo = new Date(now)
-      threeDaysAgo.setDate(now.getDate() - 3)
+      // TIMEOUT OPTIMIZATIONS: Simplified approach with single 10s timeout
+      const threeDaysAgo = new Date()
+      threeDaysAgo.setDate(threeDaysAgo.getDate() - 3)
       threeDaysAgo.setHours(0, 0, 0, 0)
 
-      console.log(`📅 Optimized range: Last 3 days from ${threeDaysAgo.toISOString()} to ${now.toISOString()}`)
+      console.log(`📋 Querying scores since: ${threeDaysAgo.toISOString()}`)
 
-      // OPTIMIZATION 1: Smaller time range (3 days instead of 7)
-      // OPTIMIZATION 2: Smaller limit for faster response
-      console.log(`📋 Querying recent scores since: ${threeDaysAgo.toISOString()}`)
+      // SIMPLIFIED: Single query with AbortController timeout
+      const controller = new AbortController()
+      const timeoutId = setTimeout(() => controller.abort(), 10000) // 10s timeout
 
-      // Add timeout to database query - INCREASED to 30s for better reliability
-      const queryPromise = supabase
+      const { data, error } = await supabase
         .from('scores')
         .select('*')
         .gte('created_at', threeDaysAgo.toISOString())
         .order('score', { ascending: false })
         .order('created_at', { ascending: true })
-        .limit(Math.min(limit, 20)) // OPTIMIZATION 3: Max 20 results for speed
+        .limit(Math.min(limit, 15))
+        .abortSignal(controller.signal)
 
-      const timeoutPromise = new Promise<never>((_, reject) =>
-        setTimeout(() => reject(new Error('Database query timeout')), 30000) // 30s timeout
-      )
-
-      let { data, error } = await Promise.race([queryPromise, timeoutPromise])
-      let scoreData: Score[] | null = data as Score[] | null
+      clearTimeout(timeoutId)
 
       if (error) {
-        console.error('Primary query failed, trying fallback...', error)
-
-        // FALLBACK STRATEGY: Try ultra-simple query with just today's scores
-        try {
-          const today = new Date()
-          today.setHours(0, 0, 0, 0)
-
-          console.log('🔄 Attempting fallback: Today only query...')
-          const fallbackQuery = supabase
-            .from('scores')
-            .select('id, user_id, score, run_seconds, created_at')
-            .gte('created_at', today.toISOString())
-            .order('score', { ascending: false })
-            .limit(10)
-
-          const fallbackTimeout = new Promise<never>((_, reject) =>
-            setTimeout(() => reject(new Error('Fallback timeout')), 15000)
-          )
-
-          const { data: fallbackData, error: fallbackError } = await Promise.race([fallbackQuery, fallbackTimeout])
-
-          if (!fallbackError && fallbackData) {
-            console.log(`✅ Fallback successful: ${fallbackData.length} today's scores`)
-            scoreData = fallbackData as Score[]
-            error = null
-          } else {
-            console.error('Fallback also failed:', fallbackError)
-            return []
-          }
-        } catch (fallbackException) {
-          console.error('Fallback exception:', fallbackException)
-          return []
-        }
-      }
-
-      if (!scoreData) {
-        console.error('No data received from queries')
+        console.error('Weekly leaderboard query failed:', error)
         return []
       }
 
-      console.log(`📊 Found ${scoreData.length} scores, fetching nicknames...`)
+      if (!data || data.length === 0) {
+        console.log('📊 No scores found in last 3 days')
+        return []
+      }
 
-      // OPTIMIZATION 4: Batch profile fetching with reduced timeout and early exit
-      console.log(`📝 Batch fetching ${scoreData.length} profiles with 3s timeout each...`)
+      console.log(`📊 Found ${data.length} scores, fetching nicknames...`)
 
+      // SIMPLIFIED: Basic profile fetching with early exit on errors
       const scoresWithNicknames = await Promise.all(
-        scoreData.map(async (score) => {
+        (data as Score[]).map(async (score) => {
           try {
-            // OPTIMIZATION: Reduced timeout from 5s to 3s
-            const profilePromise = profileService.getProfile(score.user_id)
-            const timeoutPromise = new Promise<null>((_, reject) =>
-              setTimeout(() => reject(new Error('Profile fetch timeout')), 3000)
-            )
-
-            const profile = await Promise.race([profilePromise, timeoutPromise])
-
+            const profile = await profileService.getProfile(score.user_id)
             return {
               ...score,
               nickname: profile?.nickname || 'Anonimo'
             }
-          } catch (error) {
-            // OPTIMIZATION: Fail fast with default nickname
+          } catch {
             return {
               ...score,
               nickname: 'Anonimo'
@@ -356,55 +305,50 @@ export const scoreService = {
 
   async getMonthlyLeaderboard(limit: number = 50): Promise<Array<Score & { nickname: string }>> {
     try {
+      console.log('📅 Starting monthly leaderboard query...')
+
       // Calculate start of current month
       const now = new Date()
       const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1)
-
-      // Simplified approach: Get scores only for now
       console.log(`📋 Querying monthly scores since: ${startOfMonth.toISOString()}`)
 
-      // Add timeout to database query
-      const queryPromise = supabase
+      // SIMPLIFIED: Single query with AbortController timeout
+      const controller = new AbortController()
+      const timeoutId = setTimeout(() => controller.abort(), 10000) // 10s timeout
+
+      const { data, error } = await supabase
         .from('scores')
         .select('*')
         .gte('created_at', startOfMonth.toISOString())
         .order('score', { ascending: false })
         .order('created_at', { ascending: true })
-        .limit(limit)
+        .limit(Math.min(limit, 25))
+        .abortSignal(controller.signal)
 
-      const timeoutPromise = new Promise<never>((_, reject) =>
-        setTimeout(() => reject(new Error('Database query timeout')), 10000)
-      )
-
-      const { data, error } = await Promise.race([queryPromise, timeoutPromise])
+      clearTimeout(timeoutId)
 
       if (error) {
-        console.error('Error fetching monthly leaderboard:', error)
+        console.error('Monthly leaderboard query failed:', error)
         return []
       }
 
-      console.log(`📊 Found ${data?.length || 0} monthly scores, fetching nicknames...`)
+      if (!data || data.length === 0) {
+        console.log('📊 No monthly scores found')
+        return []
+      }
 
-      // For each score, try to get the profile separately with timeout
+      console.log(`📊 Found ${data.length} monthly scores, fetching nicknames...`)
+
+      // SIMPLIFIED: Basic profile fetching with early exit on errors
       const scoresWithNicknames = await Promise.all(
-        (data as Score[]).map(async (score, index) => {
+        (data as Score[]).map(async (score) => {
           try {
-            console.log(`📝 Fetching profile ${index + 1}/${data.length} for user ${score.user_id}`)
-
-            // Add timeout to profile fetch
-            const profilePromise = profileService.getProfile(score.user_id)
-            const timeoutPromise = new Promise<null>((_, reject) =>
-              setTimeout(() => reject(new Error('Profile fetch timeout')), 5000)
-            )
-
-            const profile = await Promise.race([profilePromise, timeoutPromise])
-
+            const profile = await profileService.getProfile(score.user_id)
             return {
               ...score,
               nickname: profile?.nickname || 'Anonimo'
             }
-          } catch (error) {
-            console.warn(`⚠️ Failed to fetch profile for user ${score.user_id}:`, error)
+          } catch {
             return {
               ...score,
               nickname: 'Anonimo'
