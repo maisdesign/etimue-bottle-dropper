@@ -243,7 +243,7 @@ export const scoreService = {
     try {
       console.log('🏆 Starting optimized weekly leaderboard query...')
 
-      // TIMEOUT OPTIMIZATIONS: Simplified approach with single 10s timeout
+      // REMOVED AGGRESSIVE CONNECTION TEST - Direct query approach
       const threeDaysAgo = new Date()
       threeDaysAgo.setDate(threeDaysAgo.getDate() - 3)
       threeDaysAgo.setHours(0, 0, 0, 0)
