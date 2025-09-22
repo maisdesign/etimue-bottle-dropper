@@ -1,6 +1,5 @@
 import { supabase, profileService, type Profile } from './SupabaseClient'
 import type { User, Session } from '@supabase/supabase-js'
-import { AuthModal } from '../ui/AuthModal'
 
 export interface AuthState {
   user: User | null
@@ -177,6 +176,14 @@ export class AuthManager {
   }
 
   public canPlayGame(): boolean {
+    // 🔧 DEBUG BACKDOOR: Allow bypass in development
+    if (import.meta.env.MODE === 'development' || window.location.hostname === 'localhost') {
+      const debugAuth = localStorage.getItem('debug-auth-bypass')
+      if (debugAuth === 'etimue-debug-2024') {
+        console.log('🔧 DEBUG: Auth bypassed for development')
+        return true
+      }
+    }
     return this.state.isAuthenticated
   }
 
@@ -329,47 +336,4 @@ export class AuthManager {
 // Global instance
 export const authManager = new AuthManager()
 
-// Helper to require authentication before playing
-export const requireAuth = async (): Promise<boolean> => {
-  console.log('🎮 Checking auth for game access...')
-
-  if (authManager.canPlayGame()) {
-    console.log('✅ User can play!')
-    return true
-  }
-
-  if (!authManager.isReady()) {
-    console.log('⏳ Waiting for auth to initialize...')
-    await new Promise<void>(resolve => {
-      const unsubscribe = authManager.subscribe((state) => {
-        if (!state.isLoading) {
-          unsubscribe()
-          resolve()
-        }
-      })
-    })
-  }
-
-  // If still not authenticated, show auth modal
-  if (!authManager.canPlayGame()) {
-    console.log('🔐 Showing auth modal with STATIC import...')
-    return new Promise<boolean>((resolve) => {
-      // STATIC IMPORT VERSION - NO DYNAMIC IMPORT!
-      try {
-        const modal = new AuthModal()
-        modal.onAuth((success) => {
-          modal.destroy()
-          resolve(success && authManager.canPlayGame())
-        })
-        modal.show()
-      } catch (error) {
-        console.error('Failed to load AuthModal with static import:', error)
-        resolve(false)
-      }
-    })
-  }
-
-  const canPlay = authManager.canPlayGame()
-  console.log('🎯 Final auth check result:', canPlay)
-  return canPlay
-}
+// NOTE: Auth UI logic moved to GlobalFunctions.ts to avoid circular dependencies

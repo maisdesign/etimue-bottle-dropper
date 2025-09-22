@@ -272,3 +272,21 @@ window.toggleLanguage = globalFunctions.toggleLanguage
 window.cycleCharacter = globalFunctions.cycleCharacter
 window.showGameStartOverlay = globalFunctions.showGameStartOverlay
 window.hideGameStartOverlay = globalFunctions.hideGameStartOverlay
+
+// 🔧 DEBUG FUNCTIONS - Development only
+if (import.meta.env.MODE === 'development' || window.location.hostname === 'localhost') {
+  (window as any).debugAuthBypass = () => {
+    localStorage.setItem('debug-auth-bypass', 'etimue-debug-2024')
+    console.log('🔧 DEBUG: Auth bypass activated! Reload the page.')
+    console.log('🔧 Now you can play without logging in!')
+  }
+
+  (window as any).debugAuthRestore = () => {
+    localStorage.removeItem('debug-auth-bypass')
+    console.log('🔧 DEBUG: Auth bypass deactivated! Normal auth required.')
+  }
+
+  console.log('🔧 DEBUG FUNCTIONS AVAILABLE:')
+  console.log('  debugAuthBypass() - Skip login requirement')
+  console.log('  debugAuthRestore() - Restore normal auth')
+}

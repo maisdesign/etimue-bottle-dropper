@@ -38,14 +38,11 @@ export default defineConfig({
     sourcemap: true,
     rollupOptions: {
       output: {
-        // Use simple naming for dynamic imports to work
+        // FORCE EVERYTHING INTO MAIN BUNDLE - NO CODE SPLITTING AT ALL
         entryFileNames: `assets/[name]-[hash].js`,
         chunkFileNames: `assets/[name]-[hash].js`,
         assetFileNames: `assets/[name]-[hash].[ext]`,
-        manualChunks: {
-          phaser: ['phaser'],
-          supabase: ['@supabase/supabase-js']
-        }
+        manualChunks: () => 'everything' // Force everything into single chunk
       }
     }
   },
