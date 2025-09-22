@@ -9,35 +9,45 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - `npm run build` - Build for production (outputs to `dist/`)
 - `npm run preview` - Preview production build locally
 
-### 🚨 MANDATORY DEPLOYMENT RULES - NO EXCEPTIONS! 🚨
+### 🚨 CRITICAL DEPLOYMENT RULES - CLAUDE MUST NEVER FORGET! 🚨
 
-**CLAUDE CODE MUST FOLLOW THESE RULES FOR EVERY SINGLE CHANGE:**
+**⚠️ REPO CONFUSION PREVENTION - READ THIS EVERY TIME! ⚠️**
 
-**RULE #1: BUILD BEFORE COMMIT - ALWAYS!**
+**THERE ARE TWO REPOSITORIES:**
+1. 📝 **Development**: `etimue-bottle-dropper` (for code changes)
+2. 🌐 **Production**: `bottledropper2` (for Netlify deployment)
+
+**🎯 USE THE AUTOMATED SCRIPT TO PREVENT ERRORS:**
 ```bash
-# MANDATORY sequence - NO SHORTCUTS:
-npm run build          # Update dist/ folder
-git add .              # Stage ALL files including dist/
-git commit -m "..."    # Commit with build
-git push               # Deploy to Netlify
+# SINGLE COMMAND DOES EVERYTHING CORRECTLY:
+./deploy.sh "your commit message"
 ```
 
-**RULE #2: DIST/ FILES = NETLIFY LIVE SITE**
-- dist/ folder IS the live website on Netlify
-- Source files (src/) are for development only
-- Changes to src/ WITHOUT rebuilding dist/ = NO EFFECT ON LIVE SITE
-- You MUST run `npm run build` after ANY change to src/
+**🚫 NEVER DO MANUAL DEPLOYMENT - USE SCRIPT ONLY!**
 
-**RULE #3: VERIFICATION CHECKLIST**
-Before every commit, Claude MUST verify:
-- [ ] `npm run build` was executed
-- [ ] dist/ folder has new timestamp files
-- [ ] `git status` shows dist/ files as modified
-- [ ] All dist/ files are staged for commit
+**MANUAL DEPLOYMENT (ONLY IF SCRIPT FAILS):**
+```bash
+# Step 1: Development repo (etimue-bottle-dropper)
+npm run build          # Update dist/ folder
+git add .              # Stage ALL files including dist/
+git commit -m "✅ BUILD UPDATED: [description]"
+git push               # Push to development repo
 
-**RULE #4: COMMIT MESSAGE MUST INCLUDE BUILD STATUS**
-Every commit message MUST confirm build was done:
-"✅ BUILD UPDATED: [description]" or fail the commit
+# Step 2: Production repo (bottledropper2) - NETLIFY DEPLOYMENT
+cd /d/temp-deployment/bottledropper2
+git pull               # Get latest from bottledropper2
+cp -r /d/etimue-bottle-dropper/dist/* .  # Copy dist files
+git add .              # Stage all files
+git commit -m "🚀 DEPLOY: [description]"
+git push               # Deploy to Netlify via bottledropper2
+```
+
+**🚨 CRITICAL REMINDERS:**
+- ❌ `git push` on etimue-bottle-dropper = NOT LIVE ON NETLIFY
+- ✅ `git push` on bottledropper2 = LIVE ON NETLIFY
+- 🔄 ALWAYS do BOTH repos for any change to go live
+- 📂 dist/ files must be copied to bottledropper2 manually
+- 🤖 USE ./deploy.sh TO AVOID HUMAN ERROR
 
 **🚨 BREAKING THESE RULES = BROKEN LIVE SITE! 🚨**
 

@@ -1186,10 +1186,10 @@
     }
   </style>
   
-  <link rel="modulepreload" crossorigin href="/assets/phaser-f8c8a439-1758557648250-6b782db9.js">
-  <link rel="modulepreload" crossorigin href="/assets/supabase-2481e69c-1758557648250-11b3f456.js">
-<link rel="manifest" href="/manifest.webmanifest"><script id="vite-plugin-pwa:register-sw" src="/registerSW.js"></script>  <script type="module" crossorigin src="/assets/index-1758557648250-b8b6048e.js"></script>
-  <link rel="modulepreload" crossorigin href="/assets/supabase-1758557648250-cf010ec4.js">
+  <link rel="modulepreload" crossorigin href="/assets/phaser-f8c8a439-1758559292375-6b782db9.js">
+  <link rel="modulepreload" crossorigin href="/assets/supabase-2481e69c-1758559292375-11b3f456.js">
+<link rel="manifest" href="/manifest.webmanifest"><script id="vite-plugin-pwa:register-sw" src="/registerSW.js"></script>  <script type="module" crossorigin src="/assets/index-1758559292375-43175eec.js"></script>
+  <link rel="modulepreload" crossorigin href="/assets/supabase-1758559292375-cf010ec4.js">
 </head>
 <body>
   <div class="container">
@@ -1295,36 +1295,6 @@
     </div>
   </div>
 
-
-<script>
-// EMERGENCY SERVICE WORKER CLEANUP - Stop infinite reload loops
-console.log('🚑 EMERGENCY: Registering cleanup service worker to stop infinite reloads...');
-
-if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('/sw-cleanup.js')
-    .then(registration => {
-      console.log('🧹 Cleanup service worker registered successfully');
-
-      // Listen for service worker state changes
-      registration.addEventListener('updatefound', () => {
-        console.log('🔄 Cleanup service worker updating...');
-      });
-    })
-    .catch(error => {
-      console.error('🚨 Failed to register cleanup service worker:', error);
-    });
-
-  // Clean up any existing service workers immediately
-  navigator.serviceWorker.getRegistrations().then(registrations => {
-    console.log('🔍 Found existing service workers:', registrations.length);
-    registrations.forEach(registration => {
-      if (registration.scope.includes('sw-killer')) {
-        console.log('💀 Unregistering killer service worker:', registration.scope);
-        registration.unregister();
-      }
-    });
-  });
-}
-</script>
+  
 </body>
 </html>
