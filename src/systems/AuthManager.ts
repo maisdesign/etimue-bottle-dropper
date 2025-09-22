@@ -1,5 +1,6 @@
 import { supabase, profileService, type Profile } from './SupabaseClient'
 import type { User, Session } from '@supabase/supabase-js'
+import { AuthModal } from '../ui/AuthModal'
 
 export interface AuthState {
   user: User | null
@@ -351,20 +352,20 @@ export const requireAuth = async (): Promise<boolean> => {
 
   // If still not authenticated, show auth modal
   if (!authManager.canPlayGame()) {
-    console.log('🔐 Showing auth modal...')
+    console.log('🔐 Showing auth modal with STATIC import...')
     return new Promise<boolean>((resolve) => {
-      // Dynamic import to avoid circular dependency
-      import('../ui/AuthModal').then(({ AuthModal }) => {
+      // STATIC IMPORT VERSION - NO DYNAMIC IMPORT!
+      try {
         const modal = new AuthModal()
         modal.onAuth((success) => {
           modal.destroy()
           resolve(success && authManager.canPlayGame())
         })
         modal.show()
-      }).catch(error => {
-        console.error('Failed to load AuthModal:', error)
+      } catch (error) {
+        console.error('Failed to load AuthModal with static import:', error)
         resolve(false)
-      })
+      }
     })
   }
 

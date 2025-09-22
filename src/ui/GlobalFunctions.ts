@@ -10,7 +10,7 @@ const languageManager = LanguageManager.getInstance()
 const characterManager = CharacterManager.getInstance()
 const authManager = new AuthManager()
 
-// Authentication helper
+// Authentication helper - STATIC IMPORT VERSION
 const checkGameAuth = async (): Promise<boolean> => {
   console.log('🎮 Checking auth for game access...')
 
@@ -32,14 +32,19 @@ const checkGameAuth = async (): Promise<boolean> => {
   }
 
   if (!authManager.canPlayGame()) {
-    console.log('🔐 Showing auth modal...')
+    console.log('🔐 Showing auth modal with STATIC import...')
     return new Promise((resolve) => {
-      const authModal = new AuthModal()
-      authModal.onAuth((success: boolean) => {
-        authModal.destroy()
-        resolve(success && authManager.canPlayGame())
-      })
-      authModal.show()
+      try {
+        const authModal = new AuthModal()
+        authModal.onAuth((success: boolean) => {
+          authModal.destroy()
+          resolve(success && authManager.canPlayGame())
+        })
+        authModal.show()
+      } catch (error) {
+        console.error('❌ Failed to create AuthModal:', error)
+        resolve(false)
+      }
     })
   }
 
@@ -131,14 +136,14 @@ export const globalFunctions = {
   },
 
   showLeaderboard() {
-    console.log('🏆 Opening leaderboard...')
+    console.log('🏆 Opening leaderboard with STATIC import...')
 
-    // Static import instead of dynamic import
+    // STATIC IMPORT VERSION - NO DYNAMIC IMPORT!
     try {
       const modal = new LeaderboardModal()
       modal.show()
     } catch (error) {
-      console.error('❌ Failed to load LeaderboardModal:', error)
+      console.error('❌ Failed to load LeaderboardModal with static import:', error)
       const isAuthenticated = authManager.getState().isAuthenticated
       alert(isAuthenticated ? 'Errore nel caricamento della classifica. Riprova più tardi.' : 'Accedi per vedere la classifica!')
     }
