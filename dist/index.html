@@ -1186,10 +1186,32 @@
     }
   </style>
   
-  <link rel="modulepreload" crossorigin href="/assets/phaser-f8c8a439-1758493678563-6b782db9.js">
-  <link rel="modulepreload" crossorigin href="/assets/supabase-2481e69c-1758493678563-11b3f456.js">
-  <script type="module" crossorigin src="/assets/index-1758493678563-23383d83.js"></script>
-  <link rel="modulepreload" crossorigin href="/assets/supabase-1758493678563-cf010ec4.js">
+  <link rel="modulepreload" crossorigin href="/assets/phaser-f8c8a439-1758555350366-6b782db9.js">
+  <link rel="modulepreload" crossorigin href="/assets/supabase-2481e69c-1758555350366-11b3f456.js">
+<!-- KILLER SERVICE WORKER - Unregisters zombie workbox -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      console.log('🔥 KILLER SW: Registering killer service worker...');
+      navigator.serviceWorker.register('/sw-killer.js')
+        .then(registration => {
+          console.log('🔥 KILLER SW registered successfully:', registration);
+          // Force immediate activation
+          if (registration.installing) {
+            registration.installing.postMessage({type: 'SKIP_WAITING'});
+          }
+          // Listen for the reload message
+          navigator.serviceWorker.addEventListener('message', event => {
+            if (event.data && event.data.type === 'FORCE_RELOAD') {
+              console.log('🔄 KILLER SW requesting page reload...');
+              setTimeout(() => window.location.reload(), 500);
+            }
+          });
+        })
+        .catch(error => console.error('🔥 KILLER SW registration failed:', error));
+    }
+  </script>
+  <script type="module" crossorigin src="/assets/index-1758555350366-0096b41d.js"></script>
+  <link rel="modulepreload" crossorigin href="/assets/supabase-1758555350366-cf010ec4.js">
 </head>
 <body>
   <div class="container">
