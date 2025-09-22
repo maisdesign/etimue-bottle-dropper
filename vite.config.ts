@@ -38,13 +38,15 @@ export default defineConfig({
     sourcemap: true,
     rollupOptions: {
       output: {
-        // Force new hashes by adding timestamp
-        entryFileNames: `assets/[name]-${Date.now()}-[hash].js`,
-        chunkFileNames: `assets/[name]-${Date.now()}-[hash].js`,
-        assetFileNames: `assets/[name]-${Date.now()}-[hash].[ext]`,
+        // Use simple naming for dynamic imports to work
+        entryFileNames: `assets/[name]-[hash].js`,
+        chunkFileNames: `assets/[name]-[hash].js`,
+        assetFileNames: `assets/[name]-[hash].[ext]`,
         manualChunks: {
           phaser: ['phaser'],
-          supabase: ['@supabase/supabase-js']
+          supabase: ['@supabase/supabase-js'],
+          // Separate dynamic UI components
+          'ui-modals': ['./src/ui/LeaderboardModal.ts', './src/ui/AuthModal.ts']
         }
       }
     }
