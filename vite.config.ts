@@ -44,9 +44,7 @@ export default defineConfig({
         assetFileNames: `assets/[name]-[hash].[ext]`,
         manualChunks: {
           phaser: ['phaser'],
-          supabase: ['@supabase/supabase-js'],
-          // Separate dynamic UI components
-          'ui-modals': ['./src/ui/LeaderboardModal.ts', './src/ui/AuthModal.ts']
+          supabase: ['@supabase/supabase-js']
         }
       }
     }
