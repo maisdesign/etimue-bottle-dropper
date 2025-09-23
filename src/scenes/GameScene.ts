@@ -594,13 +594,20 @@ export class GameScene extends Scene {
         duration: gameSeconds
       })
 
-      // Submit score
-      const result = await scoreService.submitScore(state.user.id, this.score, gameSeconds)
+      // Submit score with timeout
+      const timeoutPromise = new Promise((_, reject) =>
+        setTimeout(() => reject(new Error('Score submission timeout')), 10000)
+      )
+
+      const result = await Promise.race([
+        scoreService.submitScore(state.user.id, this.score, gameSeconds),
+        timeoutPromise
+      ])
 
       if (result) {
         console.log('✅ Score submitted successfully:', result)
       } else {
-        console.error('❌ Score submission failed')
+        console.error('❌ Score submission failed - no result returned')
       }
     } catch (error) {
       console.error('💥 Score submission error:', error)

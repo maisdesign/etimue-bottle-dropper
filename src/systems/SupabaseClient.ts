@@ -167,16 +167,20 @@ export const profileService = {
 export const scoreService = {
   async submitScore(userId: string, score: number, runSeconds: number): Promise<Score | null> {
     try {
+      console.log('🔐 Getting session for score submission...')
       // Get current session for authorization
       const { data: { session }, error: sessionError } = await supabase.auth.getSession()
 
       if (sessionError || !session) {
-        console.error('No valid session for score submission')
+        console.error('❌ No valid session for score submission:', sessionError)
         return null
       }
 
+      console.log('✅ Session valid, proceeding with score submission')
+
       // Try Edge Function first (server-side validation)
       try {
+        console.log('🚀 Calling Edge Function submit-score...')
         const { data, error } = await supabase.functions.invoke('submit-score', {
           body: {
             score,
@@ -188,10 +192,13 @@ export const scoreService = {
           }
         })
 
-        if (error) throw error
+        if (error) {
+          console.error('❌ Edge Function error:', error)
+          throw error
+        }
 
         if (data.success) {
-          console.log('Score submitted via Edge Function:', data.storedScore)
+          console.log('✅ Score submitted via Edge Function:', data.storedScore)
           return {
             id: data.storedScore.id,
             user_id: userId,
@@ -201,10 +208,11 @@ export const scoreService = {
           }
         }
       } catch (edgeError) {
-        console.warn('Edge Function failed, using fallback:', edgeError)
+        console.warn('⚠️ Edge Function failed, using fallback:', edgeError)
       }
 
       // Fallback to direct database submission with client-side validation
+      console.log('📝 Using direct database submission fallback...')
       if (score < 0 || score > 600) {
         console.error('Invalid score range:', score)
         return null
