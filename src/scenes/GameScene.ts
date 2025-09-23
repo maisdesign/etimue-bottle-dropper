@@ -1,6 +1,8 @@
 import { Scene } from 'phaser'
 import { languageManager } from '../i18n/LanguageManager'
 import { characterManager } from '../systems/CharacterManager'
+import { scoreService } from '../systems/SupabaseClient'
+import { authManager } from '../systems/AuthManager'
 
 export class GameScene extends Scene {
   private character!: Phaser.Physics.Arcade.Image
@@ -511,6 +513,9 @@ export class GameScene extends Scene {
     this.gameOverTexts.push(gameOverText, finalScoreText, restartText)
 
     console.log(`🎮 Game Over! Final Score: ${this.score}`)
+
+    // Submit score to database
+    this.submitScoreToDatabase()
   }
 
   update(): void {
@@ -564,6 +569,42 @@ export class GameScene extends Scene {
     // if (!this.gameStarted && !this.gameOver && this.time.now > 3000) {
     //   this.startGame()
     // }
+  }
+
+  private async submitScoreToDatabase(): Promise<void> {
+    try {
+      console.log('📊 SUBMITTING SCORE TO DATABASE...', {
+        score: this.score,
+        timeElapsed: 60 - this.timeLeft
+      })
+
+      // Get current user
+      const state = authManager.getState()
+      if (!state.user || !state.isAuthenticated) {
+        console.error('❌ No authenticated user found for score submission')
+        return
+      }
+
+      // Calculate game duration (minimum 5 seconds for validation)
+      const gameSeconds = Math.max(5, 60 - this.timeLeft)
+
+      console.log('📞 Calling scoreService.submitScore...', {
+        userId: state.user.id,
+        score: this.score,
+        duration: gameSeconds
+      })
+
+      // Submit score
+      const result = await scoreService.submitScore(state.user.id, this.score, gameSeconds)
+
+      if (result) {
+        console.log('✅ Score submitted successfully:', result)
+      } else {
+        console.error('❌ Score submission failed')
+      }
+    } catch (error) {
+      console.error('💥 Score submission error:', error)
+    }
   }
 
   shutdown(): void {
