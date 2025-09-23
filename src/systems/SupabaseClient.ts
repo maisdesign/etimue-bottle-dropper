@@ -18,7 +18,7 @@ if (!supabaseUrl || !supabaseAnonKey) {
 // Database types
 export interface Profile {
   id: string
-  username: string
+  nickname: string | null
   email: string
   whatsapp: string | null
   instagram: string | null

@@ -108,7 +108,7 @@ export class AuthManager {
       if (!profile) {
         console.log('📝 Creating new profile...')
         profile = await profileService.createProfile({
-          username: session.user.email || session.user.user_metadata?.name || 'User',
+          nickname: session.user.email || session.user.user_metadata?.name || 'User',
           email: session.user.email || '',
           whatsapp: null,
           instagram: null,
