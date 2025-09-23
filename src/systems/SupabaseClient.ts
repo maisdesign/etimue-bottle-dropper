@@ -18,11 +18,13 @@ if (!supabaseUrl || !supabaseAnonKey) {
 // Database types
 export interface Profile {
   id: string
-  email: string
-  nickname: string | null
+  username: string
+  whatsapp: string | null
+  instagram: string | null
   consent_marketing: boolean
-  consent_timestamp: string | null
+  consent_ts: string | null
   created_at: string
+  updated_at: string
 }
 
 export interface Score {
@@ -38,8 +40,8 @@ export interface Database {
     Tables: {
       profiles: {
         Row: Profile
-        Insert: Omit<Profile, 'id' | 'created_at'>
-        Update: Partial<Omit<Profile, 'id' | 'created_at'>>
+        Insert: Omit<Profile, 'id' | 'created_at' | 'updated_at'>
+        Update: Partial<Omit<Profile, 'id' | 'created_at' | 'updated_at'>>
       }
       scores: {
         Row: Score

@@ -305,7 +305,7 @@ export class AuthModal {
       await authManager.updateProfile({
         nickname,
         consent_marketing: hasConsent,
-        consent_timestamp: hasConsent ? new Date().toISOString() : null
+        consent_ts: hasConsent ? new Date().toISOString() : null
       })
 
       this.completeAuth(true)
