@@ -252,7 +252,12 @@ export const scoreService = {
 
       // SIMPLIFIED: Single query with AbortController timeout
       const controller = new AbortController()
-      const timeoutId = setTimeout(() => controller.abort(), 10000) // 10s timeout
+      const timeoutId = setTimeout(() => {
+        console.error('❌ Supabase query timeout after 5s')
+        controller.abort()
+      }, 5000) // 5s timeout
+
+      console.log('📞 Executing Supabase query...')
 
       let { data, error } = await supabase
         .from('scores')
@@ -265,9 +270,46 @@ export const scoreService = {
 
       clearTimeout(timeoutId)
 
+      console.log('📊 Supabase query completed:', {
+        hasData: !!data,
+        dataLength: data?.length || 0,
+        hasError: !!error,
+        errorMessage: error?.message
+      })
+
       if (error) {
         console.error('Weekly leaderboard query failed:', error)
-        return []
+
+        // EMERGENCY FALLBACK: Try simplest possible query
+        console.log('🔄 Trying emergency fallback query...')
+        try {
+          const simpleController = new AbortController()
+          const simpleTimeoutId = setTimeout(() => {
+            console.error('❌ Simple query timeout after 3s')
+            simpleController.abort()
+          }, 3000)
+
+          const { data: simpleData, error: simpleError } = await supabase
+            .from('scores')
+            .select('id, user_id, score, run_seconds, created_at')
+            .order('score', { ascending: false })
+            .limit(5)
+            .abortSignal(simpleController.signal)
+
+          clearTimeout(simpleTimeoutId)
+
+          if (!simpleError && simpleData) {
+            console.log(`✅ Emergency fallback succeeded: ${simpleData.length} entries`)
+            data = simpleData
+            error = null
+          } else {
+            console.error('❌ Emergency fallback also failed:', simpleError)
+            return []
+          }
+        } catch (fallbackError) {
+          console.error('❌ Emergency fallback exception:', fallbackError)
+          return []
+        }
       }
 
       if (!data || data.length === 0) {
