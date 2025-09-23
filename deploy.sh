@@ -1,67 +1,33 @@
 #!/bin/bash
 
-# 🚀 AUTOMATED DEPLOYMENT SCRIPT FOR ETIMUE BOTTLE DROPPER
-# This script prevents repo deployment errors by automating the full process
+# Deploy script for Etimuè Bottle Dropper
+# Copies dist/ files to bottledropper2 repository and pushes to Netlify
 
-set -e  # Exit on any error
+echo "🚀 Starting deployment..."
 
-echo "🚀 Starting automated deployment process..."
-
-# Step 1: Build the project
-echo "📦 Building project..."
-npm run build
-
-# Step 2: Commit to main repository (etimue-bottle-dropper)
-echo "💾 Committing to main repository..."
-git add .
-
-# Get commit message from user or use default
-if [ -z "$1" ]; then
-    COMMIT_MSG="✅ BUILD UPDATED: Automated deployment $(date '+%Y-%m-%d %H:%M')"
-else
-    COMMIT_MSG="✅ BUILD UPDATED: $1"
-fi
-
-echo "📝 Commit message: $COMMIT_MSG"
-
-# Add the required footer
-FULL_COMMIT_MSG="$COMMIT_MSG
-
-🚀 Generated with [Claude Code](https://claude.ai/code)
-
-Co-Authored-By: Claude <noreply@anthropic.com>"
-
-git commit -m "$FULL_COMMIT_MSG"
-git push
-
-# Step 3: Deploy to Netlify via bottledropper2
-echo "🌐 Deploying to Netlify via bottledropper2..."
-
-# Check if temp deployment directory exists
-if [ ! -d "/d/temp-deployment/bottledropper2" ]; then
+# Check if we have a deployment directory
+if [ ! -d "../bottledropper2" ]; then
     echo "📁 Cloning bottledropper2 repository..."
-    mkdir -p /d/temp-deployment
-    cd /d/temp-deployment
+    cd ..
     git clone https://github.com/maisdesign/bottledropper2.git
+    cd etimue-bottle-dropper
 fi
 
-cd /d/temp-deployment/bottledropper2
+echo "🧹 Cleaning deployment directory..."
+rm -rf ../bottledropper2/*
 
-# Pull latest changes
-echo "🔄 Pulling latest changes from bottledropper2..."
-git pull
+echo "📋 Copying dist files..."
+cp -r dist/* ../bottledropper2/
 
-# Copy all dist files
-echo "📋 Copying dist files to bottledropper2..."
-cp -r /d/etimue-bottle-dropper/dist/* .
-
-# Commit and push to bottledropper2
-echo "💾 Committing to bottledropper2 (Netlify deployment)..."
+echo "📝 Adding deployment commit..."
+cd ../bottledropper2
 git add .
-git commit -m "🚀 DEPLOY: $COMMIT_MSG" || echo "No changes to commit"
-git push
+git commit -m "✅ BUILD UPDATED: CRITICAL FIX - Remove obsolete service worker files causing 404 errors"
 
-echo "✅ DEPLOYMENT COMPLETE!"
-echo "🌐 Live site: https://etimuebottledropper.netlify.app/"
-echo "📊 Main repo: https://github.com/maisdesign/etimue-bottle-dropper"
-echo "🚀 Deploy repo: https://github.com/maisdesign/bottledropper2"
+echo "🚀 Pushing to Netlify..."
+git push origin main
+
+echo "✅ Deployment completed!"
+echo "🌐 Site should be live at: https://etimuebottledropper.netlify.app/"
+
+cd ../etimue-bottle-dropper
