@@ -254,7 +254,7 @@ export const scoreService = {
       const controller = new AbortController()
       const timeoutId = setTimeout(() => controller.abort(), 10000) // 10s timeout
 
-      const { data, error } = await supabase
+      let { data, error } = await supabase
         .from('scores')
         .select('*')
         .gte('created_at', threeDaysAgo.toISOString())
@@ -271,29 +271,70 @@ export const scoreService = {
       }
 
       if (!data || data.length === 0) {
-        console.log('📊 No scores found in last 3 days')
-        return []
+        console.log('📊 No scores found in last 3 days, trying 7 days...')
+
+        // Fallback: try 7 days
+        const sevenDaysAgo = new Date()
+        sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7)
+        sevenDaysAgo.setHours(0, 0, 0, 0)
+
+        const fallbackController = new AbortController()
+        const fallbackTimeoutId = setTimeout(() => fallbackController.abort(), 5000)
+
+        const { data: fallbackData, error: fallbackError } = await supabase
+          .from('scores')
+          .select('*')
+          .gte('created_at', sevenDaysAgo.toISOString())
+          .order('score', { ascending: false })
+          .order('created_at', { ascending: true })
+          .limit(Math.min(limit, 10))
+          .abortSignal(fallbackController.signal)
+
+        clearTimeout(fallbackTimeoutId)
+
+        if (fallbackError || !fallbackData || fallbackData.length === 0) {
+          console.log('📊 No scores found in last 7 days either')
+          return []
+        }
+
+        console.log(`📊 Found ${fallbackData.length} scores in last 7 days`)
+        data = fallbackData
       }
 
       console.log(`📊 Found ${data.length} scores, fetching nicknames...`)
 
-      // SIMPLIFIED: Basic profile fetching with early exit on errors
-      const scoresWithNicknames = await Promise.all(
-        (data as Score[]).map(async (score) => {
-          try {
-            const profile = await profileService.getProfile(score.user_id)
-            return {
-              ...score,
-              nickname: profile?.nickname || 'Anonimo'
+      // SIMPLIFIED: Basic profile fetching with timeout protection
+      const scoresWithNicknames = await Promise.race([
+        Promise.all(
+          (data as Score[]).map(async (score, index) => {
+            try {
+              console.log(`📝 Fetching profile ${index + 1}/${data.length} for user ${score.user_id}`)
+              const profile = await profileService.getProfile(score.user_id)
+              console.log(`✅ Profile ${index + 1} fetched: ${profile?.nickname || 'Anonimo'}`)
+              return {
+                ...score,
+                nickname: profile?.nickname || 'Anonimo'
+              }
+            } catch (error) {
+              console.warn(`⚠️ Profile ${index + 1} failed:`, error)
+              return {
+                ...score,
+                nickname: 'Anonimo'
+              }
             }
-          } catch {
-            return {
-              ...score,
-              nickname: 'Anonimo'
-            }
-          }
-        })
-      )
+          })
+        ),
+        new Promise<Array<Score & { nickname: string }>>((_, reject) =>
+          setTimeout(() => reject(new Error('Profile fetching timeout')), 5000)
+        )
+      ]).catch(error => {
+        console.error('❌ Profile fetching failed or timed out:', error)
+        // Return scores without nicknames as fallback
+        return (data as Score[]).map(score => ({
+          ...score,
+          nickname: 'Anonimo'
+        }))
+      })
 
       console.log(`✅ Weekly leaderboard loaded: ${scoresWithNicknames.length} entries`)
       return scoresWithNicknames
