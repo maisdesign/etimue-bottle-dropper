@@ -35,14 +35,14 @@ export default defineConfig({
   build: {
     outDir: 'dist',
     emptyOutDir: true,
-    sourcemap: true,
+    sourcemap: false,
     rollupOptions: {
       output: {
-        // FORCE EVERYTHING INTO MAIN BUNDLE - NO CODE SPLITTING AT ALL
-        entryFileNames: `assets/[name]-[hash].js`,
-        chunkFileNames: `assets/[name]-[hash].js`,
-        assetFileNames: `assets/[name]-[hash].[ext]`,
-        manualChunks: () => 'everything' // Force everything into single chunk
+        entryFileNames: `assets/main.js`,
+        chunkFileNames: `assets/main.js`, // Force everything to main.js
+        assetFileNames: `assets/[name].[ext]`,
+        // Force EVERYTHING into a single file
+        manualChunks: () => 'main'
       }
     }
   },
