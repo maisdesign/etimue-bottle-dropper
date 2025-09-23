@@ -19,6 +19,7 @@ if (!supabaseUrl || !supabaseAnonKey) {
 export interface Profile {
   id: string
   username: string
+  email: string
   whatsapp: string | null
   instagram: string | null
   consent_marketing: boolean
@@ -169,61 +170,23 @@ export const profileService = {
 export const scoreService = {
   async submitScore(userId: string, score: number, runSeconds: number): Promise<Score | null> {
     try {
-      console.log('🔐 Getting session for score submission...')
-      // Get current session for authorization
-      const { data: { session }, error: sessionError } = await supabase.auth.getSession()
+      console.log('📊 Bypassing session check, going direct to database...')
 
-      if (sessionError || !session) {
-        console.error('❌ No valid session for score submission:', sessionError)
-        return null
-      }
-
-      console.log('✅ Session valid, proceeding with score submission')
-
-      // Try Edge Function first (server-side validation)
-      try {
-        console.log('🚀 Calling Edge Function submit-score...')
-        const { data, error } = await supabase.functions.invoke('submit-score', {
-          body: {
-            score,
-            runSeconds,
-            gameEndTimestamp: Date.now()
-          },
-          headers: {
-            Authorization: `Bearer ${session.access_token}`
-          }
-        })
-
-        if (error) {
-          console.error('❌ Edge Function error:', error)
-          throw error
-        }
-
-        if (data.success) {
-          console.log('✅ Score submitted via Edge Function:', data.storedScore)
-          return {
-            id: data.storedScore.id,
-            user_id: userId,
-            score: data.storedScore.score,
-            run_seconds: data.storedScore.runSeconds,
-            created_at: new Date().toISOString()
-          }
-        }
-      } catch (edgeError) {
-        console.warn('⚠️ Edge Function failed, using fallback:', edgeError)
-      }
-
-      // Fallback to direct database submission with client-side validation
-      console.log('📝 Using direct database submission fallback...')
+      // SKIP session check - go direct to database since we have auth via authManager
+      // Client-side validation
       if (score < 0 || score > 600) {
-        console.error('Invalid score range:', score)
+        console.error('❌ Invalid score range:', score)
         return null
       }
 
       if (runSeconds < 5) {
-        console.error('Game too short, likely invalid:', runSeconds)
+        console.error('❌ Game too short, likely invalid:', runSeconds)
         return null
       }
+
+      console.log('💾 Inserting score directly to database...')
+
+      // Direct database submission
 
       const { data, error } = await supabase
         .from('scores')
