@@ -395,6 +395,69 @@ class SimpleAuthSystem {
     }
   }
 
+  public async getPrizeLeaderboard(limit: number = 10, period: 'weekly' | 'monthly' = 'weekly'): Promise<Array<GameScore & { display_name: string; eligible_for_prize: boolean }>> {
+    try {
+      console.log(`🏆 SimpleAuth: Getting PRIZE leaderboard (${period}, limit: ${limit}) - Newsletter subscribers only`)
+
+      // Calculate date range based on period
+      const dateThreshold = new Date()
+      if (period === 'weekly') {
+        dateThreshold.setDate(dateThreshold.getDate() - 7)
+      } else {
+        dateThreshold.setDate(dateThreshold.getDate() - 30)
+      }
+
+      // Get scores from the period
+      const { data: scoresData, error: scoresError } = await this.supabase
+        .from('scores')
+        .select('*')
+        .gte('created_at', dateThreshold.toISOString())
+        .order('score', { ascending: false })
+        .order('created_at', { ascending: true })
+        .limit(limit * 3) // Get more to filter by newsletter subscription
+
+      if (scoresError) {
+        console.error('❌ SimpleAuth: Scores query error:', scoresError)
+        return []
+      }
+
+      // Get profiles - ONLY those with marketing consent
+      const userIds = scoresData.map(score => score.user_id)
+      const { data: profilesData, error: profilesError } = await this.supabase
+        .from('profiles')
+        .select('id, display_name, consent_marketing')
+        .in('id', userIds)
+        .eq('consent_marketing', true) // ONLY newsletter subscribers
+
+      if (profilesError) {
+        console.error('❌ SimpleAuth: Profiles query error:', profilesError)
+        return []
+      }
+
+      console.log(`✅ SimpleAuth: Prize leaderboard - ${scoresData.length} scores, ${profilesData.length} eligible users (newsletter subscribers)`)
+
+      // Filter scores to only include newsletter subscribers and combine with profiles
+      const eligibleScores = scoresData
+        .filter(score => profilesData.some(profile => profile.id === score.user_id))
+        .slice(0, limit) // Apply final limit after filtering
+        .map(score => {
+          const profile = profilesData.find(p => p.id === score.user_id)
+          return {
+            ...score,
+            display_name: profile?.display_name || 'Player',
+            eligible_for_prize: true
+          }
+        })
+
+      console.log(`🏆 Final prize leaderboard: ${eligibleScores.length} eligible entries`)
+      return eligibleScores
+
+    } catch (error) {
+      console.error('💥 SimpleAuth: Prize leaderboard exception:', error)
+      return []
+    }
+  }
+
   private notifyListeners() {
     this.listeners.forEach(listener => {
       try {

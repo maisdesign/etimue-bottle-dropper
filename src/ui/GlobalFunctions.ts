@@ -268,10 +268,30 @@ export const globalFunctions = {
     const newsletterSection = document.getElementById('newsletter-section')
 
     if (newsletterSection) {
-      // Show newsletter section only if user is authenticated and not already subscribed
-      if (authState.isAuthenticated && authState.profile && !authState.profile.consent_marketing) {
+      // Show newsletter section for all authenticated users to inform about prize requirements
+      if (authState.isAuthenticated) {
         newsletterSection.style.display = 'block'
-        console.log('📧 Newsletter section shown for authenticated user')
+        console.log('📧 Newsletter section shown for authenticated user (prize requirement info)')
+
+        // Update UI based on subscription status
+        const subscribeBtn = document.getElementById('newsletter-subscribe-btn') as HTMLButtonElement
+        const emailInput = document.getElementById('newsletter-email') as HTMLInputElement
+        const consentCheckbox = document.getElementById('newsletter-consent') as HTMLInputElement
+
+        if (authState.profile?.consent_marketing) {
+          // User already subscribed - show confirmation
+          if (subscribeBtn) subscribeBtn.textContent = '✅ Già iscritto alla newsletter!'
+          if (subscribeBtn) subscribeBtn.disabled = true
+          if (emailInput) emailInput.style.display = 'none'
+          if (consentCheckbox) consentCheckbox.parentElement!.style.display = 'none'
+        } else {
+          // User not subscribed - show form
+          const t = languageManager.getTranslation()
+          if (subscribeBtn) subscribeBtn.textContent = t.newsletterSubscribeButton
+          if (subscribeBtn) subscribeBtn.disabled = false
+          if (emailInput) emailInput.style.display = 'block'
+          if (consentCheckbox) consentCheckbox.parentElement!.style.display = 'flex'
+        }
       } else {
         newsletterSection.style.display = 'none'
       }

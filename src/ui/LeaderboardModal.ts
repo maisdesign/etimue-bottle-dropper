@@ -32,7 +32,7 @@ export class LeaderboardModal {
         <button class="leaderboard-close-btn" id="leaderboard-close">&times;</button>
 
         <div class="leaderboard-header">
-          <h2 class="leaderboard-title" data-i18n="leaderboardTitle">🏆 Classifica</h2>
+          <h2 class="leaderboard-title" data-i18n="prizeLeaderboardTitle">🏆 Classifica Premi (Solo Iscritti Newsletter)</h2>
           <div class="leaderboard-tabs">
             <button class="leaderboard-tab active" data-tab="weekly" data-i18n="leaderboardWeekly">
               📅 Settimanale
@@ -62,8 +62,8 @@ export class LeaderboardModal {
         </div>
 
         <div class="leaderboard-footer">
-          <p class="leaderboard-info" data-i18n="leaderboardInfo">
-            💡 Accedi per competere per i premi settimanali e mensili!
+          <p class="leaderboard-info" data-i18n="prizeEligibilityNote">
+            💡 Solo gli iscritti alla newsletter possono vincere i premi
           </p>
         </div>
       </div>
@@ -163,11 +163,11 @@ export class LeaderboardModal {
   }
 
   private async getWeeklyLeaderboard(): Promise<LeaderboardEntry[]> {
-    console.log('📞 Getting weekly leaderboard with SimpleAuth...')
+    console.log('📞 Getting weekly PRIZE leaderboard (newsletter subscribers only)...')
 
     try {
-      const entries = await simpleAuth.getLeaderboard(50)
-      console.log('✅ SimpleAuth.getLeaderboard completed with:', entries?.length, 'entries')
+      const entries = await simpleAuth.getPrizeLeaderboard(50, 'weekly')
+      console.log('✅ SimpleAuth.getPrizeLeaderboard completed with:', entries?.length, 'entries')
       return entries.map(entry => ({
         id: entry.id,
         score: entry.score,
@@ -177,24 +177,29 @@ export class LeaderboardModal {
         user_id: entry.user_id
       }))
     } catch (error) {
-      console.error('❌ SimpleAuth.getLeaderboard failed:', error)
+      console.error('❌ SimpleAuth.getPrizeLeaderboard failed:', error)
       throw error
     }
   }
 
   private async getMonthlyLeaderboard(): Promise<LeaderboardEntry[]> {
-    console.log('📞 Getting monthly leaderboard with SimpleAuth...')
+    console.log('📞 Getting monthly PRIZE leaderboard (newsletter subscribers only)...')
 
-    // Per ora usiamo la stessa funzione weekly (7 giorni) - SimpleAuth supporta solo quella
-    const entries = await simpleAuth.getLeaderboard(50)
-    return entries.map(entry => ({
-      id: entry.id,
-      score: entry.score,
-      game_duration: entry.game_duration,
-      created_at: entry.created_at,
-      display_name: entry.display_name || 'Anonimo',
-      user_id: entry.user_id
-    }))
+    try {
+      const entries = await simpleAuth.getPrizeLeaderboard(50, 'monthly')
+      console.log('✅ SimpleAuth.getPrizeLeaderboard (monthly) completed with:', entries?.length, 'entries')
+      return entries.map(entry => ({
+        id: entry.id,
+        score: entry.score,
+        game_duration: entry.game_duration,
+        created_at: entry.created_at,
+        display_name: entry.display_name || 'Anonimo',
+        user_id: entry.user_id
+      }))
+    } catch (error) {
+      console.error('❌ SimpleAuth.getPrizeLeaderboard (monthly) failed:', error)
+      throw error
+    }
   }
 
   private renderLeaderboard(entries: LeaderboardEntry[]): void {

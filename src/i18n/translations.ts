@@ -105,6 +105,9 @@ export interface Translation {
   newsletterErrorMessage: string
   newsletterAlreadySubscribed: string
   newsletterConsentText: string
+  newsletterPrizeRequirement: string
+  prizeLeaderboardTitle: string
+  prizeEligibilityNote: string
 }
 
 export const translations = {
@@ -214,7 +217,10 @@ export const translations = {
     newsletterSuccessMessage: 'Successfully subscribed to our newsletter!',
     newsletterErrorMessage: 'Failed to subscribe. Please try again.',
     newsletterAlreadySubscribed: 'You are already subscribed to our newsletter!',
-    newsletterConsentText: 'I agree to receive marketing communications from Etimuè'
+    newsletterConsentText: 'I agree to receive marketing communications from Etimuè',
+    newsletterPrizeRequirement: '🏆 Subscribe to newsletter to be eligible for weekly and monthly prizes!',
+    prizeLeaderboardTitle: '🏆 Prize Leaderboard (Newsletter Subscribers Only)',
+    prizeEligibilityNote: 'Only newsletter subscribers are eligible for prizes'
   } as Translation,
 
   it: {
@@ -323,7 +329,10 @@ export const translations = {
     newsletterSuccessMessage: 'Iscrizione alla newsletter completata con successo!',
     newsletterErrorMessage: 'Errore nell\'iscrizione. Riprova più tardi.',
     newsletterAlreadySubscribed: 'Sei già iscritto alla nostra newsletter!',
-    newsletterConsentText: 'Acconsento a ricevere comunicazioni marketing da Etimuè'
+    newsletterConsentText: 'Acconsento a ricevere comunicazioni marketing da Etimuè',
+    newsletterPrizeRequirement: '🏆 Iscriviti alla newsletter per partecipare ai premi settimanali e mensili!',
+    prizeLeaderboardTitle: '🏆 Classifica Premi (Solo Iscritti Newsletter)',
+    prizeEligibilityNote: 'Solo gli iscritti alla newsletter possono vincere i premi'
   } as Translation
 }
 
