@@ -82,7 +82,7 @@ export class GameScene extends Scene {
     }).setOrigin(1, 0) // Right-aligned
 
     // Instructions
-    this.instructionsText = this.add.text(width / 2, height * 0.12, t.gameInstructions, {
+    this.instructionsText = this.add.text(width / 2, height * 0.12, languageManager.translateWithCharacter('gameInstructions'), {
       fontSize: Math.min(18, width * 0.025) + 'px',
       color: '#000000',
       fontFamily: 'Arial'
@@ -115,7 +115,7 @@ export class GameScene extends Scene {
     this.timerText.setText(`${t.time}: ${this.timeLeft}s`)
 
     // Update instructions and rules
-    this.instructionsText.setText(t.gameInstructions)
+    this.instructionsText.setText(languageManager.translateWithCharacter('gameInstructions'))
     this.rulesText.setText(t.gameRules)
 
     // Update All Good text if active

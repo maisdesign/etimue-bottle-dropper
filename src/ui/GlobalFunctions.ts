@@ -203,8 +203,9 @@ function updateTranslations() {
   document.querySelectorAll('[data-i18n]').forEach((element) => {
     const key = element.getAttribute('data-i18n')
     if (key && key in translation) {
-      if (key === 'footerControls') {
-        updateFooterControls()
+      // Use character interpolation for specific keys
+      if (key === 'footerControls' || key === 'instructionsObjective' || key === 'gameInstructions') {
+        element.textContent = languageManager.translateWithCharacter(key as keyof typeof translation)
       } else {
         element.textContent = (translation as any)[key]
       }
@@ -228,20 +229,22 @@ function updateTranslations() {
   document.documentElement.lang = languageManager.getCurrentLanguage()
 }
 
-function updateFooterControls() {
-  const footerElement = document.querySelector('[data-i18n="footerControls"]')
-  if (footerElement) {
-    const translation = languageManager.getTranslation()
-    const characterName = characterManager.getCurrentCharacterName()
-    footerElement.textContent = (translation as any).footerControlsCharacter.replace('{character}', characterName)
-  }
+function updateCharacterDependentTranslations() {
+  // Update all elements that depend on character name
+  const characterElements = document.querySelectorAll('[data-i18n="footerControls"], [data-i18n="instructionsObjective"], [data-i18n="gameInstructions"]')
+  characterElements.forEach((element) => {
+    const key = element.getAttribute('data-i18n')
+    if (key) {
+      element.textContent = languageManager.translateWithCharacter(key as any)
+    }
+  })
 }
 
 // Initialize UI management
 function initializeUI() {
   languageManager.onLanguageChange(updateTranslations)
   characterManager.onCharacterChange(() => {
-    updateFooterControls()
+    updateCharacterDependentTranslations()
     const characterBtn = document.getElementById('character-btn')
     if (characterBtn) {
       const currentCharacter = characterManager.getCurrentCharacterName()

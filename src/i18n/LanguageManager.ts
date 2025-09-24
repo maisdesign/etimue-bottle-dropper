@@ -1,4 +1,5 @@
 import { translations, Language, Translation } from './translations'
+import { characterManager } from '../systems/CharacterManager'
 
 export class LanguageManager {
   private static instance: LanguageManager
@@ -75,6 +76,12 @@ export class LanguageManager {
       case 'it': return 'Italiano'
       default: return language
     }
+  }
+
+  public translateWithCharacter(key: keyof Translation): string {
+    const template = this.translate(key)
+    const characterName = characterManager.getCurrentCharacterName()
+    return template.replace('{CHARACTER}', characterName)
   }
 }
 

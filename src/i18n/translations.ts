@@ -107,7 +107,7 @@ export const translations = {
     resume: 'Resume',
     instructions: 'Instructions',
     footerMadeBy: 'Made with ❤️ by Etimuè',
-    footerControls: 'Use arrow keys or mouse to control the bucket',
+    footerControls: 'Use arrow keys or mouse to control {CHARACTER}!',
 
     // Game Start Overlay
     gameStartTitle: '🎮 Etimuè Bottle Dropper',
@@ -126,7 +126,7 @@ export const translations = {
 
     // Instructions
     instructionsTitle: '🎮 How to Play:',
-    instructionsObjective: '🎯 Objective: Catch falling bottles with your bucket!',
+    instructionsObjective: '🎯 Objective: Catch falling bottles with {CHARACTER}!',
     instructionsControls: '🕹️ Controls:',
     instructionsRules: '🍶 Game Rules:',
     instructionsTips: '🏆 Tips:',
@@ -148,7 +148,7 @@ export const translations = {
     lives: 'Lives',
     time: 'Time',
     allGood: 'ALL GOOD',
-    gameInstructions: 'Use arrow keys or drag to move the bucket!',
+    gameInstructions: 'Use arrow keys or drag to move {CHARACTER}!',
     gameRules: '🍶 Catch brown bottles: +1pt | 🟢 Avoid green bottles: -1 life | ⭐ Star: All Good!',
     gameOver: 'GAME OVER!',
     finalScore: 'Final Score',
@@ -205,7 +205,7 @@ export const translations = {
     resume: 'Riprendi',
     instructions: 'Istruzioni',
     footerMadeBy: 'Fatto con ❤️ da Etimuè',
-    footerControls: 'Usa le frecce o il mouse per controllare il secchio',
+    footerControls: 'Usa le frecce o il mouse per controllare {CHARACTER}!',
 
     // Game Start Overlay
     gameStartTitle: '🎮 Etimuè Bottle Dropper',
@@ -224,7 +224,7 @@ export const translations = {
 
     // Instructions
     instructionsTitle: '🎮 Come Giocare:',
-    instructionsObjective: '🎯 Obiettivo: Prendi le bottiglie che cadono con il tuo secchio!',
+    instructionsObjective: '🎯 Obiettivo: Prendi le bottiglie che cadono con {CHARACTER}!',
     instructionsControls: '🕹️ Controlli:',
     instructionsRules: '🍶 Regole del Gioco:',
     instructionsTips: '🏆 Suggerimenti:',
@@ -246,7 +246,7 @@ export const translations = {
     lives: 'Vite',
     time: 'Tempo',
     allGood: 'ALL GOOD',
-    gameInstructions: 'Usa le frecce o trascina per muovere il secchio!',
+    gameInstructions: 'Usa le frecce o trascina per muovere {CHARACTER}!',
     gameRules: '🍶 Prendi bottiglie marroni: +1pt | 🟢 Evita bottiglie verdi: -1 vita | ⭐ Stella: All Good!',
     gameOver: 'GAME OVER!',
     finalScore: 'Punteggio Finale',
