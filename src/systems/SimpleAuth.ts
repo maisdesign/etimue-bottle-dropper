@@ -9,7 +9,12 @@ export interface UserProfile {
   id: string
   display_name: string
   email: string
+  whatsapp: string | null
+  instagram: string | null
+  consent_marketing: boolean
+  consent_ts: string | null
   created_at: string
+  updated_at: string
 }
 
 export interface GameScore {
@@ -167,7 +172,11 @@ class SimpleAuthSystem {
       const profileData = {
         id: user.id,
         display_name: user.user_metadata?.full_name || user.email?.split('@')[0] || 'Player',
-        email: user.email || ''
+        email: user.email || '',
+        whatsapp: null,
+        instagram: null,
+        consent_marketing: false,
+        consent_ts: null
       }
 
       console.log('📝 SimpleAuth: Creating profile:', profileData)
@@ -284,29 +293,46 @@ class SimpleAuthSystem {
       const sevenDaysAgo = new Date()
       sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7)
 
-      const { data, error } = await this.supabase
+      // Prima prova query semplice solo scores
+      const { data: scoresData, error: scoresError } = await this.supabase
         .from('scores')
-        .select(`
-          *,
-          profiles!inner(display_name)
-        `)
+        .select('*')
         .gte('created_at', sevenDaysAgo.toISOString())
         .order('score', { ascending: false })
         .order('created_at', { ascending: true })
         .limit(limit)
 
-      if (error) {
-        console.error('❌ SimpleAuth: Leaderboard error:', error)
+      if (scoresError) {
+        console.error('❌ SimpleAuth: Scores query error:', scoresError)
         return []
       }
 
-      console.log(`✅ SimpleAuth: Leaderboard loaded (${data.length} entries)`)
+      // Poi prendi i profili separatamente
+      const userIds = scoresData.map(score => score.user_id)
+      const { data: profilesData, error: profilesError } = await this.supabase
+        .from('profiles')
+        .select('id, display_name')
+        .in('id', userIds)
 
-      // Transform data
-      return data.map(item => ({
-        ...item,
-        display_name: item.profiles.display_name
-      }))
+      if (profilesError) {
+        console.error('❌ SimpleAuth: Profiles query error:', profilesError)
+        // Fallback: usa "Player" come display_name
+        return scoresData.map(item => ({
+          ...item,
+          display_name: 'Player'
+        }))
+      }
+
+      console.log(`✅ SimpleAuth: Leaderboard loaded (${scoresData.length} scores, ${profilesData.length} profiles)`)
+
+      // Combina scores con profiles
+      return scoresData.map(score => {
+        const profile = profilesData.find(p => p.id === score.user_id)
+        return {
+          ...score,
+          display_name: profile?.display_name || 'Player'
+        }
+      })
 
     } catch (error) {
       console.error('💥 SimpleAuth: Leaderboard exception:', error)
