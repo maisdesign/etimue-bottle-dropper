@@ -94,6 +94,17 @@ export interface Translation {
   characterCharlie: string
   characterScrocca: string
   characterLeprecauno: string
+
+  // Newsletter System
+  newsletterTitle: string
+  newsletterDescription: string
+  newsletterEmailPlaceholder: string
+  newsletterSubscribeButton: string
+  newsletterUnsubscribeButton: string
+  newsletterSuccessMessage: string
+  newsletterErrorMessage: string
+  newsletterAlreadySubscribed: string
+  newsletterConsentText: string
 }
 
 export const translations = {
@@ -192,7 +203,18 @@ export const translations = {
     footerControlsCharacter: 'Use arrow keys or mouse to control {character}',
     characterCharlie: 'Charlie',
     characterScrocca: 'Scrocca',
-    characterLeprecauno: 'Leprechaun'
+    characterLeprecauno: 'Leprechaun',
+
+    // Newsletter System
+    newsletterTitle: 'Stay Updated!',
+    newsletterDescription: 'Subscribe to our newsletter for game updates, events, and special offers from Etimuè pub!',
+    newsletterEmailPlaceholder: 'Enter your email address',
+    newsletterSubscribeButton: 'Subscribe to Newsletter',
+    newsletterUnsubscribeButton: 'Unsubscribe',
+    newsletterSuccessMessage: 'Successfully subscribed to our newsletter!',
+    newsletterErrorMessage: 'Failed to subscribe. Please try again.',
+    newsletterAlreadySubscribed: 'You are already subscribed to our newsletter!',
+    newsletterConsentText: 'I agree to receive marketing communications from Etimuè'
   } as Translation,
 
   it: {
@@ -290,7 +312,18 @@ export const translations = {
     footerControlsCharacter: 'Usa le frecce o il mouse per controllare {character}',
     characterCharlie: 'Charlie',
     characterScrocca: 'Scrocca',
-    characterLeprecauno: 'Leprecauno'
+    characterLeprecauno: 'Leprecauno',
+
+    // Newsletter System
+    newsletterTitle: 'Resta Aggiornato!',
+    newsletterDescription: 'Iscriviti alla nostra newsletter per aggiornamenti del gioco, eventi e offerte speciali dal pub Etimuè!',
+    newsletterEmailPlaceholder: 'Inserisci la tua email',
+    newsletterSubscribeButton: 'Iscriviti alla Newsletter',
+    newsletterUnsubscribeButton: 'Disiscriviti',
+    newsletterSuccessMessage: 'Iscrizione alla newsletter completata con successo!',
+    newsletterErrorMessage: 'Errore nell\'iscrizione. Riprova più tardi.',
+    newsletterAlreadySubscribed: 'Sei già iscritto alla nostra newsletter!',
+    newsletterConsentText: 'Acconsento a ricevere comunicazioni marketing da Etimuè'
   } as Translation
 }
 

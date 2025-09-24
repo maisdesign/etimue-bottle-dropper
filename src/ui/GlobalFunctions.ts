@@ -177,6 +177,105 @@ export const globalFunctions = {
       overlay.classList.add('hidden')
       console.log('🎮 Game start overlay hidden')
     }
+  },
+
+  async subscribeToNewsletter() {
+    const emailInput = document.getElementById('newsletter-email') as HTMLInputElement
+    const consentCheckbox = document.getElementById('newsletter-consent') as HTMLInputElement
+    const subscribeBtn = document.getElementById('newsletter-subscribe-btn') as HTMLButtonElement
+    const messageDiv = document.getElementById('newsletter-message') as HTMLDivElement
+
+    if (!emailInput || !consentCheckbox || !subscribeBtn || !messageDiv) {
+      console.error('Newsletter form elements not found')
+      return
+    }
+
+    const email = emailInput.value.trim()
+
+    // Validation
+    if (!email) {
+      this.showNewsletterMessage('Please enter your email address', 'error')
+      return
+    }
+
+    if (!email.includes('@') || !email.includes('.')) {
+      this.showNewsletterMessage('Please enter a valid email address', 'error')
+      return
+    }
+
+    if (!consentCheckbox.checked) {
+      this.showNewsletterMessage('Please agree to receive marketing communications', 'error')
+      return
+    }
+
+    // Check authentication
+    const authState = simpleAuth.getState()
+    if (!authState.isAuthenticated) {
+      this.showNewsletterMessage('Please log in first to subscribe to the newsletter', 'error')
+      return
+    }
+
+    // Update UI during request
+    subscribeBtn.disabled = true
+    subscribeBtn.textContent = 'Subscribing...'
+
+    try {
+      console.log('📧 Subscribing to newsletter:', email)
+      const result = await simpleAuth.subscribeToNewsletter()
+
+      if (result.success) {
+        if (result.alreadySubscribed) {
+          const t = languageManager.getTranslation()
+          this.showNewsletterMessage(t.newsletterAlreadySubscribed, 'success')
+        } else {
+          const t = languageManager.getTranslation()
+          this.showNewsletterMessage(t.newsletterSuccessMessage, 'success')
+          emailInput.value = ''
+          consentCheckbox.checked = false
+        }
+      } else {
+        const t = languageManager.getTranslation()
+        this.showNewsletterMessage(result.error || t.newsletterErrorMessage, 'error')
+      }
+    } catch (error) {
+      console.error('Newsletter subscription error:', error)
+      const t = languageManager.getTranslation()
+      this.showNewsletterMessage(t.newsletterErrorMessage, 'error')
+    } finally {
+      // Reset button
+      subscribeBtn.disabled = false
+      const t = languageManager.getTranslation()
+      subscribeBtn.textContent = t.newsletterSubscribeButton
+    }
+  },
+
+  showNewsletterMessage(message: string, type: 'success' | 'error') {
+    const messageDiv = document.getElementById('newsletter-message') as HTMLDivElement
+    if (messageDiv) {
+      messageDiv.textContent = message
+      messageDiv.className = `newsletter-message ${type}`
+      messageDiv.style.display = 'block'
+
+      // Auto-hide after 5 seconds
+      setTimeout(() => {
+        messageDiv.style.display = 'none'
+      }, 5000)
+    }
+  },
+
+  toggleNewsletterSection() {
+    const authState = simpleAuth.getState()
+    const newsletterSection = document.getElementById('newsletter-section')
+
+    if (newsletterSection) {
+      // Show newsletter section only if user is authenticated and not already subscribed
+      if (authState.isAuthenticated && authState.profile && !authState.profile.consent_marketing) {
+        newsletterSection.style.display = 'block'
+        console.log('📧 Newsletter section shown for authenticated user')
+      } else {
+        newsletterSection.style.display = 'none'
+      }
+    }
   }
 }
 
@@ -192,6 +291,7 @@ declare global {
     cycleCharacter: () => void
     showGameStartOverlay: () => void
     hideGameStartOverlay: () => void
+    subscribeToNewsletter: () => Promise<void>
   }
 }
 
@@ -209,6 +309,14 @@ function updateTranslations() {
       } else {
         element.textContent = (translation as any)[key]
       }
+    }
+  })
+
+  // Update placeholder attributes
+  document.querySelectorAll('[data-i18n-placeholder]').forEach((element) => {
+    const key = element.getAttribute('data-i18n-placeholder')
+    if (key && key in translation) {
+      (element as HTMLInputElement).placeholder = (translation as any)[key]
     }
   })
 
@@ -252,6 +360,17 @@ function initializeUI() {
     }
   })
 
+  // Initialize newsletter functionality
+  const newsletterBtn = document.getElementById('newsletter-subscribe-btn')
+  if (newsletterBtn) {
+    newsletterBtn.addEventListener('click', globalFunctions.subscribeToNewsletter)
+  }
+
+  // Set up auth state listener for newsletter visibility
+  simpleAuth.subscribe(() => {
+    globalFunctions.toggleNewsletterSection()
+  })
+
   updateTranslations()
 }
 
@@ -279,6 +398,7 @@ window.toggleLanguage = globalFunctions.toggleLanguage
 window.cycleCharacter = globalFunctions.cycleCharacter
 window.showGameStartOverlay = globalFunctions.showGameStartOverlay
 window.hideGameStartOverlay = globalFunctions.hideGameStartOverlay
+window.subscribeToNewsletter = globalFunctions.subscribeToNewsletter
 
 // 🔧 DEBUG FUNCTIONS - Development only
 if (import.meta.env.MODE === 'development' || window.location.hostname === 'localhost') {

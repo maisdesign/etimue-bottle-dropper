@@ -340,6 +340,61 @@ class SimpleAuthSystem {
     }
   }
 
+  public async subscribeToNewsletter(): Promise<{ success: boolean; error?: string; alreadySubscribed?: boolean }> {
+    try {
+      if (!this.state.isAuthenticated || !this.state.user) {
+        return { success: false, error: 'Not authenticated' }
+      }
+
+      console.log(`📧 SimpleAuth: Subscribing ${this.state.user.email} to newsletter`)
+
+      const { data: { session }, error: sessionError } = await this.supabase.auth.getSession()
+
+      if (sessionError || !session) {
+        return { success: false, error: 'No valid session' }
+      }
+
+      const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || 'https://xtpfssiraytzvdvgrsol.supabase.co'
+      const response = await fetch(`${supabaseUrl}/functions/v1/mailchimp-subscribe`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${session.access_token}`,
+        },
+        body: JSON.stringify({
+          email: this.state.user.email,
+          userId: this.state.user.id,
+          displayName: this.state.profile?.display_name
+        })
+      })
+
+      const result = await response.json()
+
+      if (!response.ok) {
+        console.error('❌ SimpleAuth: Newsletter subscription failed:', result)
+        return { success: false, error: result.error || 'Subscription failed' }
+      }
+
+      if (result.alreadySubscribed) {
+        console.log('ℹ️ SimpleAuth: User already subscribed to newsletter')
+        return { success: true, alreadySubscribed: true }
+      }
+
+      // Update local state to reflect marketing consent
+      if (this.state.profile) {
+        this.state.profile.consent_marketing = true
+        this.state.profile.consent_ts = new Date().toISOString()
+      }
+
+      console.log('✅ SimpleAuth: Newsletter subscription successful')
+      return { success: true }
+
+    } catch (error) {
+      console.error('💥 SimpleAuth: Newsletter subscription exception:', error)
+      return { success: false, error: 'Unexpected error' }
+    }
+  }
+
   private notifyListeners() {
     this.listeners.forEach(listener => {
       try {
