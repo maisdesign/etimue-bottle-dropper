@@ -1,13 +1,12 @@
 import { languageManager } from '../i18n/LanguageManager'
-import { scoreService } from '../systems/SupabaseClient'
-import { authManager } from '../systems/AuthManager'
+import { simpleAuth } from '../systems/SimpleAuth'
 
 export interface LeaderboardEntry {
   id: number
   score: number
-  run_seconds: number
+  game_duration: number
   created_at: string
-  nickname: string
+  display_name: string
   user_id: string
 }
 
@@ -164,36 +163,36 @@ export class LeaderboardModal {
   }
 
   private async getWeeklyLeaderboard(): Promise<LeaderboardEntry[]> {
-    // Simplified version - get scores directly from scores table
-    // TODO: Add proper join with profiles when nickname column is available
-    console.log('📞 Calling scoreService.getWeeklyLeaderboard(50)...')
+    console.log('📞 Getting weekly leaderboard with SimpleAuth...')
 
     try {
-      const entries = await scoreService.getWeeklyLeaderboard(50)
-      console.log('✅ scoreService.getWeeklyLeaderboard completed with:', entries?.length, 'entries')
+      const entries = await simpleAuth.getLeaderboard(50)
+      console.log('✅ SimpleAuth.getLeaderboard completed with:', entries?.length, 'entries')
       return entries.map(entry => ({
         id: entry.id,
         score: entry.score,
-        run_seconds: entry.run_seconds,
+        game_duration: entry.game_duration,
         created_at: entry.created_at,
-        nickname: entry.nickname || 'Anonimo',
+        display_name: entry.display_name || 'Anonimo',
         user_id: entry.user_id
       }))
     } catch (error) {
-      console.error('❌ scoreService.getWeeklyLeaderboard failed:', error)
+      console.error('❌ SimpleAuth.getLeaderboard failed:', error)
       throw error
     }
   }
 
   private async getMonthlyLeaderboard(): Promise<LeaderboardEntry[]> {
-    // Simplified version - get scores directly from scores table
-    const entries = await scoreService.getMonthlyLeaderboard(50)
+    console.log('📞 Getting monthly leaderboard with SimpleAuth...')
+
+    // Per ora usiamo la stessa funzione weekly (7 giorni) - SimpleAuth supporta solo quella
+    const entries = await simpleAuth.getLeaderboard(50)
     return entries.map(entry => ({
       id: entry.id,
       score: entry.score,
-      run_seconds: entry.run_seconds,
+      game_duration: entry.game_duration,
       created_at: entry.created_at,
-      nickname: entry.nickname || 'Anonimo',
+      display_name: entry.display_name || 'Anonimo',
       user_id: entry.user_id
     }))
   }
@@ -213,7 +212,7 @@ export class LeaderboardModal {
     emptyContainer.style.display = 'none'
     listContainer.style.display = 'block'
 
-    const currentUserId = authManager.getState().user?.id
+    const currentUserId = simpleAuth.getState().user?.id
 
     listContainer.innerHTML = entries.map((entry, index) => {
       const position = index + 1
@@ -229,12 +228,12 @@ export class LeaderboardModal {
         <div class="leaderboard-entry ${isCurrentUser ? 'current-user' : ''}">
           <div class="leaderboard-position">${medal}</div>
           <div class="leaderboard-player">
-            <div class="leaderboard-nickname">${entry.nickname}</div>
+            <div class="leaderboard-nickname">${entry.display_name}</div>
             <div class="leaderboard-date">${date}</div>
           </div>
           <div class="leaderboard-score">
             <div class="score-value">${entry.score}</div>
-            <div class="score-time">${entry.run_seconds}s</div>
+            <div class="score-time">${entry.game_duration}s</div>
           </div>
         </div>
       `

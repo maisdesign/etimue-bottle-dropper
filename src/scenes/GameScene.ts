@@ -1,8 +1,7 @@
 import { Scene } from 'phaser'
 import { languageManager } from '../i18n/LanguageManager'
 import { characterManager } from '../systems/CharacterManager'
-import { scoreService } from '../systems/SupabaseClient'
-import { authManager } from '../systems/AuthManager'
+import { simpleAuth } from '../systems/SimpleAuth'
 
 export class GameScene extends Scene {
   private character!: Phaser.Physics.Arcade.Image
@@ -579,7 +578,7 @@ export class GameScene extends Scene {
       })
 
       // Get current user
-      const state = authManager.getState()
+      const state = simpleAuth.getState()
       if (!state.user || !state.isAuthenticated) {
         console.error('❌ No authenticated user found for score submission')
         return
@@ -588,26 +587,18 @@ export class GameScene extends Scene {
       // Calculate game duration (minimum 5 seconds for validation)
       const gameSeconds = Math.max(5, 60 - this.timeLeft)
 
-      console.log('📞 Calling scoreService.submitScore...', {
-        userId: state.user.id,
+      console.log('📞 Calling simpleAuth.submitScore...', {
         score: this.score,
         duration: gameSeconds
       })
 
-      // Submit score with timeout
-      const timeoutPromise = new Promise((_, reject) =>
-        setTimeout(() => reject(new Error('Score submission timeout')), 10000)
-      )
+      // Submit score with SimpleAuth
+      const result = await simpleAuth.submitScore(this.score, gameSeconds)
 
-      const result = await Promise.race([
-        scoreService.submitScore(state.user.id, this.score, gameSeconds),
-        timeoutPromise
-      ])
-
-      if (result) {
-        console.log('✅ Score submitted successfully:', result)
+      if (result.success) {
+        console.log('✅ Score submitted successfully')
       } else {
-        console.error('❌ Score submission failed - no result returned')
+        console.error('❌ Score submission failed:', result.error)
       }
     } catch (error) {
       console.error('💥 Score submission error:', error)

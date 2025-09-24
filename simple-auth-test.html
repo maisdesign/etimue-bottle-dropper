@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>SimpleAuth System Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .step { margin: 20px 0; padding: 15px; border: 1px solid #ccc; }
+        .success { color: green; }
+        .error { color: red; }
+        button { padding: 10px; margin: 5px; }
+    </style>
+</head>
+<body>
+    <h1>🔬 SimpleAuth System Test</h1>
+
+    <div class="step">
+        <h3>Step 1: Initialize SimpleAuth</h3>
+        <button onclick="testInit()">Test SimpleAuth Init</button>
+        <div id="init-result"></div>
+    </div>
+
+    <div class="step">
+        <h3>Step 2: Test Authentication</h3>
+        <button onclick="testAuth()">Check Auth State</button>
+        <button onclick="testSignIn()">Sign In</button>
+        <button onclick="testSignOut()">Sign Out</button>
+        <div id="auth-result"></div>
+    </div>
+
+    <div class="step">
+        <h3>Step 3: Test Score System</h3>
+        <button onclick="testScoreSubmit()">Submit Test Score</button>
+        <button onclick="testLeaderboard()">Get Leaderboard</button>
+        <div id="score-result"></div>
+    </div>
+
+    <script type="module">
+        import { simpleAuth } from './src/systems/SimpleAuth.js'
+        window.simpleAuth = simpleAuth
+
+        function log(elementId, message, type = 'info') {
+            const element = document.getElementById(elementId)
+            const div = document.createElement('div')
+            div.style.margin = '5px 0'
+
+            switch(type) {
+                case 'success': div.className = 'success'; break
+                case 'error': div.className = 'error'; break
+                default: div.style.color = 'black'
+            }
+
+            const timestamp = new Date().toLocaleTimeString()
+            div.innerHTML = `[${timestamp}] ${message}`
+            element.appendChild(div)
+            console.log(`[${timestamp}] ${message}`)
+        }
+
+        window.testInit = function() {
+            log('init-result', '🔧 Testing SimpleAuth initialization...', 'info')
+
+            try {
+                const state = simpleAuth.getState()
+                log('init-result', `✅ SimpleAuth initialized: ${JSON.stringify(state)}`, 'success')
+            } catch (error) {
+                log('init-result', `❌ SimpleAuth init error: ${error.message}`, 'error')
+            }
+        }
+
+        window.testAuth = function() {
+            log('auth-result', '🔐 Checking auth state...', 'info')
+
+            const state = simpleAuth.getState()
+            log('auth-result', `Auth State: isAuthenticated=${state.isAuthenticated}, isLoading=${state.isLoading}`, 'info')
+
+            if (state.user) {
+                log('auth-result', `User: ${state.user.email}`, 'success')
+            }
+
+            if (state.profile) {
+                log('auth-result', `Profile: ${state.profile.display_name}`, 'success')
+            }
+        }
+
+        window.testSignIn = async function() {
+            log('auth-result', '🔐 Testing Google sign in...', 'info')
+
+            try {
+                const result = await simpleAuth.signInWithGoogle()
+                if (result.success) {
+                    log('auth-result', '✅ Sign in initiated successfully', 'success')
+                } else {
+                    log('auth-result', `❌ Sign in failed: ${result.error}`, 'error')
+                }
+            } catch (error) {
+                log('auth-result', `❌ Sign in error: ${error.message}`, 'error')
+            }
+        }
+
+        window.testSignOut = async function() {
+            log('auth-result', '🔐 Testing sign out...', 'info')
+
+            try {
+                await simpleAuth.signOut()
+                log('auth-result', '✅ Sign out successful', 'success')
+            } catch (error) {
+                log('auth-result', `❌ Sign out error: ${error.message}`, 'error')
+            }
+        }
+
+        window.testScoreSubmit = async function() {
+            log('score-result', '📊 Testing score submission...', 'info')
+
+            const state = simpleAuth.getState()
+            if (!state.isAuthenticated) {
+                log('score-result', '❌ Not authenticated - sign in first', 'error')
+                return
+            }
+
+            try {
+                const result = await simpleAuth.submitScore(100, 45)
+                if (result.success) {
+                    log('score-result', '✅ Score submitted successfully', 'success')
+                } else {
+                    log('score-result', `❌ Score submission failed: ${result.error}`, 'error')
+                }
+            } catch (error) {
+                log('score-result', `❌ Score submission error: ${error.message}`, 'error')
+            }
+        }
+
+        window.testLeaderboard = async function() {
+            log('score-result', '🏆 Testing leaderboard...', 'info')
+
+            try {
+                const entries = await simpleAuth.getLeaderboard(10)
+                log('score-result', `✅ Leaderboard loaded: ${entries.length} entries`, 'success')
+                entries.forEach((entry, index) => {
+                    log('score-result', `${index + 1}. ${entry.display_name}: ${entry.score} (${entry.game_duration}s)`, 'info')
+                })
+            } catch (error) {
+                log('score-result', `❌ Leaderboard error: ${error.message}`, 'error')
+            }
+        }
+
+        // Subscribe to auth changes
+        simpleAuth.subscribe((state) => {
+            console.log('🔄 Auth state changed:', state)
+        })
+
+        // Auto test on load
+        setTimeout(testInit, 1000)
+    </script>
+</body>
+</html>

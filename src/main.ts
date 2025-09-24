@@ -2,6 +2,7 @@ import { Game, Types } from 'phaser'
 import { BootScene } from '@/scenes/BootScene'
 import { GameScene } from '@/scenes/GameScene'
 import '@/ui/GlobalFunctions' // Import global functions to attach to window
+import { simpleAuth } from '@/systems/SimpleAuth' // New clean auth system
 
 // Game configuration
 const config: Types.Core.GameConfig = {
@@ -60,6 +61,9 @@ export function initializeGame(): Game {
   if (import.meta.env?.MODE === 'development') {
     (window as any).game = game
   }
+
+  // Expose SimpleAuth to global functions
+  (window as any).simpleAuth = simpleAuth
 
   console.log('✅ Game initialized successfully')
   return game

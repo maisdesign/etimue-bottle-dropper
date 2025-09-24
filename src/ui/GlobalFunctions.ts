@@ -1,28 +1,29 @@
 import { initializeGame, getGame, destroyGame } from '@/main'
 import { LanguageManager } from '@/i18n/LanguageManager'
 import { CharacterManager } from '@/systems/CharacterManager'
-import { AuthManager } from '@/systems/AuthManager'
+import { simpleAuth } from '@/systems/SimpleAuth'
 import { LeaderboardModal } from '@/ui/LeaderboardModal'
-import { AuthModal } from '@/ui/AuthModal'
+// AuthModal removed - using direct Google OAuth flow now
 
 // Static imports instead of dynamic imports to avoid 404 errors
 const languageManager = LanguageManager.getInstance()
 const characterManager = CharacterManager.getInstance()
-const authManager = new AuthManager()
 
-// Authentication helper - STATIC IMPORT VERSION
+// Authentication helper - SimpleAuth version
 const checkGameAuth = async (): Promise<boolean> => {
   console.log('🎮 Checking auth for game access...')
 
-  if (authManager.canPlayGame()) {
+  const authState = simpleAuth.getState()
+
+  if (authState.isAuthenticated) {
     console.log('✅ User can play!')
     return true
   }
 
-  if (!authManager.isReady()) {
+  if (authState.isLoading) {
     console.log('⏳ Waiting for auth to initialize...')
     await new Promise<void>((resolve) => {
-      const unsubscribe = authManager.subscribe((state) => {
+      const unsubscribe = simpleAuth.subscribe((state) => {
         if (!state.isLoading) {
           unsubscribe()
           resolve()
@@ -31,24 +32,27 @@ const checkGameAuth = async (): Promise<boolean> => {
     })
   }
 
-  if (!authManager.canPlayGame()) {
-    console.log('🔐 Showing auth modal with STATIC import...')
+  if (!simpleAuth.getState().isAuthenticated) {
+    console.log('🔐 Starting Google sign in...')
+    const result = await simpleAuth.signInWithGoogle()
+    if (!result.success) {
+      console.error('❌ Sign in failed:', result.error)
+      return false
+    }
+
+    // Wait for auth state to update
+    console.log('⏳ Waiting for sign in to complete...')
     return new Promise((resolve) => {
-      try {
-        const authModal = new AuthModal()
-        authModal.onAuth((success: boolean) => {
-          authModal.destroy()
-          resolve(success && authManager.canPlayGame())
-        })
-        authModal.show()
-      } catch (error) {
-        console.error('❌ Failed to create AuthModal:', error)
-        resolve(false)
-      }
+      const unsubscribe = simpleAuth.subscribe((state) => {
+        if (!state.isLoading) {
+          unsubscribe()
+          resolve(state.isAuthenticated)
+        }
+      })
     })
   }
 
-  const canPlay = authManager.canPlayGame()
+  const canPlay = simpleAuth.getState().isAuthenticated
   console.log('🎯 Final auth check result:', canPlay)
   return canPlay
 }
@@ -144,7 +148,7 @@ export const globalFunctions = {
       modal.show()
     } catch (error) {
       console.error('❌ Failed to load LeaderboardModal with static import:', error)
-      const isAuthenticated = authManager.getState().isAuthenticated
+      const isAuthenticated = simpleAuth.getState().isAuthenticated
       alert(isAuthenticated ? 'Errore nel caricamento della classifica. Riprova più tardi.' : 'Accedi per vedere la classifica!')
     }
   },
