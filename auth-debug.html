@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Auth Debug - Local Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .step { margin: 20px 0; padding: 15px; border: 1px solid #ccc; }
+        .success { color: green; }
+        .error { color: red; }
+        .warning { color: orange; }
+        button { padding: 10px; margin: 5px; }
+        #results { margin-top: 20px; }
+    </style>
+</head>
+<body>
+    <h1>🔍 Auth Debug - Simulate Exact Game Scenario</h1>
+
+    <div class="step">
+        <h3>Step 1: Environment Check</h3>
+        <button onclick="checkEnvironment()">Check Environment</button>
+        <div id="env-result"></div>
+    </div>
+
+    <div class="step">
+        <h3>Step 2: Auth Test</h3>
+        <button onclick="testAuth()">Test Authentication</button>
+        <div id="auth-result"></div>
+    </div>
+
+    <div class="step">
+        <h3>Step 3: Simulate Game Score Submission</h3>
+        <button onclick="simulateGameSubmission()">Simulate Score Submit</button>
+        <div id="game-result"></div>
+    </div>
+
+    <div class="step">
+        <h3>Step 4: Test Leaderboard Load</h3>
+        <button onclick="testLeaderboard()">Test Leaderboard</button>
+        <div id="leaderboard-result"></div>
+    </div>
+
+    <div class="step">
+        <h3>🚨 Emergency Tools</h3>
+        <button onclick="showResetScript()">Show DB Reset Script</button>
+        <button onclick="testDirectInsert()">Test Direct Insert (Authenticated)</button>
+        <div id="emergency-result"></div>
+    </div>
+
+    <div id="results"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        let supabaseClient = null;
+        let currentUser = null;
+
+        function log(elementId, message, type = 'info') {
+            const element = document.getElementById(elementId);
+            const div = document.createElement('div');
+            div.style.margin = '5px 0';
+
+            switch(type) {
+                case 'success': div.className = 'success'; break;
+                case 'error': div.className = 'error'; break;
+                case 'warning': div.className = 'warning'; break;
+                default: div.style.color = 'black';
+            }
+
+            const timestamp = new Date().toLocaleTimeString();
+            div.innerHTML = `[${timestamp}] ${message}`;
+            element.appendChild(div);
+            console.log(`[${timestamp}] ${message}`);
+        }
+
+        async function checkEnvironment() {
+            log('env-result', '🔍 Checking environment...', 'info');
+
+            try {
+                // Environment variables (using fallback for local)
+                const supabaseUrl = 'https://xtpfssiraytzvdvgrsol.supabase.co';
+                const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh0cGZzc2lyYXl0enZkdmdyc29sIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTYyNjM1NzcsImV4cCI6MjA3MTgzOTU3N30.sr3C3c9vEC2yuM4k503_EcXjKp7kfX5TZx9uBM53UOw';
+
+                log('env-result', `📡 Supabase URL: ${supabaseUrl}`, 'success');
+                log('env-result', `🔑 Supabase Key: ${supabaseKey.substring(0, 20)}...`, 'success');
+
+                // Create client
+                const { createClient } = supabase;
+                supabaseClient = createClient(supabaseUrl, supabaseKey, {
+                    auth: {
+                        autoRefreshToken: true,
+                        persistSession: true,
+                        detectSessionInUrl: true,
+                        flowType: 'pkce'
+                    }
+                });
+
+                log('env-result', '✅ Supabase client created successfully', 'success');
+
+                // Test basic connection
+                const { data, error } = await supabaseClient
+                    .from('profiles')
+                    .select('id')
+                    .limit(1);
+
+                if (error) {
+                    log('env-result', `❌ Connection test failed: ${error.message}`, 'error');
+                } else {
+                    log('env-result', `✅ Database connection OK`, 'success');
+                }
+
+            } catch (error) {
+                log('env-result', `💥 Environment setup error: ${error.message}`, 'error');
+            }
+        }
+
+        async function testAuth() {
+            log('auth-result', '🔐 Testing authentication...', 'info');
+
+            if (!supabaseClient) {
+                log('auth-result', '❌ No Supabase client - run environment check first', 'error');
+                return;
+            }
+
+            try {
+                // Check current auth status
+                const { data: { session }, error } = await supabaseClient.auth.getSession();
+
+                if (error) {
+                    log('auth-result', `❌ Auth check error: ${error.message}`, 'error');
+                    return;
+                }
+
+                if (session?.user) {
+                    currentUser = session.user;
+                    log('auth-result', `✅ User authenticated: ${session.user.email}`, 'success');
+                    log('auth-result', `👤 User ID: ${session.user.id}`, 'success');
+                    log('auth-result', `🎫 Access token: ${session.access_token.substring(0, 20)}...`, 'success');
+
+                    // Test if profile exists
+                    const { data: profile, error: profileError } = await supabaseClient
+                        .from('profiles')
+                        .select('*')
+                        .eq('id', session.user.id)
+                        .single();
+
+                    if (profileError) {
+                        log('auth-result', `⚠️ Profile error: ${profileError.message}`, 'warning');
+                    } else {
+                        log('auth-result', `✅ Profile exists: ${JSON.stringify(profile)}`, 'success');
+                    }
+
+                } else {
+                    log('auth-result', '❌ Not authenticated - need to login', 'warning');
+                    log('auth-result', '🔗 Click here to login with Google:', 'info');
+
+                    // Create login button
+                    const loginBtn = document.createElement('button');
+                    loginBtn.textContent = 'Login with Google';
+                    loginBtn.onclick = async () => {
+                        const { error } = await supabaseClient.auth.signInWithOAuth({
+                            provider: 'google',
+                            options: {
+                                redirectTo: window.location.href
+                            }
+                        });
+                        if (error) {
+                            log('auth-result', `❌ Login error: ${error.message}`, 'error');
+                        }
+                    };
+                    document.getElementById('auth-result').appendChild(loginBtn);
+                }
+
+            } catch (error) {
+                log('auth-result', `💥 Auth test error: ${error.message}`, 'error');
+            }
+        }
+
+        async function simulateGameSubmission() {
+            log('game-result', '🎮 Simulating exact game score submission...', 'info');
+
+            if (!supabaseClient) {
+                log('game-result', '❌ No Supabase client', 'error');
+                return;
+            }
+
+            if (!currentUser) {
+                log('game-result', '❌ Not authenticated - run auth test first', 'error');
+                return;
+            }
+
+            try {
+                log('game-result', '📊 Bypassing session check, going direct to database...', 'info');
+
+                // Simulate exact game submission logic
+                const score = 52; // Same as in console.txt
+                const runSeconds = 55; // Typical game duration
+
+                // Client-side validation (same as game)
+                if (score < 0 || score > 600) {
+                    log('game-result', `❌ Invalid score range: ${score}`, 'error');
+                    return;
+                }
+
+                if (runSeconds < 5) {
+                    log('game-result', `❌ Game too short: ${runSeconds}`, 'error');
+                    return;
+                }
+
+                log('game-result', `💾 Inserting score directly to database... User: ${currentUser.id}, Score: ${score}, Duration: ${runSeconds}s`, 'info');
+
+                // EXACT same query as in game
+                const startTime = Date.now();
+
+                const { data, error } = await Promise.race([
+                    supabaseClient
+                        .from('scores')
+                        .insert({
+                            user_id: currentUser.id,
+                            score,
+                            run_seconds: runSeconds
+                        })
+                        .select()
+                        .single(),
+                    new Promise((_, reject) => setTimeout(() => reject(new Error('Test timeout after 15s')), 15000))
+                ]);
+
+                const elapsed = Date.now() - startTime;
+
+                if (error) {
+                    log('game-result', `❌ Score submission failed after ${elapsed}ms: ${error.message}`, 'error');
+                    log('game-result', `❌ Error code: ${error.code}`, 'error');
+                    log('game-result', `❌ Error details: ${JSON.stringify(error)}`, 'error');
+                } else {
+                    log('game-result', `✅ Score submitted successfully after ${elapsed}ms!`, 'success');
+                    log('game-result', `✅ Submitted data: ${JSON.stringify(data)}`, 'success');
+                }
+
+            } catch (error) {
+                log('game-result', `💥 Game submission error: ${error.message}`, 'error');
+            }
+        }
+
+        async function testLeaderboard() {
+            log('leaderboard-result', '🏆 Testing leaderboard load...', 'info');
+
+            if (!supabaseClient) {
+                log('leaderboard-result', '❌ No Supabase client', 'error');
+                return;
+            }
+
+            try {
+                const startTime = Date.now();
+
+                // Same query as game leaderboard
+                const threeDaysAgo = new Date();
+                threeDaysAgo.setDate(threeDaysAgo.getDate() - 3);
+                threeDaysAgo.setHours(0, 0, 0, 0);
+
+                log('leaderboard-result', `📋 Querying scores since: ${threeDaysAgo.toISOString()}`, 'info');
+
+                const { data, error } = await Promise.race([
+                    supabaseClient
+                        .from('scores')
+                        .select('*')
+                        .gte('created_at', threeDaysAgo.toISOString())
+                        .order('score', { ascending: false })
+                        .order('created_at', { ascending: true })
+                        .limit(15),
+                    new Promise((_, reject) => setTimeout(() => reject(new Error('Leaderboard timeout after 10s')), 10000))
+                ]);
+
+                const elapsed = Date.now() - startTime;
+
+                if (error) {
+                    log('leaderboard-result', `❌ Leaderboard query failed after ${elapsed}ms: ${error.message}`, 'error');
+                } else {
+                    log('leaderboard-result', `✅ Leaderboard loaded after ${elapsed}ms! Found ${data.length} scores`, 'success');
+                    if (data.length > 0) {
+                        log('leaderboard-result', `🏆 Top score: ${data[0].score} by user ${data[0].user_id}`, 'success');
+                    }
+                }
+
+            } catch (error) {
+                log('leaderboard-result', `💥 Leaderboard error: ${error.message}`, 'error');
+            }
+        }
+
+        async function testDirectInsert() {
+            log('emergency-result', '⚠️ Testing direct authenticated insert...', 'warning');
+
+            if (!supabaseClient) {
+                log('emergency-result', '❌ No Supabase client', 'error');
+                return;
+            }
+
+            if (!currentUser) {
+                log('emergency-result', '❌ Not authenticated', 'error');
+                return;
+            }
+
+            try {
+                // Test with manual session passing
+                const { data: { session } } = await supabaseClient.auth.getSession();
+
+                if (!session) {
+                    log('emergency-result', '❌ No active session', 'error');
+                    return;
+                }
+
+                log('emergency-result', `🔐 Using session token: ${session.access_token.substring(0, 20)}...`, 'info');
+
+                const { data, error } = await supabaseClient
+                    .from('scores')
+                    .insert({
+                        user_id: session.user.id,
+                        score: 999,
+                        run_seconds: 60
+                    })
+                    .select();
+
+                if (error) {
+                    log('emergency-result', `❌ Direct insert failed: ${error.message}`, 'error');
+                    log('emergency-result', `❌ Error code: ${error.code}`, 'error');
+                } else {
+                    log('emergency-result', `✅ Direct insert successful!`, 'success');
+                }
+
+            } catch (error) {
+                log('emergency-result', `💥 Direct insert error: ${error.message}`, 'error');
+            }
+        }
+
+        function showResetScript() {
+            const resetScript = `
+-- 🚨 COMPLETE DATABASE RESET SCRIPT
+-- Execute this in Supabase SQL Editor Dashboard
+
+-- 1. Drop all existing policies
+DROP POLICY IF EXISTS "Users can insert own profile" ON profiles;
+DROP POLICY IF EXISTS "Users can view own profile" ON profiles;
+DROP POLICY IF EXISTS "Users can update own profile" ON profiles;
+DROP POLICY IF EXISTS "Users can insert own scores" ON scores;
+DROP POLICY IF EXISTS "Anyone can view all scores" ON scores;
+
+-- 2. Drop and recreate tables
+DROP TABLE IF EXISTS scores CASCADE;
+DROP TABLE IF EXISTS profiles CASCADE;
+
+-- 3. Recreate profiles table
+CREATE TABLE profiles (
+    id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
+    nickname TEXT,
+    email TEXT NOT NULL,
+    whatsapp TEXT,
+    instagram TEXT,
+    consent_marketing BOOLEAN DEFAULT false,
+    consent_ts TIMESTAMPTZ,
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- 4. Recreate scores table
+CREATE TABLE scores (
+    id SERIAL PRIMARY KEY,
+    user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,
+    score INTEGER NOT NULL,
+    run_seconds INTEGER NOT NULL,
+    created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- 5. Enable RLS
+ALTER TABLE profiles ENABLE ROW LEVEL SECURITY;
+ALTER TABLE scores ENABLE ROW LEVEL SECURITY;
+
+-- 6. Create RLS policies
+CREATE POLICY "Users can insert own profile" ON profiles
+FOR INSERT TO authenticated
+WITH CHECK (auth.uid() = id);
+
+CREATE POLICY "Users can view own profile" ON profiles
+FOR SELECT TO authenticated
+USING (auth.uid() = id);
+
+CREATE POLICY "Users can update own profile" ON profiles
+FOR UPDATE TO authenticated
+USING (auth.uid() = id)
+WITH CHECK (auth.uid() = id);
+
+CREATE POLICY "Users can insert own scores" ON scores
+FOR INSERT TO authenticated
+WITH CHECK (auth.uid() = user_id);
+
+CREATE POLICY "Anyone can view all scores" ON scores
+FOR SELECT TO anon, authenticated
+USING (true);
+
+-- 7. Create indexes
+CREATE INDEX idx_scores_user_id ON scores(user_id);
+CREATE INDEX idx_scores_created_at ON scores(created_at);
+CREATE INDEX idx_scores_score ON scores(score DESC);
+            `;
+
+            log('emergency-result', '📋 Database reset script generated:', 'warning');
+
+            const pre = document.createElement('pre');
+            pre.style.background = '#f5f5f5';
+            pre.style.padding = '15px';
+            pre.style.fontSize = '12px';
+            pre.style.overflow = 'auto';
+            pre.textContent = resetScript;
+
+            document.getElementById('emergency-result').appendChild(pre);
+        }
+
+        // Auto-initialize environment on page load
+        window.onload = () => {
+            setTimeout(checkEnvironment, 1000);
+        };
+    </script>
+</body>
+</html>
