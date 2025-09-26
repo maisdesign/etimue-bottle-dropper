@@ -280,7 +280,8 @@ export const globalFunctions = {
 
         if (authState.profile?.consent_marketing) {
           // User already subscribed - show confirmation
-          if (subscribeBtn) subscribeBtn.textContent = '✅ Già iscritto alla newsletter!'
+          const confirmText = languageManager.getCurrentLanguage() === 'it' ? '✅ Già iscritto alla newsletter!' : '✅ Already subscribed to newsletter!'
+          if (subscribeBtn) subscribeBtn.textContent = confirmText
           if (subscribeBtn) subscribeBtn.disabled = true
           if (emailInput) emailInput.style.display = 'none'
           if (consentCheckbox) consentCheckbox.parentElement!.style.display = 'none'
@@ -383,7 +384,7 @@ function initializeUI() {
   // Initialize newsletter functionality
   const newsletterBtn = document.getElementById('newsletter-subscribe-btn')
   if (newsletterBtn) {
-    newsletterBtn.addEventListener('click', globalFunctions.subscribeToNewsletter)
+    newsletterBtn.addEventListener('click', () => globalFunctions.subscribeToNewsletter())
   }
 
   // Set up auth state listener for newsletter visibility
