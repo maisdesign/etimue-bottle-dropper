@@ -117,6 +117,18 @@ serve(async (req) => {
         })
       }
 
+      // Handle permanently deleted email case
+      if (mailchimpResult.title === 'Forgotten Email Not Subscribed') {
+        return new Response(JSON.stringify({
+          success: false,
+          error: 'This email was previously unsubscribed and cannot be re-added automatically. Please contact support or use a different email address.',
+          isPermanentlyDeleted: true
+        }), {
+          status: 400,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        })
+      }
+
       return new Response(JSON.stringify({
         error: 'Failed to subscribe to newsletter',
         details: mailchimpResult.detail

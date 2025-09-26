@@ -340,7 +340,7 @@ class SimpleAuthSystem {
     }
   }
 
-  public async subscribeToNewsletter(): Promise<{ success: boolean; error?: string; alreadySubscribed?: boolean }> {
+  public async subscribeToNewsletter(): Promise<{ success: boolean; error?: string; alreadySubscribed?: boolean; isPermanentlyDeleted?: boolean }> {
     try {
       if (!this.state.isAuthenticated || !this.state.user) {
         return { success: false, error: 'Not authenticated' }

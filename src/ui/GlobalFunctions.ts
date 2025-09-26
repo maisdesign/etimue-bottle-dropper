@@ -235,7 +235,12 @@ export const globalFunctions = {
         }
       } else {
         const t = languageManager.getTranslation()
-        this.showNewsletterMessage(result.error || t.newsletterErrorMessage, 'error')
+        // Handle specific error cases with appropriate translations
+        if (result.isPermanentlyDeleted) {
+          this.showNewsletterMessage(t.newsletterPermanentlyDeleted, 'error')
+        } else {
+          this.showNewsletterMessage(result.error || t.newsletterErrorMessage, 'error')
+        }
       }
     } catch (error) {
       console.error('Newsletter subscription error:', error)

@@ -108,6 +108,7 @@ export interface Translation {
   newsletterPrizeRequirement: string
   prizeLeaderboardTitle: string
   prizeEligibilityNote: string
+  newsletterPermanentlyDeleted: string
 }
 
 export const translations = {
@@ -220,7 +221,8 @@ export const translations = {
     newsletterConsentText: 'I agree to receive marketing communications from Etimuè',
     newsletterPrizeRequirement: '🏆 Subscribe to newsletter to be eligible for weekly and monthly prizes!',
     prizeLeaderboardTitle: '🏆 Prize Leaderboard (Newsletter Subscribers Only)',
-    prizeEligibilityNote: 'Only newsletter subscribers are eligible for prizes'
+    prizeEligibilityNote: 'Only newsletter subscribers are eligible for prizes',
+    newsletterPermanentlyDeleted: 'This email was previously unsubscribed and cannot be re-added automatically. Please contact support or use a different email address.'
   } as Translation,
 
   it: {
@@ -332,7 +334,8 @@ export const translations = {
     newsletterConsentText: 'Acconsento a ricevere comunicazioni marketing da Etimuè',
     newsletterPrizeRequirement: '🏆 Iscriviti alla newsletter per partecipare ai premi settimanali e mensili!',
     prizeLeaderboardTitle: '🏆 Classifica Premi (Solo Iscritti Newsletter)',
-    prizeEligibilityNote: 'Solo gli iscritti alla newsletter possono vincere i premi'
+    prizeEligibilityNote: 'Solo gli iscritti alla newsletter possono vincere i premi',
+    newsletterPermanentlyDeleted: 'Questa email è stata precedentemente cancellata e non può essere riaggiunta automaticamente. Contatta il supporto o usa un indirizzo email diverso.'
   } as Translation
 }
 
