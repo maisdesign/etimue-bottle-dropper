@@ -257,7 +257,8 @@ export const globalFunctions = {
   showNewsletterMessage(message: string, type: 'success' | 'error') {
     const messageDiv = document.getElementById('newsletter-message') as HTMLDivElement
     if (messageDiv) {
-      messageDiv.textContent = message
+      // Use innerHTML to support HTML links in messages
+      messageDiv.innerHTML = message
       messageDiv.className = `newsletter-message ${type}`
       messageDiv.style.display = 'block'
 

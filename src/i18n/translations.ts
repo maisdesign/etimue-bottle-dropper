@@ -222,7 +222,7 @@ export const translations = {
     newsletterPrizeRequirement: '🏆 Subscribe to newsletter to be eligible for weekly and monthly prizes!',
     prizeLeaderboardTitle: '🏆 Prize Leaderboard (Newsletter Subscribers Only)',
     prizeEligibilityNote: 'Only newsletter subscribers are eligible for prizes',
-    newsletterPermanentlyDeleted: 'This email was previously unsubscribed and cannot be re-added automatically. Please contact support or use a different email address.'
+    newsletterPermanentlyDeleted: 'This email was previously unsubscribed and cannot be re-added automatically. Please use our <a href="https://mailchimp.com/help/share-your-signup-form/" target="_blank" style="color: #FFD700; text-decoration: underline;">official signup form</a> or try a different email address.'
   } as Translation,
 
   it: {
@@ -335,7 +335,7 @@ export const translations = {
     newsletterPrizeRequirement: '🏆 Iscriviti alla newsletter per partecipare ai premi settimanali e mensili!',
     prizeLeaderboardTitle: '🏆 Classifica Premi (Solo Iscritti Newsletter)',
     prizeEligibilityNote: 'Solo gli iscritti alla newsletter possono vincere i premi',
-    newsletterPermanentlyDeleted: 'Questa email è stata precedentemente cancellata e non può essere riaggiunta automaticamente. Contatta il supporto o usa un indirizzo email diverso.'
+    newsletterPermanentlyDeleted: 'Questa email è stata precedentemente cancellata e non può essere riaggiunta automaticamente. Usa il nostro <a href="https://mailchimp.com/help/share-your-signup-form/" target="_blank" style="color: #FFD700; text-decoration: underline;">form ufficiale</a> oppure prova con un indirizzo email diverso.'
   } as Translation
 }
 
