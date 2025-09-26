@@ -96,3 +96,5 @@ DEPLOYMENT_REMINDER.md
 
 # Legacy backup (never commit to avoid conflicts)
 Legacy/
+PasswordProgetto.txt
+PasswordMailchimp.txt
