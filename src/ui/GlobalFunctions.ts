@@ -235,10 +235,16 @@ export const globalFunctions = {
         }
       } else {
         const t = languageManager.getTranslation()
+        // DEBUG: Log the exact response from Edge Function
+        console.log('🔍 DEBUG: Newsletter error response:', result)
+        console.log('🔍 DEBUG: isPermanentlyDeleted flag:', result.isPermanentlyDeleted)
+
         // Handle specific error cases with appropriate translations
         if (result.isPermanentlyDeleted) {
+          console.log('🔗 DEBUG: Showing Mailchimp link message')
           this.showNewsletterMessage(t.newsletterPermanentlyDeleted, 'error')
         } else {
+          console.log('⚠️ DEBUG: Showing generic error message')
           this.showNewsletterMessage(result.error || t.newsletterErrorMessage, 'error')
         }
       }
