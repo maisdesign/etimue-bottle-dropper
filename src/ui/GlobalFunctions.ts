@@ -191,6 +191,8 @@ export const globalFunctions = {
 
     // Use singleton instance to preserve dark pattern logic
     try {
+      console.log('🔍 DEBUG: leaderboardModal type:', typeof leaderboardModal)
+      console.log('🔍 DEBUG: leaderboardModal value:', leaderboardModal)
       leaderboardModal.show()
     } catch (error) {
       console.error('❌ Failed to load LeaderboardModal:', error)
