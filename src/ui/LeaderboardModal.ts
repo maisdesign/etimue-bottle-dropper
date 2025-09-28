@@ -1,5 +1,6 @@
 import { languageManager } from '../i18n/LanguageManager'
 import { simpleAuth } from '../systems/SimpleAuth'
+import { globalFunctions } from './GlobalFunctions'
 
 export interface LeaderboardEntry {
   id: number
@@ -214,8 +215,8 @@ export class LeaderboardModal {
       return
     }
 
-    emptyContainer.style.display = 'none'
-    listContainer.style.display = 'block'
+    if (emptyContainer) emptyContainer.style.display = 'none'
+    if (listContainer) listContainer.style.display = 'block'
 
     const currentUserId = simpleAuth.getState().user?.id
 
@@ -277,27 +278,145 @@ export class LeaderboardModal {
     if (!this.modal) return
 
     const listContainer = this.modal.querySelector('#leaderboard-list') as HTMLElement
-    listContainer.innerHTML = `
-      <div class="leaderboard-error">
-        <p>❌ Errore nel caricamento della classifica</p>
-        <button onclick="location.reload()" class="retry-btn">🔄 Riprova</button>
-      </div>
-    `
-    listContainer.style.display = 'block'
+    if (listContainer) {
+      listContainer.innerHTML = `
+        <div class="leaderboard-error">
+          <p>❌ Errore nel caricamento della classifica</p>
+          <button onclick="location.reload()" class="retry-btn">🔄 Riprova</button>
+        </div>
+      `
+      listContainer.style.display = 'block'
+    }
   }
 
   public show(): void {
     if (!this.modal) return
 
+    // Check if user is in casual mode or doesn't have newsletter consent
+    const isCasualMode = localStorage.getItem('gameMode') === 'casual'
+    const authState = simpleAuth.getState()
+    const hasNewsletterConsent = authState.profile?.consent_marketing === true
+
+    console.log('🏆 Leaderboard access check:', { isCasualMode, hasNewsletterConsent })
+
     this.modal.style.display = 'flex'
     this.updateTranslations()
-    this.loadLeaderboard()
+
+    if (isCasualMode || !hasNewsletterConsent) {
+      console.log('🔒 Showing blurred leaderboard with dark pattern messaging')
+      this.showBlurredLeaderboard(isCasualMode ? 'casual' : 'no-newsletter')
+    } else {
+      console.log('🏆 Showing full leaderboard - user eligible')
+      this.loadLeaderboard()
+    }
 
     console.log('🏆 Leaderboard modal opened')
   }
 
+  private showBlurredLeaderboard(reason: 'casual' | 'no-newsletter'): void {
+    if (!this.modal) return
+
+    const contentDiv = this.modal.querySelector('#leaderboard-content') as HTMLElement
+    const listContainer = this.modal.querySelector('#leaderboard-list') as HTMLElement
+    const emptyContainer = this.modal.querySelector('#leaderboard-empty') as HTMLElement
+
+    if (!contentDiv || !listContainer || !emptyContainer) return
+
+    // Hide empty state
+    (emptyContainer as HTMLElement).style.display = 'none'
+
+    // Create fake leaderboard entries for visual effect
+    const fakeEntries = [
+      { position: 1, nickname: 'ProPlayer123', score: 287, date: '2 giorni fa' },
+      { position: 2, nickname: 'GameMaster', score: 245, date: '1 giorno fa' },
+      { position: 3, nickname: 'BottleCatcher', score: 198, date: '3 ore fa' },
+      { position: 4, nickname: 'ScoreHunter', score: 176, date: '5 ore fa' },
+      { position: 5, nickname: 'TopGamer99', score: 154, date: '1 giorno fa' }
+    ]
+
+    // Generate blurred leaderboard HTML
+    listContainer.innerHTML = fakeEntries.map(entry => `
+      <div class="leaderboard-entry blurred-entry">
+        <div class="leaderboard-position">${entry.position}</div>
+        <div class="leaderboard-player">
+          <div class="leaderboard-nickname">${entry.nickname}</div>
+          <div class="leaderboard-date">${entry.date}</div>
+        </div>
+        <div class="leaderboard-score">
+          <div class="score-value">${entry.score}</div>
+        </div>
+      </div>
+    `).join('')
+
+    // Add blur effect to content
+    contentDiv.classList.add('blurred-leaderboard')
+
+    // Create overlay with dark pattern message
+    const translation = languageManager.getTranslation()
+    const overlayMessage = reason === 'casual'
+      ? translation.casualLeaderboardMessage || 'Subscribe to newsletter to compete and see the leaderboard!'
+      : translation.newsletterLeaderboardMessage || 'Subscribe to newsletter to see the leaderboard and compete for prizes!'
+
+    const darkPatternOverlay = document.createElement('div')
+    darkPatternOverlay.className = 'dark-pattern-overlay'
+    darkPatternOverlay.innerHTML = `
+      <div class="dark-pattern-content">
+        <h3>🏆 ${translation.leaderboardLocked || 'Leaderboard Locked'}</h3>
+        <p>${overlayMessage}</p>
+        <div class="dark-pattern-benefits">
+          <p>✨ ${translation.darkPatternBenefit1 || 'Compete for weekly and monthly prizes'}</p>
+          <p>🎯 ${translation.darkPatternBenefit2 || 'Track your progress on the leaderboard'}</p>
+          <p>🏅 ${translation.darkPatternBenefit3 || 'Join the exclusive gaming community'}</p>
+        </div>
+        <button class="dark-pattern-btn" id="dark-pattern-subscribe">
+          ${translation.subscribeNowBtn || '📧 Subscribe Now'}
+        </button>
+        <p class="dark-pattern-later">
+          <span id="dark-pattern-maybe-later">${translation.maybeLater || 'Maybe later'}</span>
+        </p>
+      </div>
+    `
+
+    contentDiv.appendChild(darkPatternOverlay)
+
+    // Add event listeners
+    const subscribeBtn = darkPatternOverlay.querySelector('#dark-pattern-subscribe')
+    const maybeLaterBtn = darkPatternOverlay.querySelector('#dark-pattern-maybe-later')
+
+    if (subscribeBtn) {
+      subscribeBtn.addEventListener('click', () => {
+        console.log('🔒 Dark pattern: User clicked subscribe from leaderboard')
+        this.hide()
+        // Trigger newsletter subscription
+        globalFunctions.subscribeToNewsletter().catch(console.error)
+      })
+    }
+
+    if (maybeLaterBtn) {
+      maybeLaterBtn.addEventListener('click', () => {
+        console.log('🔒 Dark pattern: User declined - switching to casual mode')
+        localStorage.setItem('gameMode', 'casual')
+        this.hide()
+      })
+    }
+
+    (listContainer as HTMLElement).style.display = 'block'
+  }
+
   public hide(): void {
     if (!this.modal) return
+
+    // Clean up dark pattern overlay and blur effects
+    const contentDiv = this.modal.querySelector('#leaderboard-content')
+    const darkPatternOverlay = this.modal.querySelector('.dark-pattern-overlay')
+
+    if (contentDiv) {
+      contentDiv.classList.remove('blurred-leaderboard')
+    }
+
+    if (darkPatternOverlay) {
+      darkPatternOverlay.remove()
+    }
 
     this.modal.style.display = 'none'
     console.log('🏆 Leaderboard modal closed')

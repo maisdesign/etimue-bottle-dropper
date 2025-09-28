@@ -3,6 +3,7 @@ import { LanguageManager } from '@/i18n/LanguageManager'
 import { CharacterManager } from '@/systems/CharacterManager'
 import { simpleAuth } from '@/systems/SimpleAuth'
 import { LeaderboardModal } from '@/ui/LeaderboardModal'
+import { gameModeModal } from '@/ui/GameModeModal'
 // AuthModal removed - using direct Google OAuth flow now
 
 // Static imports instead of dynamic imports to avoid 404 errors
@@ -70,7 +71,52 @@ export const globalFunctions = {
       return
     }
 
-    console.log('✅ User authenticated, starting game...')
+    console.log('✅ User authenticated, checking game mode preferences...')
+
+    // Check if user has casual mode preference
+    const hasCasualPreference = localStorage.getItem('gameMode') === 'casual'
+    console.log('🎯 Casual mode preference:', hasCasualPreference)
+
+    // Check if user has newsletter consent (competitive eligibility)
+    const authState = simpleAuth.getState()
+    const hasNewsletterConsent = authState.profile?.consent_marketing === true
+    console.log('📧 Newsletter consent status:', hasNewsletterConsent)
+
+    // If user has no preference and no newsletter consent, show mode selection
+    if (!hasCasualPreference && !hasNewsletterConsent) {
+      console.log('🎯 Showing game mode selection modal...')
+
+      return new Promise<void>((resolve) => {
+        gameModeModal.show((mode) => {
+          console.log('🎯 User selected mode:', mode)
+
+          if (mode === 'competitive') {
+            // Competitive mode was selected and newsletter subscription was triggered
+            // The subscription process is handled by GameModeModal
+            console.log('🏆 Competitive mode selected - checking final consent status')
+
+            // Small delay to let the subscription process complete
+            setTimeout(() => {
+              this.actuallyStartGame()
+              resolve()
+            }, 500)
+          } else {
+            // Casual mode selected
+            console.log('🎮 Casual mode selected - starting game immediately')
+            this.actuallyStartGame()
+            resolve()
+          }
+        })
+      })
+    }
+
+    // User already has preference or newsletter consent - start game directly
+    console.log('🚀 Starting game directly (existing preference or consent)')
+    this.actuallyStartGame()
+  },
+
+  actuallyStartGame() {
+    console.log('🚀 Actually starting game engine...')
 
     const overlay = document.getElementById('game-start-overlay')
     if (overlay) {

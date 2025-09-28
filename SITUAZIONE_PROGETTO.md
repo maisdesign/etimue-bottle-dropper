@@ -1,6 +1,66 @@
 # SITUAZIONE PROGETTO - ETIMUÈ BOTTLE DROPPER
 
-## 🕒 ULTIMO AGGIORNAMENTO: 28 Settembre 2025 - MILESTONE v2.1.0 CREATO
+## 🕒 ULTIMO AGGIORNAMENTO: 28 Settembre 2025 - GAME MODE SYSTEM COMPLETE
+
+### 🎯 GAME MODE MODAL SYSTEM: 100% IMPLEMENTATO ✅
+
+**✅ MAJOR ACHIEVEMENT**: Sistema Game Mode con dark patterns completamente implementato
+
+**🎯 RISULTATO**: Modal di selezione modalità competitiva/casual con UX persuasiva per newsletter subscription
+
+**📊 ARCHITETTURA**: localStorage per preferenze casual + dark pattern leaderboard blur effect
+
+#### ✅ GAME MODE SYSTEM 100% IMPLEMENTATO:
+
+1. **🎮 GameModeModal Component** ✅
+   - Modal con scelta Competitive vs Casual mode
+   - Design responsive con hover effects e gradients
+   - Integrazione completa con sistema newsletter esistente
+   - Due pulsanti: "🏆 Subscribe & Compete" e "🎮 Play for Fun"
+
+2. **🧠 Smart Game Flow Logic** ✅
+   - Controllo automatico consent_marketing e localStorage preferences
+   - Modal mostrato solo per utenti senza preferenze definite
+   - Integrazione seamless con GlobalFunctions.startNewGame()
+   - Supporto per utenti già iscritti (bypass modal)
+
+3. **🚫 Casual Mode Score Blocking** ✅
+   - GameScene modificata per bloccare score submission in modalità casual
+   - Messaggi informativi al game over per utenti casual
+   - Fallback per utenti senza newsletter consent (anche con account)
+   - Traduzioni complete IT/EN per tutti i messaggi
+
+4. **🔒 Dark Pattern Leaderboard** ✅
+   - LeaderboardModal con blur effect per utenti non eligibili
+   - Fake leaderboard entries per mostrare cosa si perdono
+   - Overlay persuasivo con benefici e CTA "Subscribe & Unlock"
+   - Opzione "Maybe later" che imposta modalità casual permanente
+
+5. **🎨 Complete UI/UX Design** ✅
+   - CSS styling completo per tutti i componenti
+   - Mobile responsive design per tutti i breakpoint
+   - Gradients dorati per competitive, verdi per casual
+   - Dark pattern overlay con design accattivante
+
+6. **📝 Comprehensive Translations** ✅
+   - Tutte le stringhe tradotte IT/EN
+   - Messaggi persuasivi per dark patterns
+   - Descrizioni chiare dei benefici competitivi
+   - Error messages per score blocking
+
+**🔧 IMPLEMENTAZIONE TECNICA**:
+- `src/ui/GameModeModal.ts` - Componente modal principale
+- `src/ui/GlobalFunctions.ts` - Logica integrazione startup
+- `src/scenes/GameScene.ts` - Score blocking per casual players
+- `src/ui/LeaderboardModal.ts` - Dark pattern blur implementation
+- `src/i18n/translations.ts` - Traduzioni complete
+- `index.html` - CSS styling per dark patterns
+
+**🧪 TESTING**: Build completato senza errori TypeScript ✅
+
+---
+
+## 🕒 SESSIONE PRECEDENTE: 28 Settembre 2025 - MILESTONE v2.1.0 CREATO
 
 ### 🎯 MILESTONE v2.1.0: NEWSLETTER SYSTEM COMPLETE ✅
 

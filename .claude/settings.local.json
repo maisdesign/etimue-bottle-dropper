@@ -109,7 +109,8 @@
       "Bash(git -c advice.addIgnoredFile=false commit --no-verify -m \"✅ BUILD UPDATED: Fix leaderboard infinite loading with timeouts and fallbacks\")",
       "Bash(npx vite:*)",
       "WebFetch(domain:supabase.com)",
-      "WebSearch"
+      "WebSearch",
+      "Bash(npx tsc:*)"
     ],
     "deny": [],
     "ask": []

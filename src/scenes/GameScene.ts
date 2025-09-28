@@ -572,10 +572,29 @@ export class GameScene extends Scene {
 
   private async submitScoreToDatabase(): Promise<void> {
     try {
-      console.log('📊 SUBMITTING SCORE TO DATABASE...', {
+      console.log('📊 CHECKING SCORE SUBMISSION ELIGIBILITY...', {
         score: this.score,
         timeElapsed: 60 - this.timeLeft
       })
+
+      // Check if user is in casual mode
+      const isCasualMode = localStorage.getItem('gameMode') === 'casual'
+      if (isCasualMode) {
+        console.log('🎮 CASUAL MODE: Score submission blocked - user playing for fun only')
+
+        // Show casual mode message
+        const { width, height } = this.cameras.main
+        const t = languageManager.getTranslation()
+
+        const casualText = this.add.text(width / 2, height / 2 + 150, t.casualModeScoreBlocked || 'Casual Mode: Score not saved', {
+          fontSize: Math.min(16, width * 0.022) + 'px',
+          color: '#FFA500',
+          fontFamily: 'Arial'
+        }).setOrigin(0.5)
+
+        this.gameOverTexts.push(casualText)
+        return
+      }
 
       // Get current user
       const state = simpleAuth.getState()
@@ -583,6 +602,26 @@ export class GameScene extends Scene {
         console.error('❌ No authenticated user found for score submission')
         return
       }
+
+      // Check newsletter consent for competitive eligibility
+      if (!state.profile?.consent_marketing) {
+        console.log('📧 NEWSLETTER CONSENT MISSING: Score submission blocked - user not eligible for competition')
+
+        // Show newsletter requirement message
+        const { width, height } = this.cameras.main
+        const t = languageManager.getTranslation()
+
+        const consentText = this.add.text(width / 2, height / 2 + 150, t.newsletterRequiredForScore || 'Newsletter subscription required for competition', {
+          fontSize: Math.min(16, width * 0.022) + 'px',
+          color: '#FFA500',
+          fontFamily: 'Arial'
+        }).setOrigin(0.5)
+
+        this.gameOverTexts.push(consentText)
+        return
+      }
+
+      console.log('🏆 COMPETITIVE MODE: User eligible for score submission')
 
       // Calculate game duration (minimum 5 seconds for validation)
       const gameSeconds = Math.max(5, 60 - this.timeLeft)

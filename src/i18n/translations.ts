@@ -109,6 +109,32 @@ export interface Translation {
   prizeLeaderboardTitle: string
   prizeEligibilityNote: string
   newsletterPermanentlyDeleted: string
+
+  // Game Mode Modal
+  gameModeTitle: string
+  gameModeSubtitle: string
+  gameModeCompetitiveTitle: string
+  gameModeCompetitiveDesc: string
+  gameModePrizeWeekly: string
+  gameModePrizeMonthly: string
+  gameModeCompetitiveButton: string
+  gameModeCasualTitle: string
+  gameModeCasualDesc: string
+  gameModeCasualButton: string
+
+  // Casual Mode Messages
+  casualModeScoreBlocked: string
+  newsletterRequiredForScore: string
+
+  // Dark Pattern Messages for Leaderboard
+  casualLeaderboardMessage: string
+  newsletterLeaderboardMessage: string
+  leaderboardLocked: string
+  darkPatternBenefit1: string
+  darkPatternBenefit2: string
+  darkPatternBenefit3: string
+  subscribeNowBtn: string
+  maybeLater: string
 }
 
 export const translations = {
@@ -222,7 +248,33 @@ export const translations = {
     newsletterPrizeRequirement: '🏆 Subscribe to newsletter to be eligible for weekly and monthly prizes!',
     prizeLeaderboardTitle: '🏆 Prize Leaderboard (Newsletter Subscribers Only)',
     prizeEligibilityNote: 'Only newsletter subscribers are eligible for prizes',
-    newsletterPermanentlyDeleted: 'This email was previously unsubscribed and cannot be re-added automatically. Please use our <a href="https://facebook.us7.list-manage.com/subscribe?u=aacb79a7271a37e78eb76ebb9&id=e1cc02e51c" target="_blank" style="color: #FFD700; text-decoration: underline;">official signup form</a> or try a different email address.'
+    newsletterPermanentlyDeleted: 'This email was previously unsubscribed and cannot be re-added automatically. Please use our <a href="https://facebook.us7.list-manage.com/subscribe?u=aacb79a7271a37e78eb76ebb9&id=e1cc02e51c" target="_blank" style="color: #FFD700; text-decoration: underline;">official signup form</a> or try a different email address.',
+
+    // Game Mode Modal
+    gameModeTitle: '🏆 Choose Your Game Mode',
+    gameModeSubtitle: 'Want to compete for amazing prizes?',
+    gameModeCompetitiveTitle: 'Compete for Prizes',
+    gameModeCompetitiveDesc: 'Subscribe to our newsletter and compete in the leaderboard for exclusive rewards:',
+    gameModePrizeWeekly: '• Weekly prize: 5% dinner discount at Etimuè pub',
+    gameModePrizeMonthly: '• Monthly prize: 10% dinner discount at Etimuè pub',
+    gameModeCompetitiveButton: '🏆 Subscribe & Compete',
+    gameModeCasualTitle: 'Play for Fun',
+    gameModeCasualDesc: 'Just want to enjoy the game without competing? No problem!',
+    gameModeCasualButton: '🎮 Play for Fun',
+
+    // Casual Mode Messages
+    casualModeScoreBlocked: '🎮 Casual Mode: Score not saved for competition',
+    newsletterRequiredForScore: '📧 Newsletter subscription required for competition',
+
+    // Dark Pattern Messages for Leaderboard
+    casualLeaderboardMessage: 'Want to see your rank and compete with others? Subscribe to our newsletter to unlock the leaderboard and compete for amazing prizes!',
+    newsletterLeaderboardMessage: 'Subscribe to our newsletter to access the leaderboard and compete for weekly and monthly prizes at Etimuè pub!',
+    leaderboardLocked: 'Leaderboard Locked',
+    darkPatternBenefit1: 'Compete for weekly and monthly dinner discounts',
+    darkPatternBenefit2: 'Track your progress and climb the rankings',
+    darkPatternBenefit3: 'Join our exclusive gaming community',
+    subscribeNowBtn: '📧 Subscribe & Unlock',
+    maybeLater: 'Maybe later (continue playing casually)'
   } as Translation,
 
   it: {
@@ -335,7 +387,33 @@ export const translations = {
     newsletterPrizeRequirement: '🏆 Iscriviti alla newsletter per partecipare ai premi settimanali e mensili!',
     prizeLeaderboardTitle: '🏆 Classifica Premi (Solo Iscritti Newsletter)',
     prizeEligibilityNote: 'Solo gli iscritti alla newsletter possono vincere i premi',
-    newsletterPermanentlyDeleted: 'Questa email è stata precedentemente cancellata e non può essere riaggiunta automaticamente. Usa il nostro <a href="https://facebook.us7.list-manage.com/subscribe?u=aacb79a7271a37e78eb76ebb9&id=e1cc02e51c" target="_blank" style="color: #FFD700; text-decoration: underline;">form ufficiale</a> oppure prova con un indirizzo email diverso.'
+    newsletterPermanentlyDeleted: 'Questa email è stata precedentemente cancellata e non può essere riaggiunta automaticamente. Usa il nostro <a href="https://facebook.us7.list-manage.com/subscribe?u=aacb79a7271a37e78eb76ebb9&id=e1cc02e51c" target="_blank" style="color: #FFD700; text-decoration: underline;">form ufficiale</a> oppure prova con un indirizzo email diverso.',
+
+    // Game Mode Modal
+    gameModeTitle: '🏆 Scegli la Modalità di Gioco',
+    gameModeSubtitle: 'Vuoi competere per fantastici premi?',
+    gameModeCompetitiveTitle: 'Compete per i Premi',
+    gameModeCompetitiveDesc: 'Iscriviti alla newsletter e compete nella classifica per ricompense esclusive:',
+    gameModePrizeWeekly: '• Premio settimanale: 5% sconto cena al pub Etimuè',
+    gameModePrizeMonthly: '• Premio mensile: 10% sconto cena al pub Etimuè',
+    gameModeCompetitiveButton: '🏆 Iscriviti e Competi',
+    gameModeCasualTitle: 'Gioca per Divertimento',
+    gameModeCasualDesc: 'Vuoi solo goderti il gioco senza competere? Nessun problema!',
+    gameModeCasualButton: '🎮 Gioca per Divertimento',
+
+    // Casual Mode Messages
+    casualModeScoreBlocked: '🎮 Modalità Casual: Punteggio non salvato per la competizione',
+    newsletterRequiredForScore: '📧 Iscrizione newsletter richiesta per la competizione',
+
+    // Dark Pattern Messages for Leaderboard
+    casualLeaderboardMessage: 'Vuoi vedere la tua posizione e competere con altri? Iscriviti alla nostra newsletter per sbloccare la classifica e competere per premi fantastici!',
+    newsletterLeaderboardMessage: 'Iscriviti alla nostra newsletter per accedere alla classifica e competere per i premi settimanali e mensili al pub Etimuè!',
+    leaderboardLocked: 'Classifica Bloccata',
+    darkPatternBenefit1: 'Compete per sconti cena settimanali e mensili',
+    darkPatternBenefit2: 'Traccia i tuoi progressi e scala le classifiche',
+    darkPatternBenefit3: 'Unisciti alla nostra community gaming esclusiva',
+    subscribeNowBtn: '📧 Iscriviti & Sblocca',
+    maybeLater: 'Forse più tardi (continua a giocare casualmente)'
   } as Translation
 }
 
