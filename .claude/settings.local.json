@@ -108,7 +108,8 @@
       "Bash(git -c advice.addIgnoredFile=false commit --no-verify -m \"✅ BUILD UPDATED: CRITICAL FIX - Replace dynamic imports with static imports to resolve 404 errors\")",
       "Bash(git -c advice.addIgnoredFile=false commit --no-verify -m \"✅ BUILD UPDATED: Fix leaderboard infinite loading with timeouts and fallbacks\")",
       "Bash(npx vite:*)",
-      "WebFetch(domain:supabase.com)"
+      "WebFetch(domain:supabase.com)",
+      "WebSearch"
     ],
     "deny": [],
     "ask": []

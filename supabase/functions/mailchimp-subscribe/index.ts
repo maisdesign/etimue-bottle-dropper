@@ -120,9 +120,21 @@ serve(async (req) => {
         })
       }
 
-      // Handle permanently deleted email case
-      if (mailchimpResult.title === 'Forgotten Email Not Subscribed') {
+      // Handle permanently deleted email case - check multiple possible titles
+      const forgottenEmailTitles = [
+        'Forgotten Email Not Subscribed',
+        'Forgotten Email',
+        'Member In Compliance State',
+        'Compliance Related'
+      ];
+
+      const isPermanentlyDeleted = forgottenEmailTitles.some(title =>
+        mailchimpResult.title && mailchimpResult.title.includes(title)
+      );
+
+      if (isPermanentlyDeleted) {
         console.log('DEBUG: Matched Forgotten Email case - returning isPermanentlyDeleted: true')
+        console.log('DEBUG: Matched title was:', mailchimpResult.title)
         return new Response(JSON.stringify({
           success: false,
           error: 'This email was previously unsubscribed and cannot be re-added automatically. Please contact support or use a different email address.',
