@@ -9,6 +9,7 @@ import { gameModeModal } from '@/ui/GameModeModal'
 // Static imports instead of dynamic imports to avoid 404 errors
 const languageManager = LanguageManager.getInstance()
 const characterManager = CharacterManager.getInstance()
+const leaderboardModal = new LeaderboardModal()
 
 // Authentication helper - SimpleAuth version
 const checkGameAuth = async (): Promise<boolean> => {
@@ -186,14 +187,13 @@ export const globalFunctions = {
   },
 
   showLeaderboard() {
-    console.log('🏆 Opening leaderboard with STATIC import...')
+    console.log('🏆 Opening leaderboard with singleton instance...')
 
-    // STATIC IMPORT VERSION - NO DYNAMIC IMPORT!
+    // Use singleton instance to preserve dark pattern logic
     try {
-      const modal = new LeaderboardModal()
-      modal.show()
+      leaderboardModal.show()
     } catch (error) {
-      console.error('❌ Failed to load LeaderboardModal with static import:', error)
+      console.error('❌ Failed to load LeaderboardModal:', error)
       const isAuthenticated = simpleAuth.getState().isAuthenticated
       alert(isAuthenticated ? 'Errore nel caricamento della classifica. Riprova più tardi.' : 'Accedi per vedere la classifica!')
     }
