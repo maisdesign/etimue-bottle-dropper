@@ -104,9 +104,12 @@ serve(async (req) => {
 
     if (!mailchimpResponse.ok) {
       console.error('Mailchimp error:', mailchimpResult)
+      console.log('DEBUG: Mailchimp error title:', mailchimpResult.title)
+      console.log('DEBUG: Full Mailchimp response:', JSON.stringify(mailchimpResult, null, 2))
 
       // Handle already subscribed case
       if (mailchimpResult.title === 'Member Exists') {
+        console.log('DEBUG: Matched Member Exists case')
         return new Response(JSON.stringify({
           success: true,
           message: 'Already subscribed',
@@ -119,6 +122,7 @@ serve(async (req) => {
 
       // Handle permanently deleted email case
       if (mailchimpResult.title === 'Forgotten Email Not Subscribed') {
+        console.log('DEBUG: Matched Forgotten Email case - returning isPermanentlyDeleted: true')
         return new Response(JSON.stringify({
           success: false,
           error: 'This email was previously unsubscribed and cannot be re-added automatically. Please contact support or use a different email address.',
@@ -128,6 +132,8 @@ serve(async (req) => {
           headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         })
       }
+
+      console.log('DEBUG: No specific case matched, using generic error')
 
       return new Response(JSON.stringify({
         error: 'Failed to subscribe to newsletter',
