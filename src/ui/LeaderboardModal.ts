@@ -293,16 +293,30 @@ export class LeaderboardModal {
     if (!this.modal) return
 
     // Check if user is in casual mode or doesn't have newsletter consent
-    const isCasualMode = localStorage.getItem('gameMode') === 'casual'
+    const gameMode = localStorage.getItem('gameMode')
+    const isCasualMode = gameMode === 'casual'
     const authState = simpleAuth.getState()
     const hasNewsletterConsent = authState.profile?.consent_marketing === true
 
-    console.log('🏆 Leaderboard access check:', { isCasualMode, hasNewsletterConsent })
+    console.log('🏆 Leaderboard access check:', {
+      gameMode,
+      isCasualMode,
+      hasNewsletterConsent,
+      profile: authState.profile,
+      isAuthenticated: authState.isAuthenticated
+    })
 
     this.modal.style.display = 'flex'
     this.updateTranslations()
 
-    if (isCasualMode || !hasNewsletterConsent) {
+    // Show dark patterns if:
+    // 1. User explicitly chose casual mode, OR
+    // 2. User is authenticated but doesn't have newsletter consent
+    const shouldShowDarkPattern = isCasualMode || (authState.isAuthenticated && !hasNewsletterConsent)
+
+    console.log('🔒 Dark pattern decision:', { shouldShowDarkPattern, reason: isCasualMode ? 'casual' : 'no-newsletter' })
+
+    if (shouldShowDarkPattern) {
       console.log('🔒 Showing blurred leaderboard with dark pattern messaging')
       this.showBlurredLeaderboard(isCasualMode ? 'casual' : 'no-newsletter')
     } else {
