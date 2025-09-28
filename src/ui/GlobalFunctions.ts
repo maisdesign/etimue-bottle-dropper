@@ -268,10 +268,13 @@ export const globalFunctions = {
       messageDiv.className = `newsletter-message ${type}`
       messageDiv.style.display = 'block'
 
-      // Auto-hide after 5 seconds
-      setTimeout(() => {
-        messageDiv.style.display = 'none'
-      }, 5000)
+      // Only auto-hide if message doesn't contain links
+      const hasLinks = message.includes('<a')
+      if (!hasLinks) {
+        setTimeout(() => {
+          messageDiv.style.display = 'none'
+        }, 5000)
+      }
     }
   },
 

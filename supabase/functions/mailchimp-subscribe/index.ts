@@ -104,10 +104,14 @@ serve(async (req) => {
 
     if (!mailchimpResponse.ok) {
       console.error('Mailchimp error:', mailchimpResult)
-      console.log('DEBUG: Mailchimp error title:', mailchimpResult.title)
-      console.log('DEBUG: Mailchimp error detail:', mailchimpResult.detail)
-      console.log('DEBUG: Mailchimp error type:', mailchimpResult.type)
-      console.log('DEBUG: Full Mailchimp response:', JSON.stringify(mailchimpResult, null, 2))
+      console.log('🔍 DEBUG: DETAILED MAILCHIMP ANALYSIS')
+      console.log('🔍 Title exists:', !!mailchimpResult.title)
+      console.log('🔍 Title value:', JSON.stringify(mailchimpResult.title))
+      console.log('🔍 Title length:', mailchimpResult.title ? mailchimpResult.title.length : 'null')
+      console.log('🔍 Detail exists:', !!mailchimpResult.detail)
+      console.log('🔍 Detail value:', JSON.stringify(mailchimpResult.detail))
+      console.log('🔍 Full response keys:', Object.keys(mailchimpResult))
+      console.log('🔍 Full Mailchimp response:', JSON.stringify(mailchimpResult, null, 2))
 
       // Handle already subscribed case
       if (mailchimpResult.title === 'Member Exists') {
@@ -135,20 +139,67 @@ serve(async (req) => {
         'cannot be re-imported',
         'was previously unsubscribed',
         'must re-subscribe to get back',
-        'compliance state'
+        'compliance state',
+        'cannot be re-added',
+        'contact must re-subscribe',
+        'unsubscribed and cannot be',
+        'deleted and cannot be'
       ];
 
-      const isPermanentlyDeleted =
-        forgottenEmailTitles.some(title =>
-          mailchimpResult.title && mailchimpResult.title.includes(title)
-        ) ||
-        forgottenEmailDetails.some(detail =>
-          mailchimpResult.detail && mailchimpResult.detail.toLowerCase().includes(detail)
-        );
+      console.log('🔍 TESTING TITLE MATCHES:')
+      forgottenEmailTitles.forEach(title => {
+        const matches = mailchimpResult.title && mailchimpResult.title.includes(title)
+        console.log(`🔍 "${title}" matches: ${matches}`)
+      })
+
+      console.log('🔍 TESTING DETAIL MATCHES:')
+      forgottenEmailDetails.forEach(detail => {
+        const matches = mailchimpResult.detail && mailchimpResult.detail.toLowerCase().includes(detail)
+        console.log(`🔍 "${detail}" matches: ${matches}`)
+      })
+
+      const titleMatches = forgottenEmailTitles.some(title =>
+        mailchimpResult.title && mailchimpResult.title.includes(title)
+      )
+      const detailMatches = forgottenEmailDetails.some(detail =>
+        mailchimpResult.detail && mailchimpResult.detail.toLowerCase().includes(detail)
+      )
+
+      console.log('🔍 Title matches any:', titleMatches)
+      console.log('🔍 Detail matches any:', detailMatches)
+
+      const isPermanentlyDeleted = titleMatches || detailMatches
+
+      console.log('🔍 FINAL isPermanentlyDeleted:', isPermanentlyDeleted)
 
       if (isPermanentlyDeleted) {
-        console.log('DEBUG: Matched Forgotten Email case - returning isPermanentlyDeleted: true')
-        console.log('DEBUG: Matched title was:', mailchimpResult.title)
+        console.log('✅ MATCHED! Returning isPermanentlyDeleted: true')
+        console.log('✅ Matched title was:', mailchimpResult.title)
+        console.log('✅ Matched detail was:', mailchimpResult.detail)
+        return new Response(JSON.stringify({
+          success: false,
+          error: 'This email was previously unsubscribed and cannot be re-added automatically. Please use our <a href="https://facebook.us7.list-manage.com/subscribe?u=aacb79a7271a37e78eb76ebb9&id=e1cc02e51c" target="_blank" style="color: #FFD700; text-decoration: underline; font-weight: bold;">official signup form</a> or try a different email address.',
+          isPermanentlyDeleted: true
+        }), {
+          status: 400,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        })
+      }
+
+      console.log('DEBUG: No specific case matched, checking if it could be permanently deleted')
+
+      // If it's a 400 error and contains certain keywords, assume it might be permanently deleted
+      const errorText = (mailchimpResult.detail || mailchimpResult.error || '').toLowerCase()
+      const couldBePermanentlyDeleted =
+        errorText.includes('unsubscribed') ||
+        errorText.includes('deleted') ||
+        errorText.includes('cannot be') ||
+        errorText.includes('previously') ||
+        errorText.includes('re-add')
+
+      if (couldBePermanentlyDeleted) {
+        console.log('DEBUG: Error text suggests permanently deleted - returning isPermanentlyDeleted: true')
+        console.log('DEBUG: Error text was:', errorText)
         return new Response(JSON.stringify({
           success: false,
           error: 'This email was previously unsubscribed and cannot be re-added automatically. Please contact support or use a different email address.',
@@ -159,7 +210,7 @@ serve(async (req) => {
         })
       }
 
-      console.log('DEBUG: No specific case matched, using generic error')
+      console.log('DEBUG: Using generic error')
 
       return new Response(JSON.stringify({
         error: 'Failed to subscribe to newsletter',
