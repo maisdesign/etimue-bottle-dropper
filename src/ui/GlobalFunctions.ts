@@ -97,13 +97,13 @@ export const globalFunctions = {
 
             // Small delay to let the subscription process complete
             setTimeout(() => {
-              this.actuallyStartGame()
+              globalFunctions.actuallyStartGame()
               resolve()
             }, 500)
           } else {
             // Casual mode selected
             console.log('🎮 Casual mode selected - starting game immediately')
-            this.actuallyStartGame()
+            globalFunctions.actuallyStartGame()
             resolve()
           }
         })
@@ -112,7 +112,7 @@ export const globalFunctions = {
 
     // User already has preference or newsletter consent - start game directly
     console.log('🚀 Starting game directly (existing preference or consent)')
-    this.actuallyStartGame()
+    globalFunctions.actuallyStartGame()
   },
 
   actuallyStartGame() {

@@ -1,5 +1,4 @@
 import { languageManager } from '../i18n/LanguageManager'
-import { globalFunctions } from './GlobalFunctions'
 
 export class GameModeModal {
   private modal: HTMLDivElement | null = null
@@ -38,7 +37,6 @@ export class GameModeModal {
                 <li id="prize-monthly" class="prize-item"></li>
               </ul>
               <button id="competitive-btn" class="game-mode-btn competitive-btn">
-                🏆 Subscribe & Compete
               </button>
             </div>
           </div>
@@ -100,15 +98,20 @@ export class GameModeModal {
   private async handleCompetitiveChoice() {
     console.log('🏆 User chose competitive mode - showing newsletter signup')
 
-    // Hide game mode modal
+    // Hide game mode modal first
     this.hide()
 
-    // Trigger newsletter subscription flow
-    await globalFunctions.subscribeToNewsletter()
+    // Show newsletter section on homepage
+    const newsletterSection = document.getElementById('newsletter-section')
+    if (newsletterSection) {
+      newsletterSection.style.display = 'block'
+      // Scroll to newsletter section
+      newsletterSection.scrollIntoView({ behavior: 'smooth' })
+      console.log('📧 Newsletter section shown and scrolled to')
+    }
 
-    // After newsletter signup (success or failure), check result
-    // If successful, user will have consent_marketing = true
-    // We'll let the calling function handle game start
+    // Call callback to indicate competitive mode was chosen
+    // The actual newsletter subscription will happen through the regular form
     if (this.onModeSelected) {
       this.onModeSelected('competitive')
     }
