@@ -410,7 +410,14 @@ export class LeaderboardModal {
       </div>
     `
 
-    contentDiv.appendChild(darkPatternOverlay)
+    // Append overlay to modal main container instead of content to ensure it covers everything
+    const modalContent = this.modal.querySelector('.leaderboard-modal-content') as HTMLElement
+    if (modalContent) {
+      modalContent.appendChild(darkPatternOverlay)
+    } else {
+      // Fallback to contentDiv if modal-content not found
+      contentDiv.appendChild(darkPatternOverlay)
+    }
 
     // Add event listeners
     const subscribeBtn = darkPatternOverlay.querySelector('#dark-pattern-subscribe')
