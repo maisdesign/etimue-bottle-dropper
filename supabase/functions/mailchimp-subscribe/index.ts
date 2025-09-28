@@ -105,6 +105,8 @@ serve(async (req) => {
     if (!mailchimpResponse.ok) {
       console.error('Mailchimp error:', mailchimpResult)
       console.log('DEBUG: Mailchimp error title:', mailchimpResult.title)
+      console.log('DEBUG: Mailchimp error detail:', mailchimpResult.detail)
+      console.log('DEBUG: Mailchimp error type:', mailchimpResult.type)
       console.log('DEBUG: Full Mailchimp response:', JSON.stringify(mailchimpResult, null, 2))
 
       // Handle already subscribed case
@@ -120,7 +122,7 @@ serve(async (req) => {
         })
       }
 
-      // Handle permanently deleted email case - check multiple possible titles
+      // Handle permanently deleted email case - check multiple possible indicators
       const forgottenEmailTitles = [
         'Forgotten Email Not Subscribed',
         'Forgotten Email',
@@ -128,9 +130,21 @@ serve(async (req) => {
         'Compliance Related'
       ];
 
-      const isPermanentlyDeleted = forgottenEmailTitles.some(title =>
-        mailchimpResult.title && mailchimpResult.title.includes(title)
-      );
+      const forgottenEmailDetails = [
+        'permanently deleted',
+        'cannot be re-imported',
+        'was previously unsubscribed',
+        'must re-subscribe to get back',
+        'compliance state'
+      ];
+
+      const isPermanentlyDeleted =
+        forgottenEmailTitles.some(title =>
+          mailchimpResult.title && mailchimpResult.title.includes(title)
+        ) ||
+        forgottenEmailDetails.some(detail =>
+          mailchimpResult.detail && mailchimpResult.detail.toLowerCase().includes(detail)
+        );
 
       if (isPermanentlyDeleted) {
         console.log('DEBUG: Matched Forgotten Email case - returning isPermanentlyDeleted: true')
