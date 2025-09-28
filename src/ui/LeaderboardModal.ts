@@ -330,14 +330,33 @@ export class LeaderboardModal {
   private showBlurredLeaderboard(reason: 'casual' | 'no-newsletter'): void {
     if (!this.modal) return
 
-    const contentDiv = this.modal.querySelector('#leaderboard-content') as HTMLElement
+    console.log('🔍 DEBUG: Starting showBlurredLeaderboard with reason:', reason)
+
+    const contentDiv = this.modal.querySelector('.leaderboard-content') as HTMLElement
     const listContainer = this.modal.querySelector('#leaderboard-list') as HTMLElement
     const emptyContainer = this.modal.querySelector('#leaderboard-empty') as HTMLElement
 
-    if (!contentDiv || !listContainer || !emptyContainer) return
+    console.log('🔍 DEBUG: Elements found:', {
+      contentDiv: !!contentDiv,
+      listContainer: !!listContainer,
+      emptyContainer: !!emptyContainer
+    })
 
-    // Hide empty state
-    (emptyContainer as HTMLElement).style.display = 'none'
+    if (!contentDiv || !listContainer || !emptyContainer) {
+      console.error('❌ DEBUG: Missing elements, cannot show dark patterns')
+      return
+    }
+
+    console.log('✅ DEBUG: All elements found, proceeding with dark patterns')
+
+    // Hide loading and empty states
+    const loadingElement = this.modal.querySelector('#leaderboard-loading') as HTMLElement
+    if (loadingElement) {
+      loadingElement.style.display = 'none'
+    }
+    if (emptyContainer) {
+      emptyContainer.style.display = 'none'
+    }
 
     // Create fake leaderboard entries for visual effect
     const fakeEntries = [
@@ -421,7 +440,7 @@ export class LeaderboardModal {
     if (!this.modal) return
 
     // Clean up dark pattern overlay and blur effects
-    const contentDiv = this.modal.querySelector('#leaderboard-content')
+    const contentDiv = this.modal.querySelector('.leaderboard-content')
     const darkPatternOverlay = this.modal.querySelector('.dark-pattern-overlay')
 
     if (contentDiv) {
