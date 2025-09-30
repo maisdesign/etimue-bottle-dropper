@@ -1,6 +1,5 @@
 import { languageManager } from '../i18n/LanguageManager'
 import { simpleAuth } from '../systems/SimpleAuth'
-import { globalFunctions } from './GlobalFunctions'
 
 export interface LeaderboardEntry {
   id: number
@@ -427,8 +426,16 @@ export class LeaderboardModal {
       subscribeBtn.addEventListener('click', () => {
         console.log('🔒 Dark pattern: User clicked subscribe from leaderboard')
         this.hide()
-        // Trigger newsletter subscription
-        globalFunctions.subscribeToNewsletter().catch(console.error)
+
+        // Show and scroll to newsletter section (same logic as GameModeModal)
+        const newsletterSection = document.getElementById('newsletter-section')
+        if (newsletterSection) {
+          newsletterSection.style.display = 'block'
+          newsletterSection.scrollIntoView({ behavior: 'smooth' })
+          console.log('📧 Newsletter section shown and scrolled to')
+        } else {
+          console.warn('⚠️ Newsletter section not found in DOM')
+        }
       })
     }
 
