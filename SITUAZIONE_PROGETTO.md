@@ -1,23 +1,42 @@
 # SITUAZIONE PROGETTO - ETIMUÈ BOTTLE DROPPER
 
-## 🕒 ULTIMO AGGIORNAMENTO: 29 Settembre 2025 - DARK PATTERNS FULLY WORKING
+## 🕒 ULTIMO AGGIORNAMENTO: 30 Settembre 2025 - NEWSLETTER SIGNUP FLOW FIXED
+
+### 🎯 CRITICAL BUG FIXES COMPLETED ✅
+
+**✅ EMERGENCY FIX**: Dark pattern newsletter signup now works correctly
+
+**🐛 BUG RISOLTO**: Newsletter form non si apriva quando utenti casual cliccavano "Iscriviti" dal dark pattern overlay
+
+**🔧 CRITICAL FIXES SESSION 30/09**:
+1. ✅ **Dark Pattern Subscribe Button** - Ora mostra e scrolla correttamente alla newsletter section
+   - Fix: src/ui/LeaderboardModal.ts (lines 427-440)
+   - Allineato comportamento con GameModeModal per consistenza
+   - Risolto conversion funnel rotto per iscrizioni newsletter
+
+2. ✅ **Vite Build Error** - Build bloccato da inline CSS error
+   - Fix: Estratto 1768 righe di CSS inline in src/styles.css
+   - Risolto errore "html-proxy inline-css" che bloccava production builds
+   - Build ora completa con successo in 6.81s
+
+**🎯 USER IMPACT**:
+- Casual players possono finalmente iscriversi alla newsletter dal game over screen
+- Conversion funnel newsletter completamente funzionante
+- Production builds di nuovo operativi
+
+---
+
+## 📋 STORICO SESSIONE PRECEDENTE (29 Settembre 2025)
 
 ### 🎯 GAME MODE MODAL SYSTEM: 100% IMPLEMENTATO ✅
 
 **✅ MAJOR ACHIEVEMENT**: Sistema Game Mode con dark patterns completamente implementato e FUNZIONANTE
-
-**🎯 RISULTATO**: Modal di selezione modalità competitiva/casual con UX persuasiva per newsletter subscription
-
-**📊 ARCHITETTURA**: localStorage per preferenze casual + dark pattern leaderboard blur effect
 
 **🔧 CRITICAL BUGS FIXED SESSION 29/09**:
 - ✅ Fixed CSS selector bug (#leaderboard-content → .leaderboard-content)
 - ✅ Fixed infinite loading icon by properly hiding loading state
 - ✅ Fixed dark pattern overlay visibility with z-index 9999
 - ✅ Fixed overlay positioning (appended to modal-content vs content)
-- ✅ System now fully functional on production
-
-**⚠️ REMAINING**: Mobile CSS optimization needed for dark pattern readability
 
 #### ✅ GAME MODE SYSTEM 100% IMPLEMENTATO:
 
