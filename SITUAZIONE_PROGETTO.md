@@ -1,6 +1,57 @@
 # SITUAZIONE PROGETTO - ETIMUÈ BOTTLE DROPPER
 
-## 🕒 ULTIMO AGGIORNAMENTO: 30 Settembre 2025 - NEWSLETTER SIGNUP FLOW FIXED
+## 🕒 ULTIMO AGGIORNAMENTO: 30 Settembre 2025 - NEWSLETTER VERIFICATION SYSTEM COMPLETED
+
+### 🎯 MAJOR FEATURE COMPLETED: MAILCHIMP VERIFICATION ✅
+
+**✅ SYSTEM IMPLEMENTATO**: Newsletter verification con Mailchimp API per validazione reale subscription status
+
+**🐛 PROBLEMA RISOLTO**: Utenti che si iscrivevano via form esterno Mailchimp avevano `consent_marketing = false` nel database, causando re-apparizione del game mode modal ad ogni login
+
+**🔧 COMPLETE IMPLEMENTATION (30/09)**:
+
+1. **✅ Mailchimp Verification Edge Function**
+   - File: `supabase/functions/verify-newsletter-subscription/index.ts`
+   - Verifica reale via Mailchimp API usando MD5 subscriber hash
+   - Aggiorna database solo se email effettivamente iscritta
+   - Previene barare - impossibile fake subscription
+   - **Deployata su Supabase**: ✅ LIVE
+
+2. **✅ "Already Subscribed? Verify" Button**
+   - Nuovo pulsante verde nella newsletter section
+   - Chiama Mailchimp API per verifica real-time
+   - Aggiorna automaticamente `consent_marketing = true`
+   - Auto-nasconde newsletter section dopo verifica success
+
+3. **✅ Complete Integration**
+   - `SimpleAuth.verifyNewsletterSubscription()` method
+   - `GlobalFunctions.verifyNewsletterSubscription()` handler
+   - Traduzioni complete IT/EN (5 nuove stringhe)
+   - CSS styling per verify button con gradient verde
+   - Event listeners e window binding
+
+4. **✅ Security Measures**
+   - JWT authentication required
+   - User ID verification
+   - Real Mailchimp API check (no fake claims possible)
+   - MD5 hash-based subscriber lookup
+
+**🎯 USER FLOW RISOLTO**:
+1. Utente si iscrive via form esterno Mailchimp (per email deleted)
+2. Torna al gioco, vede newsletter section
+3. Clicca "Già Iscritto? Verifica" (IT) / "Already Subscribed? Verify" (EN)
+4. Sistema verifica con Mailchimp API → Aggiorna database
+5. `consent_marketing = true` → No more game mode modal! ✅
+
+**📊 DEPLOYMENT STATUS**:
+- Edge Function: ✅ Deployata su Supabase
+- Frontend: ✅ Deployato su Netlify (bottledropper2)
+- Build: ✅ Successful in 6.47s
+- Live Site: https://etimuebottledropper.netlify.app/
+
+---
+
+## 📋 STORICO SESSIONE 30/09 - PARTE 1
 
 ### 🎯 CRITICAL BUG FIXES COMPLETED ✅
 
@@ -8,7 +59,7 @@
 
 **🐛 BUG RISOLTO**: Newsletter form non si apriva quando utenti casual cliccavano "Iscriviti" dal dark pattern overlay
 
-**🔧 CRITICAL FIXES SESSION 30/09**:
+**🔧 CRITICAL FIXES SESSION 30/09 - MATTINA**:
 1. ✅ **Dark Pattern Subscribe Button** - Ora mostra e scrolla correttamente alla newsletter section
    - Fix: src/ui/LeaderboardModal.ts (lines 427-440)
    - Allineato comportamento con GameModeModal per consistenza
