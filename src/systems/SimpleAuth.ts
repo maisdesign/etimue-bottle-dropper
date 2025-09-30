@@ -395,6 +395,59 @@ class SimpleAuthSystem {
     }
   }
 
+  public async verifyNewsletterSubscription(): Promise<{ success: boolean; subscribed: boolean; error?: string }> {
+    try {
+      if (!this.state.isAuthenticated || !this.state.user) {
+        return { success: false, subscribed: false, error: 'Not authenticated' }
+      }
+
+      console.log(`🔍 SimpleAuth: Verifying newsletter subscription for ${this.state.user.email}`)
+
+      const { data: { session }, error: sessionError } = await this.supabase.auth.getSession()
+
+      if (sessionError || !session) {
+        console.error('Session error:', sessionError)
+        return { success: false, subscribed: false, error: 'Session error' }
+      }
+
+      const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/verify-newsletter-subscription`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${session.access_token}`,
+        },
+        body: JSON.stringify({
+          email: this.state.user.email,
+          userId: this.state.user.id,
+        }),
+      })
+
+      const result = await response.json()
+
+      if (result.success && result.subscribed) {
+        console.log('✅ SimpleAuth: Subscription verified, updating local state')
+
+        // Update local state to reflect marketing consent
+        if (this.state.profile) {
+          this.state.profile.consent_marketing = true
+          this.state.profile.consent_ts = new Date().toISOString()
+        }
+
+        // Notify listeners about state change
+        this.notifyListeners()
+
+        return { success: true, subscribed: true }
+      }
+
+      console.log('❌ SimpleAuth: Subscription not verified')
+      return { success: true, subscribed: false, error: result.message || 'Not subscribed' }
+
+    } catch (error) {
+      console.error('💥 SimpleAuth: Newsletter verification exception:', error)
+      return { success: false, subscribed: false, error: 'Unexpected error' }
+    }
+  }
+
   public async getPrizeLeaderboard(limit: number = 10, period: 'weekly' | 'monthly' = 'weekly'): Promise<Array<GameScore & { display_name: string; eligible_for_prize: boolean }>> {
     try {
       console.log(`🏆 SimpleAuth: Getting PRIZE leaderboard (${period}, limit: ${limit}) - Newsletter subscribers only`)

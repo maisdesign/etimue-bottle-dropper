@@ -1673,6 +1673,16 @@ body {
       box-shadow: 0 4px 12px rgba(255, 215, 0, 0.4);
     }
 
+    .newsletter-verify-btn {
+      background: linear-gradient(45deg, #4CAF50, #45a049);
+      margin-top: 0.5rem;
+      font-size: 0.9rem;
+    }
+
+    .newsletter-verify-btn:hover {
+      box-shadow: 0 4px 12px rgba(76, 175, 80, 0.4);
+    }
+
     .newsletter-btn:disabled {
       opacity: 0.6;
       cursor: not-allowed;

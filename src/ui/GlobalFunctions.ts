@@ -308,6 +308,61 @@ export const globalFunctions = {
     }
   },
 
+  async verifyNewsletterSubscription() {
+    const verifyBtn = document.getElementById('newsletter-verify-btn') as HTMLButtonElement
+    const messageDiv = document.getElementById('newsletter-message') as HTMLDivElement
+
+    if (!verifyBtn || !messageDiv) {
+      console.error('Newsletter verify elements not found')
+      return
+    }
+
+    // Check authentication
+    const authState = simpleAuth.getState()
+    if (!authState.isAuthenticated) {
+      this.showNewsletterMessage('Please log in first to verify subscription', 'error')
+      return
+    }
+
+    // Update UI during request
+    verifyBtn.disabled = true
+    const originalText = verifyBtn.textContent
+    const t = languageManager.getTranslation()
+    verifyBtn.textContent = t.newsletterVerifying
+
+    try {
+      console.log('🔍 Verifying newsletter subscription...')
+      const result = await simpleAuth.verifyNewsletterSubscription()
+
+      if (result.success && result.subscribed) {
+        // Success - user is subscribed
+        this.showNewsletterMessage(t.newsletterVerifySuccess, 'success')
+
+        // Hide newsletter section after successful verification
+        setTimeout(() => {
+          const newsletterSection = document.getElementById('newsletter-section')
+          if (newsletterSection) {
+            newsletterSection.style.display = 'none'
+          }
+        }, 3000)
+      } else if (result.success && !result.subscribed) {
+        // Not subscribed
+        this.showNewsletterMessage(t.newsletterVerifyNotFound, 'error')
+      } else {
+        // Error
+        this.showNewsletterMessage(result.error || t.newsletterVerifyError, 'error')
+      }
+    } catch (error) {
+      console.error('Newsletter verification error:', error)
+      const t = languageManager.getTranslation()
+      this.showNewsletterMessage(t.newsletterVerifyError, 'error')
+    } finally {
+      // Reset button
+      verifyBtn.disabled = false
+      verifyBtn.textContent = originalText
+    }
+  },
+
   showNewsletterMessage(message: string, type: 'success' | 'error') {
     const messageDiv = document.getElementById('newsletter-message') as HTMLDivElement
     if (messageDiv) {
@@ -376,6 +431,7 @@ declare global {
     showGameStartOverlay: () => void
     hideGameStartOverlay: () => void
     subscribeToNewsletter: () => Promise<void>
+    verifyNewsletterSubscription: () => Promise<void>
   }
 }
 
@@ -450,6 +506,11 @@ function initializeUI() {
     newsletterBtn.addEventListener('click', () => globalFunctions.subscribeToNewsletter())
   }
 
+  const newsletterVerifyBtn = document.getElementById('newsletter-verify-btn')
+  if (newsletterVerifyBtn) {
+    newsletterVerifyBtn.addEventListener('click', () => globalFunctions.verifyNewsletterSubscription())
+  }
+
   // Set up auth state listener for newsletter visibility
   simpleAuth.subscribe(() => {
     globalFunctions.toggleNewsletterSection()
@@ -483,6 +544,7 @@ window.cycleCharacter = globalFunctions.cycleCharacter
 window.showGameStartOverlay = globalFunctions.showGameStartOverlay
 window.hideGameStartOverlay = globalFunctions.hideGameStartOverlay
 window.subscribeToNewsletter = globalFunctions.subscribeToNewsletter
+window.verifyNewsletterSubscription = globalFunctions.verifyNewsletterSubscription
 
 // 🔧 DEBUG FUNCTIONS - Development only
 if (import.meta.env.MODE === 'development' || window.location.hostname === 'localhost') {

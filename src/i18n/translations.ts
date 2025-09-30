@@ -109,6 +109,11 @@ export interface Translation {
   prizeLeaderboardTitle: string
   prizeEligibilityNote: string
   newsletterPermanentlyDeleted: string
+  newsletterVerifyButton: string
+  newsletterVerifying: string
+  newsletterVerifySuccess: string
+  newsletterVerifyNotFound: string
+  newsletterVerifyError: string
 
   // Game Mode Modal
   gameModeTitle: string
@@ -249,6 +254,11 @@ export const translations = {
     prizeLeaderboardTitle: '🏆 Prize Leaderboard (Newsletter Subscribers Only)',
     prizeEligibilityNote: 'Only newsletter subscribers are eligible for prizes',
     newsletterPermanentlyDeleted: 'This email was previously unsubscribed and cannot be re-added automatically. Please use our <a href="https://facebook.us7.list-manage.com/subscribe?u=aacb79a7271a37e78eb76ebb9&id=e1cc02e51c" target="_blank" style="color: #FFD700; text-decoration: underline;">official signup form</a> or try a different email address.',
+    newsletterVerifyButton: '✅ Already Subscribed? Verify',
+    newsletterVerifying: '🔍 Verifying subscription...',
+    newsletterVerifySuccess: '✅ Subscription verified! You can now compete for prizes.',
+    newsletterVerifyNotFound: '❌ Email not found in newsletter subscribers. Please subscribe first.',
+    newsletterVerifyError: '⚠️ Verification failed. Please try again later.',
 
     // Game Mode Modal
     gameModeTitle: '🏆 Choose Your Game Mode',
@@ -388,6 +398,11 @@ export const translations = {
     prizeLeaderboardTitle: '🏆 Classifica Premi (Solo Iscritti Newsletter)',
     prizeEligibilityNote: 'Solo gli iscritti alla newsletter possono vincere i premi',
     newsletterPermanentlyDeleted: 'Questa email è stata precedentemente cancellata e non può essere riaggiunta automaticamente. Usa il nostro <a href="https://facebook.us7.list-manage.com/subscribe?u=aacb79a7271a37e78eb76ebb9&id=e1cc02e51c" target="_blank" style="color: #FFD700; text-decoration: underline;">form ufficiale</a> oppure prova con un indirizzo email diverso.',
+    newsletterVerifyButton: '✅ Già Iscritto? Verifica',
+    newsletterVerifying: '🔍 Verifica in corso...',
+    newsletterVerifySuccess: '✅ Iscrizione verificata! Ora puoi competere per i premi.',
+    newsletterVerifyNotFound: '❌ Email non trovata negli iscritti alla newsletter. Iscriviti prima.',
+    newsletterVerifyError: '⚠️ Verifica fallita. Riprova più tardi.',
 
     // Game Mode Modal
     gameModeTitle: '🏆 Scegli la Modalità di Gioco',
