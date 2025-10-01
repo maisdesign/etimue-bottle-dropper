@@ -1,6 +1,61 @@
 # SITUAZIONE PROGETTO - ETIMUÈ BOTTLE DROPPER
 
-## 🕒 ULTIMO AGGIORNAMENTO: 30 Settembre 2025 - NEWSLETTER VERIFICATION SYSTEM COMPLETED
+## 🕒 ULTIMO AGGIORNAMENTO: 1 Ottobre 2025 - CRITICAL BUGS FIXED + AUDIT COMPLETO ✅
+
+### 🚨 CRITICAL BUGS FIXED (1 Ottobre 2025 - 22:45) ✅
+
+**✅ BUG #1 RISOLTO**: Game Mode Modal Appariva Anche con Newsletter Consent
+- **Problema**: Utenti iscritti via form esterno Mailchimp vedevano modal inutile
+- **Root Cause**: Edge Function `mailchimp-subscribe` non aggiornava database quando `alreadySubscribed: true`
+- **Fix**: Database update anche per existing subscribers + local state sync con `notifyListeners()`
+- **Files**: `supabase/functions/mailchimp-subscribe/index.ts`, `src/systems/SimpleAuth.ts`
+
+**✅ BUG #2 RISOLTO**: Newsletter Verify Button Blocco Permanente
+- **Problema**: Button restava disabled dopo errore API o timeout
+- **Root Cause**: `try-finally` eseguito troppo tardi, dopo check authentication
+- **Fix**: Moved `originalText` storage prima del try block + robusto finally
+- **File**: `src/ui/GlobalFunctions.ts`
+
+**✅ BUG #3 RISOLTO**: Button Disabled Dopo F5 Durante API Call
+- **Problema**: Page reload durante verify causava button permanentemente disabilitato
+- **Root Cause**: Browser salvava stato DOM `disabled=true`
+- **Fix**: Reset `button.disabled = false` in `initializeUI()` al page load
+- **File**: `src/ui/GlobalFunctions.ts`
+
+**📊 DEPLOYMENT STATUS**:
+- Edge Function: ✅ Deployata su Supabase
+- Frontend: ✅ Deployato su Netlify (bottledropper2)
+- Build: ✅ Successful (TypeScript 0 errors)
+- Live Site: https://etimuebottledropper.netlify.app/
+- Commit: `99b8d178` (dev) + `9dcf145` (prod)
+
+### 🔍 AUDIT COMPLETO COMPLETATO (1 Ottobre 2025) ✅
+
+**📋 AUDIT REPORT GENERATO**: [AUDIT_REPORT.md](AUDIT_REPORT.md)
+
+**Punteggio Complessivo**: 8.2/10 (B+)
+
+**Metriche Codebase**:
+- Linee di codice: ~6,800
+- TypeScript errors: 0 ✅
+- Build time: 4.71s ✅
+- Bundle size: 1.67MB (⚠️ warning >500KB)
+- Console.log statements: 262 (⚠️ troppi)
+- Playwright tests: 7/7 PASS ✅
+
+**Problemi Critici Identificati**:
+1. 🔴 **Score submission bypassa anti-cheat** - Nessuna Edge Function validation
+2. 🔴 **Hard-coded credentials** in SimpleAuth.ts
+3. 🟡 **Bundle size troppo grande** - No code splitting
+
+**Raccomandazioni Priority 1**:
+1. Implementare Edge Function `submit-score` con validazione server-side
+2. Rimuovere hard-coded Supabase credentials
+3. Implementare Logger utility environment-aware
+
+---
+
+## 📋 STORICO PRECEDENTE - NEWSLETTER VERIFICATION (30 Settembre 2025)
 
 ### 🎯 MAJOR FEATURE COMPLETED: MAILCHIMP VERIFICATION ✅
 
