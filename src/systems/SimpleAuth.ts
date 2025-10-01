@@ -377,6 +377,16 @@ class SimpleAuthSystem {
 
       if (result.alreadySubscribed) {
         console.log('ℹ️ SimpleAuth: User already subscribed to newsletter')
+
+        // 🔧 FIX: Update local state even when already subscribed
+        if (this.state.profile) {
+          this.state.profile.consent_marketing = true
+          this.state.profile.consent_ts = new Date().toISOString()
+        }
+
+        // Notify listeners about state change
+        this.notifyListeners()
+
         return { success: true, alreadySubscribed: true }
       }
 

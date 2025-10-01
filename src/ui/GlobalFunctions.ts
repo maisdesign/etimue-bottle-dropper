@@ -324,13 +324,15 @@ export const globalFunctions = {
       return
     }
 
-    // Update UI during request
-    verifyBtn.disabled = true
-    const originalText = verifyBtn.textContent
-    const t = languageManager.getTranslation()
-    verifyBtn.textContent = t.newsletterVerifying
+    // 🔧 FIX: Store original text before any modifications
+    const originalText = verifyBtn.textContent || ''
 
     try {
+      // Update UI during request
+      verifyBtn.disabled = true
+      const t = languageManager.getTranslation()
+      verifyBtn.textContent = t.newsletterVerifying
+
       console.log('🔍 Verifying newsletter subscription...')
       const result = await simpleAuth.verifyNewsletterSubscription()
 
@@ -357,7 +359,7 @@ export const globalFunctions = {
       const t = languageManager.getTranslation()
       this.showNewsletterMessage(t.newsletterVerifyError, 'error')
     } finally {
-      // Reset button
+      // 🔧 FIX: Always restore button to original state, even on early errors
       verifyBtn.disabled = false
       verifyBtn.textContent = originalText
     }
@@ -506,8 +508,10 @@ function initializeUI() {
     newsletterBtn.addEventListener('click', () => globalFunctions.subscribeToNewsletter())
   }
 
-  const newsletterVerifyBtn = document.getElementById('newsletter-verify-btn')
+  const newsletterVerifyBtn = document.getElementById('newsletter-verify-btn') as HTMLButtonElement
   if (newsletterVerifyBtn) {
+    // 🔧 FIX: Reset button state on page load (in case of F5 during API call)
+    newsletterVerifyBtn.disabled = false
     newsletterVerifyBtn.addEventListener('click', () => globalFunctions.verifyNewsletterSubscription())
   }
 

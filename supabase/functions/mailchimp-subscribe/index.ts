@@ -116,6 +116,22 @@ serve(async (req) => {
       // Handle already subscribed case
       if (mailchimpResult.title === 'Member Exists') {
         console.log('DEBUG: Matched Member Exists case')
+
+        // 🔧 FIX: Update database even when already subscribed to ensure sync
+        const { error: updateError } = await supabase
+          .from('profiles')
+          .update({
+            consent_marketing: true,
+            consent_ts: new Date().toISOString()
+          })
+          .eq('id', userId)
+
+        if (updateError) {
+          console.error('Failed to update profile consent for existing subscriber:', updateError)
+        } else {
+          console.log('✅ Database synced for existing subscriber')
+        }
+
         return new Response(JSON.stringify({
           success: true,
           message: 'Already subscribed',
