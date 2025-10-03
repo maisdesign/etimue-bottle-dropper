@@ -3,6 +3,10 @@ import { BootScene } from '@/scenes/BootScene'
 import { GameScene } from '@/scenes/GameScene'
 import '@/ui/GlobalFunctions' // Import global functions to attach to window
 import { simpleAuth } from '@/systems/SimpleAuth' // New clean auth system
+import { disableConsoleLogs } from '@/utils/logger'
+
+// Disable console logs in production
+disableConsoleLogs()
 
 // Game configuration
 const config: Types.Core.GameConfig = {
