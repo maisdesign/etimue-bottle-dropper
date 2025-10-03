@@ -520,6 +520,48 @@ function initializeUI() {
     globalFunctions.toggleNewsletterSection()
   })
 
+  // Set up HTML touch button controls
+  const touchLeftBtn = document.getElementById('touch-left')
+  const touchRightBtn = document.getElementById('touch-right')
+
+  if (touchLeftBtn && touchRightBtn) {
+    // Left button events
+    touchLeftBtn.addEventListener('touchstart', (e) => {
+      e.preventDefault()
+      const game = getGame()
+      const gameScene = game?.scene.getScene('GameScene') as any
+      if (gameScene) {
+        gameScene.moveDirection = -1
+        if (!gameScene.gameStarted) gameScene.startGame()
+      }
+    })
+
+    touchLeftBtn.addEventListener('touchend', (e) => {
+      e.preventDefault()
+      const game = getGame()
+      const gameScene = game?.scene.getScene('GameScene') as any
+      if (gameScene) gameScene.moveDirection = 0
+    })
+
+    // Right button events
+    touchRightBtn.addEventListener('touchstart', (e) => {
+      e.preventDefault()
+      const game = getGame()
+      const gameScene = game?.scene.getScene('GameScene') as any
+      if (gameScene) {
+        gameScene.moveDirection = 1
+        if (!gameScene.gameStarted) gameScene.startGame()
+      }
+    })
+
+    touchRightBtn.addEventListener('touchend', (e) => {
+      e.preventDefault()
+      const game = getGame()
+      const gameScene = game?.scene.getScene('GameScene') as any
+      if (gameScene) gameScene.moveDirection = 0
+    })
+  }
+
   updateTranslations()
 }
 
