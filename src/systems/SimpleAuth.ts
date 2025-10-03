@@ -159,6 +159,12 @@ class SimpleAuthSystem {
       }
 
       console.log('✅ SimpleAuth: Profile found')
+      console.log('📋 SimpleAuth: Profile data:', {
+        id: data.id,
+        nickname: data.nickname,
+        consent_marketing: data.consent_marketing,
+        consent_ts: data.consent_ts
+      })
       return data as UserProfile
 
     } catch (error) {
@@ -413,6 +419,13 @@ class SimpleAuthSystem {
 
       console.log(`🔍 SimpleAuth: Verifying newsletter subscription for ${this.state.user.email}`)
 
+      // 🔧 FIX: Check database first - if user already has consent_marketing, accept it
+      if (this.state.profile?.consent_marketing) {
+        console.log('✅ SimpleAuth: User already has marketing consent in database')
+        return { success: true, subscribed: true }
+      }
+
+      // If no database consent, try to verify via Mailchimp
       const { data: { session }, error: sessionError } = await this.supabase.auth.getSession()
 
       if (sessionError || !session) {
@@ -435,7 +448,7 @@ class SimpleAuthSystem {
       const result = await response.json()
 
       if (result.success && result.subscribed) {
-        console.log('✅ SimpleAuth: Subscription verified, updating local state')
+        console.log('✅ SimpleAuth: Subscription verified via Mailchimp, updating local state')
 
         // Update local state to reflect marketing consent
         if (this.state.profile) {
