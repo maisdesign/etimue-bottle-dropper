@@ -1,6 +1,7 @@
 // Supabase Edge Function to verify if user is subscribed to Mailchimp newsletter
 import { serve } from 'https://deno.land/std@0.177.0/http/server.ts'
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
+import { createHash } from 'https://deno.land/std@0.177.0/node/crypto.ts'
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -78,11 +79,7 @@ serve(async (req) => {
     const datacenter = MAILCHIMP_API_KEY.split('-').pop()
 
     // Generate subscriber hash (MD5 of lowercase email)
-    const encoder = new TextEncoder()
-    const data = encoder.encode(email.toLowerCase())
-    const hashBuffer = await crypto.subtle.digest('MD5', data)
-    const hashArray = Array.from(new Uint8Array(hashBuffer))
-    const subscriberHash = hashArray.map(b => b.toString(16).padStart(2, '0')).join('')
+    const subscriberHash = createHash('md5').update(email.toLowerCase()).digest('hex')
 
     // Check if email exists in Mailchimp list
     const mailchimpUrl = `https://${datacenter}.api.mailchimp.com/3.0/lists/${MAILCHIMP_LIST_ID}/members/${subscriberHash}`
