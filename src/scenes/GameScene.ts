@@ -26,6 +26,9 @@ export class GameScene extends Scene {
   private allGoodMode: boolean = false
   private allGoodTimeLeft: number = 0
   private gameOverTexts: Phaser.GameObjects.Text[] = []
+  private leftButton?: Phaser.GameObjects.Graphics
+  private rightButton?: Phaser.GameObjects.Graphics
+  private moveDirection: number = 0 // -1 left, 0 stop, 1 right
 
   constructor() {
     super({ key: 'GameScene' })
@@ -164,21 +167,118 @@ export class GameScene extends Scene {
       // Handle keyboard input in update loop
     }
 
-    // Mouse/Touch controls
+    // Create touch control buttons for mobile
+    this.createTouchButtons()
+
+    // Mouse/Touch controls (drag mode for desktop)
     this.input.on('pointermove', (pointer: Phaser.Input.Pointer) => {
-      if (pointer.isDown) {
+      if (pointer.isDown && !this.isTouchingButton(pointer)) {
         const { width } = this.cameras.main
         const margin = Math.max(40, width * 0.05) // 5% margin or minimum 40px
         this.character.x = Phaser.Math.Clamp(pointer.x, margin, width - margin)
       }
     })
 
-    this.input.on('pointerdown', () => {
-      // Only allow game start if not in game over state
-      if (!this.gameOver) {
+    this.input.on('pointerdown', (pointer: Phaser.Input.Pointer) => {
+      // Only allow game start if not in game over state and not touching buttons
+      if (!this.gameOver && !this.isTouchingButton(pointer)) {
         this.startGame()
       }
     })
+  }
+
+  private createTouchButtons(): void {
+    const { width, height } = this.cameras.main
+    const buttonSize = 100
+    const buttonY = height - 120
+    const buttonMargin = 40
+
+    // Left button
+    this.leftButton = this.add.graphics()
+    this.leftButton.fillStyle(0x4a90e2, 0.5)
+    this.leftButton.fillRoundedRect(buttonMargin, buttonY, buttonSize, buttonSize, 20)
+    this.leftButton.lineStyle(3, 0xffffff, 0.8)
+    this.leftButton.strokeRoundedRect(buttonMargin, buttonY, buttonSize, buttonSize, 20)
+
+    // Draw left arrow
+    this.leftButton.fillStyle(0xffffff, 1)
+    this.leftButton.fillTriangle(
+      buttonMargin + 70, buttonY + 30,
+      buttonMargin + 70, buttonY + 70,
+      buttonMargin + 30, buttonY + 50
+    )
+    this.leftButton.setDepth(1000)
+    this.leftButton.setScrollFactor(0)
+    this.leftButton.setInteractive(
+      new Phaser.Geom.Rectangle(buttonMargin, buttonY, buttonSize, buttonSize),
+      Phaser.Geom.Rectangle.Contains
+    )
+
+    // Right button
+    this.rightButton = this.add.graphics()
+    this.rightButton.fillStyle(0x4a90e2, 0.5)
+    this.rightButton.fillRoundedRect(width - buttonMargin - buttonSize, buttonY, buttonSize, buttonSize, 20)
+    this.rightButton.lineStyle(3, 0xffffff, 0.8)
+    this.rightButton.strokeRoundedRect(width - buttonMargin - buttonSize, buttonY, buttonSize, buttonSize, 20)
+
+    // Draw right arrow
+    this.rightButton.fillStyle(0xffffff, 1)
+    this.rightButton.fillTriangle(
+      width - buttonMargin - 70, buttonY + 30,
+      width - buttonMargin - 70, buttonY + 70,
+      width - buttonMargin - 30, buttonY + 50
+    )
+    this.rightButton.setDepth(1000)
+    this.rightButton.setScrollFactor(0)
+    this.rightButton.setInteractive(
+      new Phaser.Geom.Rectangle(width - buttonMargin - buttonSize, buttonY, buttonSize, buttonSize),
+      Phaser.Geom.Rectangle.Contains
+    )
+
+    // Left button events
+    this.leftButton.on('pointerdown', () => {
+      this.moveDirection = -1
+      if (!this.gameOver) this.startGame()
+    })
+    this.leftButton.on('pointerup', () => {
+      this.moveDirection = 0
+    })
+    this.leftButton.on('pointerout', () => {
+      this.moveDirection = 0
+    })
+
+    // Right button events
+    this.rightButton.on('pointerdown', () => {
+      this.moveDirection = 1
+      if (!this.gameOver) this.startGame()
+    })
+    this.rightButton.on('pointerup', () => {
+      this.moveDirection = 0
+    })
+    this.rightButton.on('pointerout', () => {
+      this.moveDirection = 0
+    })
+  }
+
+  private isTouchingButton(pointer: Phaser.Input.Pointer): boolean {
+    const { width, height } = this.cameras.main
+    const buttonSize = 100
+    const buttonY = height - 120
+    const buttonMargin = 40
+
+    // Check left button
+    if (pointer.x >= buttonMargin && pointer.x <= buttonMargin + buttonSize &&
+        pointer.y >= buttonY && pointer.y <= buttonY + buttonSize) {
+      return true
+    }
+
+    // Check right button
+    if (pointer.x >= width - buttonMargin - buttonSize && pointer.x <= width - buttonMargin &&
+        pointer.y >= buttonY && pointer.y <= buttonY + buttonSize) {
+      return true
+    }
+
+    return false
   }
 
   private setupCollisions(): void {
@@ -521,15 +621,24 @@ export class GameScene extends Scene {
     if (this.gameOver) return
 
     const { width, height } = this.cameras.main
+    const margin = Math.max(40, width * 0.05) // 5% margin or minimum 40px
+    const speed = Math.max(5, width * 0.006) // Responsive speed based on screen width
 
     // Keyboard controls
     const cursors = this.input.keyboard?.createCursorKeys()
     if (cursors) {
-      const margin = Math.max(40, width * 0.05) // 5% margin or minimum 40px
-      const speed = Math.max(5, width * 0.006) // Responsive speed based on screen width
       if (cursors.left?.isDown) {
         this.character.x = Math.max(margin, this.character.x - speed)
       } else if (cursors.right?.isDown) {
+        this.character.x = Math.min(width - margin, this.character.x + speed)
+      }
+    }
+
+    // Touch button controls
+    if (this.moveDirection !== 0) {
+      if (this.moveDirection === -1) {
+        this.character.x = Math.max(margin, this.character.x - speed)
+      } else if (this.moveDirection === 1) {
         this.character.x = Math.min(width - margin, this.character.x + speed)
       }
     }
