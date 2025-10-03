@@ -125,6 +125,13 @@ export const globalFunctions = {
       console.log('🎮 Game start overlay hidden')
     }
 
+    // Show mobile touch controls when game starts
+    const mobileControls = document.querySelector('.mobile-controls') as HTMLElement
+    if (mobileControls) {
+      mobileControls.style.display = 'flex'
+      console.log('📱 Mobile controls shown')
+    }
+
     if (getGame()) {
       console.log('🔄 Destroying existing game instance')
       destroyGame()
@@ -216,6 +223,13 @@ export const globalFunctions = {
     if (overlay) {
       overlay.classList.remove('hidden')
       console.log('🎮 Game start overlay shown')
+    }
+
+    // Hide mobile controls when returning to overlay
+    const mobileControls = document.querySelector('.mobile-controls') as HTMLElement
+    if (mobileControls) {
+      mobileControls.style.display = 'none'
+      console.log('📱 Mobile controls hidden')
     }
   },
 

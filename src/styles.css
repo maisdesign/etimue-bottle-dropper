@@ -243,7 +243,7 @@ body {
       bottom: 10px;
       left: 50%;
       transform: translateX(-50%);
-      gap: 80px;
+      gap: 180px;
       z-index: 1000;
       /* Ensure controls are always visible and within viewport */
       width: auto;
@@ -409,9 +409,9 @@ body {
       }
 
       .mobile-controls {
-        display: flex !important;
+        display: none; /* Hidden by default - shown when game starts */
         bottom: 15px;
-        gap: 100px;
+        gap: 220px;
       }
 
       .touch-btn {
@@ -490,7 +490,7 @@ body {
 
         .mobile-controls {
           bottom: 8px;
-          gap: 80px;
+          gap: 160px;
         }
 
         .touch-btn {
