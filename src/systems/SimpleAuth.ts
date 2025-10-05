@@ -483,8 +483,20 @@ class SimpleAuthSystem {
         dateThreshold.setDate(dateThreshold.getDate() - 30)
       }
 
-      // Get scores from the period
-      const { data: scoresData, error: scoresError } = await this.supabase
+      // 🔧 FIX: Add timeout to prevent infinite hanging (Supabase connection issues)
+      const QUERY_TIMEOUT = 15000 // 15 seconds timeout
+
+      // Timeout promise that rejects after specified time
+      const timeoutPromise = new Promise<never>((_, reject) => {
+        setTimeout(() => {
+          console.error('⏱️ Leaderboard query timeout - returning empty array')
+          reject(new Error('Query timeout'))
+        }, QUERY_TIMEOUT)
+      })
+
+      // Get scores from the period with timeout protection
+      console.log('📊 Fetching scores from database...')
+      const scoresPromise = this.supabase
         .from('scores')
         .select('*')
         .gte('created_at', dateThreshold.toISOString())
@@ -492,32 +504,58 @@ class SimpleAuthSystem {
         .order('created_at', { ascending: true })
         .limit(limit * 3) // Get more to filter by newsletter subscription
 
-      if (scoresError) {
-        console.error('❌ SimpleAuth: Scores query error:', scoresError)
+      const { data: scoresData, error: scoresError } = await Promise.race([
+        scoresPromise,
+        timeoutPromise
+      ]).catch(() => ({ data: null, error: { message: 'Timeout' } })) as any
+
+      if (scoresError || !scoresData) {
+        console.error('❌ SimpleAuth: Scores query error or timeout:', scoresError?.message || 'Timeout')
+        return []
+      }
+
+      console.log(`✅ Scores fetched: ${scoresData.length} entries`)
+
+      // Handle empty scores
+      if (scoresData.length === 0) {
+        console.log('ℹ️ No scores found for this period')
         return []
       }
 
       // Get profiles - ONLY those with marketing consent
-      const userIds = scoresData.map(score => score.user_id)
-      const { data: profilesData, error: profilesError } = await this.supabase
+      const userIds = scoresData.map((score: any) => score.user_id)
+      console.log(`📊 Fetching ${userIds.length} profiles with newsletter consent...`)
+
+      const profilesPromise = this.supabase
         .from('profiles')
         .select('id, display_name, consent_marketing')
         .in('id', userIds)
         .eq('consent_marketing', true) // ONLY newsletter subscribers
 
-      if (profilesError) {
-        console.error('❌ SimpleAuth: Profiles query error:', profilesError)
+      const { data: profilesData, error: profilesError } = await Promise.race([
+        profilesPromise,
+        timeoutPromise
+      ]).catch(() => ({ data: null, error: { message: 'Timeout' } })) as any
+
+      if (profilesError || !profilesData) {
+        console.error('❌ SimpleAuth: Profiles query error or timeout:', profilesError?.message || 'Timeout')
         return []
       }
 
       console.log(`✅ SimpleAuth: Prize leaderboard - ${scoresData.length} scores, ${profilesData.length} eligible users (newsletter subscribers)`)
 
+      // Handle no eligible profiles
+      if (profilesData.length === 0) {
+        console.log('ℹ️ No newsletter subscribers found in score list')
+        return []
+      }
+
       // Filter scores to only include newsletter subscribers and combine with profiles
       const eligibleScores = scoresData
-        .filter(score => profilesData.some(profile => profile.id === score.user_id))
+        .filter((score: any) => profilesData.some((profile: any) => profile.id === score.user_id))
         .slice(0, limit) // Apply final limit after filtering
-        .map(score => {
-          const profile = profilesData.find(p => p.id === score.user_id)
+        .map((score: any) => {
+          const profile = profilesData.find((p: any) => p.id === score.user_id)
           return {
             ...score,
             display_name: profile?.display_name || 'Player',
