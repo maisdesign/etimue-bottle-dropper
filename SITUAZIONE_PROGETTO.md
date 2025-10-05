@@ -1,6 +1,69 @@
 # SITUAZIONE PROGETTO - ETIMUÈ BOTTLE DROPPER
 
-## 🕒 ULTIMO AGGIORNAMENTO: 1 Ottobre 2025 - CRITICAL BUGS FIXED + AUDIT COMPLETO ✅
+## 🕒 ULTIMO AGGIORNAMENTO: 5 Ottobre 2025 - LEADERBOARD TIMEOUT FIX ✅
+
+### 🔧 CRITICAL FIX APPLICATO (5 Ottobre 2025 - 17:30) ✅
+
+**🐛 BUG RISOLTO**: Leaderboard Infinite Loading
+
+**Problema Identificato**:
+- La leaderboard si bloccava indefinitamente in alcuni casi
+- Query `getPrizeLeaderboard()` si fermava senza timeout
+- Nessun errore, nessun dato, nessuna indicazione all'utente
+
+**Root Cause**:
+- Query Supabase senza timeout protection
+- In caso di connessione lenta/problemi, Promise non si risolve mai
+- Spinner di caricamento infinito per l'utente
+
+**Soluzione Implementata**:
+- ✅ Aggiunto `Promise.race()` con timeout 15 secondi
+- ✅ Entrambe le query (scores + profiles) ora hanno timeout
+- ✅ Graceful degradation: mostra array vuoto invece di hang
+- ✅ Log dettagliati per debugging: fetch progress tracking
+
+**Files Modificati**:
+- `src/systems/SimpleAuth.ts` (lines 474-573)
+
+**Testing**:
+- ✅ Build successful (TypeScript 0 errors)
+- ✅ Bundle size: 1.674 MB (leggero aumento per timeout logic)
+- ⏳ **Richiede test manuale in produzione**
+
+**Deployment Status**:
+- Commit: `2b73a373`
+- Files changed: 15 (audit report + timeout fix)
+- Ready for production deployment
+
+---
+
+## 📊 AUDIT COMPLETO (5 Ottobre 2025) ✅
+
+**📋 FULL AUDIT REPORT**: [AUDIT_REPORT_5_OTTOBRE_2025.md](AUDIT_REPORT_5_OTTOBRE_2025.md)
+
+**Punteggio Finale**: **7.45/10 (B+)** - PRODUCTION READY con ottimizzazioni raccomandate
+
+**Verdict**: Il progetto è **production ready** se:
+- Gli utenti sono beta tester o interni
+- C'è un piano per fix rapidi della score validation
+- Monitoring/error tracking è disponibile
+
+**Problemi Critici da Risolvere**:
+1. 🔴 **Server-side score validation** mancante (anti-cheat bypassabile)
+2. 🔴 **Hard-coded credentials** in SimpleAuth.ts
+3. 🟡 **Bundle size 1.67MB** (>500KB warning)
+
+**Breakdown Scores**:
+| Categoria | Punteggio | Note |
+|-----------|-----------|------|
+| Architettura | 9/10 | Eccellente modularità |
+| Security | 6/10 | Score validation mancante |
+| Performance | 7/10 | Bundle size grande |
+| Code Quality | 8/10 | Pulito e leggibile |
+| Testing | 6/10 | Solo test base |
+| Documentation | 9/10 | CLAUDE.md completo |
+
+---
 
 ### 🚨 CRITICAL BUGS FIXED (1 Ottobre 2025 - 22:45) ✅
 

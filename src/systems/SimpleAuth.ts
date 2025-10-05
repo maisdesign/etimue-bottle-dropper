@@ -123,6 +123,26 @@ class SimpleAuthSystem {
       console.log('✅ SimpleAuth: Sign in complete')
       this.notifyListeners()
 
+      // 🔧 FIX: Refresh profile after 2 seconds to catch any external updates
+      // This ensures consent_marketing is correctly loaded from database
+      // even if it was updated externally (e.g., via Mailchimp Edge Function)
+      setTimeout(async () => {
+        console.log('🔄 Auto-refreshing profile to sync external updates...')
+        const freshProfile = await this.getProfile(user.id, true)
+
+        if (freshProfile && this.state.user?.id === user.id) {
+          // Check if consent_marketing changed
+          const consentChanged = this.state.profile?.consent_marketing !== freshProfile.consent_marketing
+
+          this.state.profile = freshProfile
+
+          if (consentChanged) {
+            console.log('🔄 consent_marketing changed after refresh - notifying listeners')
+            this.notifyListeners()
+          }
+        }
+      }, 2000)
+
     } catch (error) {
       console.error('❌ SimpleAuth: Sign in error:', error)
       this.state.isLoading = false
@@ -143,9 +163,9 @@ class SimpleAuthSystem {
     this.notifyListeners()
   }
 
-  private async getProfile(userId: string): Promise<UserProfile | null> {
+  private async getProfile(userId: string, forceRefresh: boolean = false): Promise<UserProfile | null> {
     try {
-      console.log(`📋 SimpleAuth: Getting profile for ${userId}`)
+      console.log(`📋 SimpleAuth: Getting profile for ${userId}${forceRefresh ? ' (FORCE REFRESH)' : ''}`)
 
       const { data, error } = await this.supabase
         .from('profiles')
@@ -165,11 +185,38 @@ class SimpleAuthSystem {
         consent_marketing: data.consent_marketing,
         consent_ts: data.consent_ts
       })
+
+      // 🔧 FIX: Log actual values to verify data is correct
+      if (!data.consent_marketing) {
+        console.warn('⚠️ consent_marketing is FALSE or NULL - user will see game mode modal')
+      } else {
+        console.log('✅ consent_marketing is TRUE - user eligible for competitive mode')
+      }
+
       return data as UserProfile
 
     } catch (error) {
       console.error('❌ SimpleAuth: Get profile error:', error)
       return null
+    }
+  }
+
+  // 🔧 NEW: Public method to refresh profile from database
+  public async refreshProfile(): Promise<void> {
+    if (!this.state.user) {
+      console.warn('⚠️ Cannot refresh profile - no user logged in')
+      return
+    }
+
+    console.log('🔄 Refreshing profile from database...')
+    const freshProfile = await this.getProfile(this.state.user.id, true)
+
+    if (freshProfile) {
+      this.state.profile = freshProfile
+      this.notifyListeners()
+      console.log('✅ Profile refreshed successfully')
+    } else {
+      console.error('❌ Failed to refresh profile')
     }
   }
 
