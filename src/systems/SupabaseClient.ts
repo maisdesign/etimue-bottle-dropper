@@ -174,7 +174,9 @@ export const scoreService = {
 
       // SKIP session check - go direct to database since we have auth via authManager
       // Client-side validation
-      if (score < 0 || score > 600) {
+      // 🆕 Increased limit to 1200 to account for star time bonuses (+5s each)
+      // Max realistic: 120 seconds * 10 points/sec = 1200 points
+      if (score < 0 || score > 1200) {
         console.error('❌ Invalid score range:', score)
         return null
       }

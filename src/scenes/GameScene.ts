@@ -433,8 +433,13 @@ export class GameScene extends Scene {
     this.allGoodMode = true
     this.allGoodTimeLeft = 10
 
+    // 🆕 TIME BONUS: Add 5 seconds to game timer
+    this.timeLeft += 5
+    console.log(`⏰ Star collected! +5 seconds bonus. New time: ${this.timeLeft}s`)
+
     // Update UI
     const t = languageManager.getTranslation()
+    this.timerText.setText(`${t.time}: ${this.timeLeft}s`) // Update timer display
     this.powerupText.setText(`⭐ ${t.allGood}: ${this.allGoodTimeLeft}s`)
 
     // Start countdown timer
