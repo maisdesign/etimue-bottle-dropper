@@ -275,7 +275,10 @@ export class GameScene extends Scene {
         console.log(`🍶 BROWN bottle spawned at x:${x}`)
       }
 
-      bottle.body.velocity.y = 200
+      // 🎮 PROGRESSIVE DIFFICULTY: Speed increases every 10 seconds
+      const baseSpeed = 200
+      const bottleSpeed = this.calculateBottleSpeed(baseSpeed)
+      bottle.body.velocity.y = bottleSpeed
       bottle.body.velocity.x = Phaser.Math.Between(-50, 50)
 
       // Set collision bounds to detect when bottle hits ground
@@ -286,6 +289,24 @@ export class GameScene extends Scene {
       bottle.setData('checkGround', true)
       bottle.setData('isGreen', isGreen)
     }
+  }
+
+  private calculateBottleSpeed(baseSpeed: number): number {
+    // Calculate elapsed time (60 - remaining time)
+    const elapsedTime = 60 - this.timeLeft
+
+    // Increase 15% every 10 seconds
+    const difficultyLevel = Math.floor(elapsedTime / 10)
+    const speedMultiplier = 1 + (difficultyLevel * 0.15)
+
+    const finalSpeed = Math.floor(baseSpeed * speedMultiplier)
+
+    // Log only on level changes (every 10 seconds)
+    if (elapsedTime % 10 === 0 && elapsedTime > 0) {
+      console.log(`⚡ Difficulty Level ${difficultyLevel}: Speed ${finalSpeed}px/s (${Math.floor(speedMultiplier * 100)}%)`)
+    }
+
+    return finalSpeed
   }
 
   private scheduleNextPowerup(): void {
@@ -326,8 +347,9 @@ export class GameScene extends Scene {
       powerup.setActive(true)
       powerup.setVisible(true)
 
-      // Random velocity for more dynamic movement
-      const velocityY = Phaser.Math.Between(120, 180)
+      // Random velocity for more dynamic movement + progressive difficulty
+      const baseVelocityY = Phaser.Math.Between(120, 180)
+      const velocityY = this.calculateBottleSpeed(baseVelocityY)
       const velocityX = Phaser.Math.Between(-30, 30)
 
       powerup.body.velocity.y = velocityY
