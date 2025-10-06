@@ -1,6 +1,51 @@
 # SITUAZIONE PROGETTO - ETIMUÈ BOTTLE DROPPER
 
-## 🕒 ULTIMO AGGIORNAMENTO: 6 Ottobre 2025 - STAR TIME BONUS FEATURE ✨
+## 🕒 ULTIMO AGGIORNAMENTO: 6 Ottobre 2025 - PROGRESSIVE DIFFICULTY SYSTEM 🎮
+
+### 🎮 NUOVA FEATURE: Sistema Difficoltà Progressiva (6 Ottobre 2025) ⚡
+
+**🔥 Feature Implementata**:
+- Velocità bottiglie aumenta **+15% ogni 10 secondi**
+- Stelle (powerup) seguono stesso scaling per bilanciamento
+- Progressione lineare e prevedibile per i giocatori
+- Console log mostra cambio livello difficoltà in tempo reale
+
+**📊 Scaling della Velocità**:
+| Tempo | Livello | Velocità | Percentuale |
+|-------|---------|----------|-------------|
+| 0-10s | 0 | 200 px/s | 100% (base) |
+| 10-20s | 1 | 230 px/s | 115% |
+| 20-30s | 2 | 264 px/s | 132% |
+| 30-40s | 3 | 304 px/s | 152% |
+| 40-50s | 4 | 350 px/s | 175% |
+| 50-60s+ | 5 | 402 px/s | 201% |
+
+**🔧 Implementazione Tecnica**:
+- Nuovo metodo `calculateBottleSpeed(baseSpeed)` in GameScene.ts
+- Formula: `speedMultiplier = 1 + (difficultyLevel * 0.15)`
+- Applicato sia a bottiglie che a stelle per consistenza
+- Zero impact su performance (nessun oggetto extra)
+
+**✅ Vantaggi**:
+- ✅ Gameplay più dinamico e sfidante
+- ✅ Curva difficoltà graduale e fair
+- ✅ Incentiva raccolta stelle per tempo extra
+- ✅ Mobile-friendly (no lag)
+- ✅ Facile da bilanciare se serve tuning
+
+**Files Modificati**:
+- `src/scenes/GameScene.ts` (righe 278-310)
+
+**Deployment Status**:
+- Dev commit: `07c3ad81`
+- Prod commit: `98aa109`
+- Live: https://etimuebottledropper.netlify.app/
+
+**🎯 Testing**: Aprire console per vedere log `⚡ Difficulty Level X` ogni 10 secondi
+
+---
+
+## 🕒 AGGIORNAMENTO PRECEDENTE: 6 Ottobre 2025 - STAR TIME BONUS FEATURE ✨
 
 ### ✨ NUOVA FEATURE: Star Powerup Time Bonus (6 Ottobre 2025) 🌟
 
