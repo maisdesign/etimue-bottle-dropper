@@ -1,6 +1,48 @@
 # SITUAZIONE PROGETTO - ETIMUÈ BOTTLE DROPPER
 
-## 🕒 ULTIMO AGGIORNAMENTO: 5 Ottobre 2025 - LEADERBOARD TIMEOUT FIX ✅
+## 🕒 ULTIMO AGGIORNAMENTO: 6 Ottobre 2025 - LEADERBOARD RLS BUG INVESTIGATION 🔍
+
+### 🐛 BUG IN CORSO: Leaderboard Mostra Solo Punteggi Utente Loggato (6 Ottobre 2025) 🔴
+
+**Problema Segnalato**:
+- La leaderboard mostra solo i punteggi del player loggato
+- Dovrebbe mostrare classifica generale di tutti i giocatori
+- Query `getPrizeLeaderboard()` sembra corretta (no filtro per user_id)
+
+**Analisi Iniziale**:
+- ✅ Codice `SimpleAuth.ts` verificato: NO filtri per user_id specifico
+- ✅ Query usa `.eq('consent_marketing', true)` (corretto per newsletter subscribers)
+- ⚠️ Possibile causa: **RLS (Row Level Security) Policy** nel database Supabase
+
+**Ipotesi**:
+1. **RLS Policy errata**: Policy `public_read_scores` potrebbe non essere applicata correttamente
+2. **Policy mancante**: Possibile policy aggiuntiva che filtra per `auth.uid() = user_id`
+3. **Timeout/Error nascosto**: Query fallisce silenziosamente e mostra solo fallback data
+
+**Azione Intrapresa**:
+- ✅ Aggiunto **debug logging dettagliato** in `SimpleAuth.getPrizeLeaderboard()`:
+  - Log query parameters (dateThreshold, limit, currentUserId)
+  - Log full error object se query fallisce
+  - Log primi 3 user_ids ritornati vs current user ID
+- ✅ Deployed su produzione per raccogliere dati da browser console
+
+**Next Steps**:
+1. Aprire console browser su https://etimuebottledropper.netlify.app/
+2. Aprire leaderboard e verificare log console
+3. Analizzare quali user_ids vengono ritornati dalla query
+4. Se tutti user_ids sono uguali → RLS policy da fixare
+5. Se query va in timeout/error → problemi connessione Supabase
+
+**Files Modificati**:
+- `src/systems/SimpleAuth.ts` (righe 545-573)
+
+**Commit**:
+- Dev: `18a5d047`
+- Prod: `e55e078`
+
+---
+
+## 🕒 AGGIORNAMENTO PRECEDENTE: 5 Ottobre 2025 - LEADERBOARD TIMEOUT FIX ✅
 
 ### 🔧 CRITICAL FIX APPLICATO (5 Ottobre 2025 - 17:30) ✅
 
