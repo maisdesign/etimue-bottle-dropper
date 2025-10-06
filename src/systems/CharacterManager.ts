@@ -59,6 +59,15 @@ export class CharacterManager {
     }
   }
 
+  public subscribe(callback: (character: Character) => void): () => void {
+    this.callbacks.add(callback)
+
+    // Return unsubscribe function
+    return () => {
+      this.callbacks.delete(callback)
+    }
+  }
+
   public getCharacterInfo(character?: Character): CharacterInfo {
     const char = character || this.currentCharacter
     const t = languageManager.getTranslation()

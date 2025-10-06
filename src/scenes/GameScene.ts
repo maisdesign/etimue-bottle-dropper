@@ -100,6 +100,11 @@ export class GameScene extends Scene {
       this.updateUITexts()
     }
     languageManager.onLanguageChange(this.languageChangeCallback)
+
+    // 🎭 Listen for character changes and update UI texts
+    characterManager.subscribe(() => {
+      this.updateUITexts()
+    })
   }
 
   private updateUITexts(): void {
