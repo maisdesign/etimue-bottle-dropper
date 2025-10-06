@@ -1,44 +1,47 @@
 # SITUAZIONE PROGETTO - ETIMUÈ BOTTLE DROPPER
 
-## 🕒 ULTIMO AGGIORNAMENTO: 6 Ottobre 2025 - LEADERBOARD RLS BUG INVESTIGATION 🔍
+## 🕒 ULTIMO AGGIORNAMENTO: 6 Ottobre 2025 - LEADERBOARD RLS BUG FIXED ✅
 
-### 🐛 BUG IN CORSO: Leaderboard Mostra Solo Punteggi Utente Loggato (6 Ottobre 2025) 🔴
+### ✅ BUG RISOLTO: Leaderboard RLS Policy Fixed (6 Ottobre 2025) 🎉
 
-**Problema Segnalato**:
-- La leaderboard mostra solo i punteggi del player loggato
-- Dovrebbe mostrare classifica generale di tutti i giocatori
-- Query `getPrizeLeaderboard()` sembra corretta (no filtro per user_id)
+**🐛 Problema Identificato**:
+- La leaderboard mostrava solo i punteggi del player loggato
+- Doveva mostrare classifica generale di tutti i giocatori con `consent_marketing = true`
 
-**Analisi Iniziale**:
-- ✅ Codice `SimpleAuth.ts` verificato: NO filtri per user_id specifico
-- ✅ Query usa `.eq('consent_marketing', true)` (corretto per newsletter subscribers)
-- ⚠️ Possibile causa: **RLS (Row Level Security) Policy** nel database Supabase
+**🔍 Root Cause Analysis**:
+1. ✅ Policy `public_read_scores` su tabella `scores` era corretta (USING = true)
+2. ❌ Policy `users_own_profile` su tabella `profiles` bloccava lettura altri profili (USING = auth.uid() = id)
+3. La query profiles (riga 585-589 SimpleAuth.ts) ritornava **solo il profilo utente loggato**
+4. Il filtro alla riga 611 eliminava tutti gli scores senza profilo corrispondente
+5. Risultato: solo gli scores dell'utente loggato rimanevano visibili
 
-**Ipotesi**:
-1. **RLS Policy errata**: Policy `public_read_scores` potrebbe non essere applicata correttamente
-2. **Policy mancante**: Possibile policy aggiuntiva che filtra per `auth.uid() = user_id`
-3. **Timeout/Error nascosto**: Query fallisce silenziosamente e mostra solo fallback data
-
-**Azione Intrapresa**:
-- ✅ Aggiunto **debug logging dettagliato** in `SimpleAuth.getPrizeLeaderboard()`:
-  - Log query parameters (dateThreshold, limit, currentUserId)
-  - Log full error object se query fallisce
-  - Log primi 3 user_ids ritornati vs current user ID
-- ✅ Deployed su produzione per raccogliere dati da browser console
-
-**Next Steps**:
-1. Aprire console browser su https://etimuebottledropper.netlify.app/
-2. Aprire leaderboard e verificare log console
-3. Analizzare quali user_ids vengono ritornati dalla query
-4. Se tutti user_ids sono uguali → RLS policy da fixare
-5. Se query va in timeout/error → problemi connessione Supabase
+**🔧 Soluzione Implementata**:
+- Rimossa policy `users_own_profile` troppo restrittiva
+- Create 4 nuove policy separate per operazioni specifiche:
+  - `users_read_own_profile` - Leggi il tuo profilo (per settings)
+  - `public_read_newsletter_profiles` - Leggi profili con consent_marketing=true (per leaderboard) ← **FIX PRINCIPALE**
+  - `users_update_own_profile` - Modifica solo tuo profilo
+  - `users_insert_own_profile` - Crea solo tuo profilo
 
 **Files Modificati**:
-- `src/systems/SimpleAuth.ts` (righe 545-573)
+- `FIX-PROFILES-RLS.sql` (nuovo script SQL per fix RLS policies)
+- `src/systems/SimpleAuth.ts` (cleanup debug logging)
 
-**Commit**:
-- Dev: `18a5d047`
-- Prod: `e55e078`
+**Testing**:
+- ✅ Query SQL diretta su Supabase: ritorna tutti e 3 gli utenti
+- ✅ Leaderboard frontend: mostra tutti gli utenti con newsletter consent
+- ✅ Classifica corretta: whiteout (57 punti), Marco Cardia (54 punti), MaisDesign (52 punti)
+
+**Deployment Status**:
+- Dev commit: `42654c24`
+- Prod commit: `33a4ee8`
+- Live: https://etimuebottledropper.netlify.app/
+- Database: Policies aggiornate su Supabase Production
+
+**Lesson Learned**:
+- RLS policies devono bilanciare attentamente security e features
+- Leaderboard pubbliche richiedono policy che permettano lettura profili con consent
+- Sempre testare queries SQL dirette nel database per isolare problemi RLS vs codice client
 
 ---
 
