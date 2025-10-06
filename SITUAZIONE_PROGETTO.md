@@ -1,6 +1,48 @@
 # SITUAZIONE PROGETTO - ETIMUÈ BOTTLE DROPPER
 
-## 🕒 ULTIMO AGGIORNAMENTO: 6 Ottobre 2025 - LEADERBOARD RLS BUG FIXED ✅
+## 🕒 ULTIMO AGGIORNAMENTO: 6 Ottobre 2025 - STAR TIME BONUS FEATURE ✨
+
+### ✨ NUOVA FEATURE: Star Powerup Time Bonus (6 Ottobre 2025) 🌟
+
+**🎮 Feature Implementata**:
+- Raccogliere una stella ⭐ ora aggiunge **+5 secondi** al timer di gioco
+- Migliora la progressione del gameplay e premia i giocatori abili
+- Sistema "All Good" rimane invariato (10s di immunità dalle bottiglie verdi)
+
+**🔧 Modifiche Tecniche**:
+1. **GameScene.ts** - `activateAllGoodMode()`:
+   - Aggiunto `this.timeLeft += 5` per bonus tempo
+   - Timer UI aggiorna immediatamente alla raccolta stella
+   - Console log per tracking: "⏰ Star collected! +5 seconds bonus"
+
+2. **SupabaseClient.ts** - Anti-Cheat Update:
+   - Limite punteggio aumentato da 600 → 1200
+   - Calcolo: 120 secondi * 10 punti/sec = 1200 max
+   - Previene falsi positivi per giochi lunghi con molte stelle
+
+**📊 Impact**:
+- ✅ Gameplay più dinamico e strategico
+- ✅ Maggiore incentivo a raccogliere stelle
+- ✅ Durata partita variabile (60-120 secondi tipicamente)
+- ✅ Anti-cheat adattato per nuovo limite
+
+**Files Modificati**:
+- `src/scenes/GameScene.ts` (riga 436-442)
+- `src/systems/SupabaseClient.ts` (riga 177-182)
+
+**Deployment Status**:
+- Dev commit: `1c1a8b31`
+- Prod commit: `5d593b3`
+- Live: https://etimuebottledropper.netlify.app/
+
+**🎯 Rischio Valutazione**: BASSO ✅
+- Feature isolata, no impact su auth/database
+- Facile rollback se necessario
+- Testing manuale richiesto per bilanciamento gameplay
+
+---
+
+## 🕒 AGGIORNAMENTO PRECEDENTE: 6 Ottobre 2025 - LEADERBOARD RLS BUG FIXED ✅
 
 ### ✅ BUG RISOLTO: Leaderboard RLS Policy Fixed (6 Ottobre 2025) 🎉
 
