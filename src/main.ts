@@ -8,9 +8,6 @@ import { disableConsoleLogs } from '@/utils/logger'
 // Disable console logs in production
 disableConsoleLogs()
 
-// 📱 Detect mobile device
-const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
-
 // Game configuration
 const config: Types.Core.GameConfig = {
   type: Phaser.AUTO,
@@ -19,18 +16,15 @@ const config: Types.Core.GameConfig = {
   parent: 'game-container',
   backgroundColor: '#87CEEB',
   scale: {
-    // 📱 Mobile: Use RESIZE for fullscreen, Desktop: Use FIT for windowed
-    mode: isMobile ? Phaser.Scale.RESIZE : Phaser.Scale.FIT,
+    mode: Phaser.Scale.FIT,
     autoCenter: Phaser.Scale.CENTER_BOTH,
-    // 📱 Mobile fullscreen target
-    fullscreenTarget: 'game-container',
     min: {
       width: 300,
       height: 400
     },
     max: {
-      width: isMobile ? window.innerWidth : 1200,
-      height: isMobile ? window.innerHeight : 900
+      width: 1200,
+      height: 900
     }
   },
   physics: {
@@ -67,11 +61,6 @@ export function initializeGame(): Game {
   game = new Game(config)
   isInitializing = false
 
-  // 📱 Mobile fullscreen setup
-  if (isMobile) {
-    setupMobileFullscreen(game)
-  }
-
   // Development helper - only expose in dev mode
   if (import.meta.env?.MODE === 'development') {
     (window as any).game = game
@@ -82,37 +71,6 @@ export function initializeGame(): Game {
 
   console.log('✅ Game initialized successfully')
   return game
-}
-
-// 📱 Setup mobile fullscreen experience
-function setupMobileFullscreen(game: Game): void {
-  console.log('📱 Setting up mobile fullscreen...')
-
-  // Add game container class for mobile styling
-  const gameContainer = document.getElementById('game-container')
-  if (gameContainer) {
-    gameContainer.classList.add('mobile-fullscreen')
-  }
-
-  // Handle orientation changes
-  const handleResize = () => {
-    if (game && game.scale) {
-      game.scale.resize(window.innerWidth, window.innerHeight)
-      console.log(`📱 Resized to: ${window.innerWidth}x${window.innerHeight}`)
-    }
-  }
-
-  // Listen for resize and orientation change
-  window.addEventListener('resize', handleResize)
-  window.addEventListener('orientationchange', () => {
-    // Delay to ensure browser UI updates first
-    setTimeout(handleResize, 100)
-  })
-
-  // Initial resize
-  handleResize()
-
-  console.log('✅ Mobile fullscreen enabled')
 }
 
 export function getGame(): Game | null {
