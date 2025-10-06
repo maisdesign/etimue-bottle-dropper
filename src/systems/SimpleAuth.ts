@@ -550,7 +550,7 @@ class SimpleAuthSystem {
         .gte('created_at', dateThreshold.toISOString())
         .order('score', { ascending: false })
         .order('created_at', { ascending: true })
-        .limit(limit * 3) // Get more to filter by newsletter subscription
+        .limit(limit * 3) // Fetch 3x limit to ensure enough newsletter subscribers after filtering
 
       const { data: scoresData, error: scoresError } = await Promise.race([
         scoresPromise,

@@ -166,7 +166,8 @@ export class LeaderboardModal {
     console.log('📞 Getting weekly PRIZE leaderboard (newsletter subscribers only)...')
 
     try {
-      const entries = await simpleAuth.getPrizeLeaderboard(50, 'weekly')
+      // 🎯 Limit to top 10 for better performance and UX
+      const entries = await simpleAuth.getPrizeLeaderboard(10, 'weekly')
       console.log('✅ SimpleAuth.getPrizeLeaderboard completed with:', entries?.length, 'entries')
       return entries.map(entry => ({
         id: entry.id,
@@ -186,7 +187,8 @@ export class LeaderboardModal {
     console.log('📞 Getting monthly PRIZE leaderboard (newsletter subscribers only)...')
 
     try {
-      const entries = await simpleAuth.getPrizeLeaderboard(50, 'monthly')
+      // 🎯 Limit to top 10 for better performance and UX
+      const entries = await simpleAuth.getPrizeLeaderboard(10, 'monthly')
       console.log('✅ SimpleAuth.getPrizeLeaderboard (monthly) completed with:', entries?.length, 'entries')
       return entries.map(entry => ({
         id: entry.id,
