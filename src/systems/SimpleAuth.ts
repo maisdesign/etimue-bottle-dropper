@@ -543,6 +543,12 @@ class SimpleAuthSystem {
 
       // Get scores from the period with timeout protection
       console.log('📊 Fetching scores from database...')
+      console.log('🔍 DEBUG: Query parameters:', {
+        dateThreshold: dateThreshold.toISOString(),
+        limit: limit * 3,
+        currentUserId: this.state.user?.id
+      })
+
       const scoresPromise = this.supabase
         .from('scores')
         .select('*')
@@ -558,10 +564,13 @@ class SimpleAuthSystem {
 
       if (scoresError || !scoresData) {
         console.error('❌ SimpleAuth: Scores query error or timeout:', scoresError?.message || 'Timeout')
+        console.error('🔍 DEBUG: Full error object:', scoresError)
         return []
       }
 
       console.log(`✅ Scores fetched: ${scoresData.length} entries`)
+      console.log('🔍 DEBUG: First 3 scores user_ids:', scoresData.slice(0, 3).map((s: any) => s.user_id))
+      console.log('🔍 DEBUG: Current user ID:', this.state.user?.id)
 
       // Handle empty scores
       if (scoresData.length === 0) {
