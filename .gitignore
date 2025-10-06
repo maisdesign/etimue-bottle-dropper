@@ -99,3 +99,6 @@ Legacy/
 PasswordProgetto.txt
 PasswordMailchimp.txt
 NEXT_SESSION_TODO.md
+CHECK-RLS-POLICIES.sql
+FIX-PROFILES-RLS.sql
+FIX-RLS-LEADERBOARD.sql
