@@ -448,6 +448,18 @@ export const globalFunctions = {
       btn.classList.add('active')
       console.log('🍔 Hamburger menu opened')
 
+      // Pause game if it's running
+      const game = getGame()
+      if (game) {
+        const gameScene = game.scene.getScene('GameScene')
+        if (gameScene && gameScene.scene.isActive()) {
+          game.scene.pause('GameScene')
+          console.log('⏸️ Game automatically paused (hamburger menu opened)')
+          // Store that we auto-paused so we can resume when closing
+          ;(menu as any).wasGameRunning = true
+        }
+      }
+
       // Update logout button visibility
       const logoutBtn = document.getElementById('hamburger-logout-btn')
       if (logoutBtn) {
@@ -464,6 +476,19 @@ export const globalFunctions = {
       menu.classList.remove('active')
       btn.classList.remove('active')
       console.log('🍔 Hamburger menu closed')
+
+      // Resume game if it was auto-paused
+      if ((menu as any).wasGameRunning) {
+        const game = getGame()
+        if (game) {
+          const gameScene = game.scene.getScene('GameScene')
+          if (gameScene && gameScene.scene.isPaused('GameScene')) {
+            game.scene.resume('GameScene')
+            console.log('▶️ Game automatically resumed (hamburger menu closed)')
+          }
+        }
+        ;(menu as any).wasGameRunning = false
+      }
     }
   },
 

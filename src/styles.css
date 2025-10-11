@@ -239,8 +239,9 @@ body {
     /* Hamburger Menu Styles */
     .hamburger-btn {
       position: fixed;
-      top: 1rem;
-      left: 1rem;
+      top: 50%;
+      left: 1.5rem;
+      transform: translateY(-50%);
       z-index: 10000;
       width: 50px;
       height: 50px;
@@ -258,9 +259,45 @@ body {
       padding: 0;
     }
 
+    /* Mobile positioning for hamburger button */
+    @media (max-width: 768px) {
+      .hamburger-btn {
+        top: 1rem;
+        left: 1rem;
+        transform: none;
+        width: 45px;
+        height: 45px;
+      }
+
+      .hamburger-btn span {
+        width: 22px;
+        height: 2.5px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .hamburger-btn {
+        top: 0.75rem;
+        left: 0.75rem;
+        width: 42px;
+        height: 42px;
+      }
+
+      .hamburger-btn span {
+        width: 20px;
+        height: 2px;
+      }
+    }
+
     .hamburger-btn:hover {
       background: rgba(0, 0, 0, 0.7);
-      transform: scale(1.1);
+    }
+
+    /* Desktop hover effect only */
+    @media (min-width: 769px) {
+      .hamburger-btn:hover {
+        transform: translateY(-50%) scale(1.1);
+      }
     }
 
     .hamburger-btn span {
