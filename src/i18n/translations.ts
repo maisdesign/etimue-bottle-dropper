@@ -140,6 +140,14 @@ export interface Translation {
   darkPatternBenefit3: string
   subscribeNowBtn: string
   maybeLater: string
+
+  // Hamburger Menu
+  audioOn: string
+  audioOff: string
+  privacy: string
+  terms: string
+  logout: string
+  prizesButton: string
 }
 
 export const translations = {
@@ -284,7 +292,15 @@ export const translations = {
     darkPatternBenefit2: 'Track your progress and climb the rankings',
     darkPatternBenefit3: 'Join our exclusive gaming community',
     subscribeNowBtn: '📧 Subscribe & Unlock',
-    maybeLater: 'Maybe later (continue playing casually)'
+    maybeLater: 'Maybe later (continue playing casually)',
+
+    // Hamburger Menu
+    audioOn: 'Audio On',
+    audioOff: 'Audio Off',
+    privacy: 'Privacy',
+    terms: 'Terms',
+    logout: 'Logout',
+    prizesButton: 'What You Win'
   } as Translation,
 
   it: {
@@ -428,7 +444,15 @@ export const translations = {
     darkPatternBenefit2: 'Traccia i tuoi progressi e scala le classifiche',
     darkPatternBenefit3: 'Unisciti alla nostra community gaming esclusiva',
     subscribeNowBtn: '📧 Iscriviti & Sblocca',
-    maybeLater: 'Forse più tardi (continua a giocare casualmente)'
+    maybeLater: 'Forse più tardi (continua a giocare casualmente)',
+
+    // Hamburger Menu
+    audioOn: 'Audio On',
+    audioOff: 'Audio Off',
+    privacy: 'Privacy',
+    terms: 'Termini',
+    logout: 'Logout',
+    prizesButton: 'Cosa si vince'
   } as Translation
 }
 

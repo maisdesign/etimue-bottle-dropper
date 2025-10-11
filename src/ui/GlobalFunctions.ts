@@ -125,6 +125,12 @@ export const globalFunctions = {
       console.log('🎮 Game start overlay hidden')
     }
 
+    // Request fullscreen on mobile devices
+    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
+    if (isMobile) {
+      globalFunctions.requestFullscreen()
+    }
+
     // Show mobile touch controls when game starts
     const mobileControls = document.querySelector('.mobile-controls') as HTMLElement
     if (mobileControls) {
@@ -431,6 +437,116 @@ export const globalFunctions = {
         newsletterSection.style.display = 'none'
       }
     }
+  },
+
+  // Hamburger menu functions
+  openHamburgerMenu() {
+    const menu = document.getElementById('hamburger-menu')
+    const btn = document.getElementById('hamburger-btn')
+    if (menu && btn) {
+      menu.classList.add('active')
+      btn.classList.add('active')
+      console.log('🍔 Hamburger menu opened')
+
+      // Update logout button visibility
+      const logoutBtn = document.getElementById('hamburger-logout-btn')
+      if (logoutBtn) {
+        const authState = simpleAuth.getState()
+        logoutBtn.style.display = authState.isAuthenticated ? 'flex' : 'none'
+      }
+    }
+  },
+
+  closeHamburgerMenu() {
+    const menu = document.getElementById('hamburger-menu')
+    const btn = document.getElementById('hamburger-btn')
+    if (menu && btn) {
+      menu.classList.remove('active')
+      btn.classList.remove('active')
+      console.log('🍔 Hamburger menu closed')
+    }
+  },
+
+  toggleHamburgerMenu() {
+    const menu = document.getElementById('hamburger-menu')
+    if (menu && menu.classList.contains('active')) {
+      globalFunctions.closeHamburgerMenu()
+    } else {
+      globalFunctions.openHamburgerMenu()
+    }
+  },
+
+  toggleAudio() {
+    // TODO: Implement audio toggle when audio is added
+    console.log('🔊 Audio toggle (not yet implemented)')
+    alert('Audio feature coming soon!')
+  },
+
+  showPrizes() {
+    // TODO: Implement prizes modal
+    console.log('🏆 Prizes modal (reusing existing modal or creating new one)')
+    const t = languageManager.getTranslation()
+    alert(`🏆 ${t.gameModePrizeWeekly}\n${t.gameModePrizeMonthly}`)
+  },
+
+  showPrivacy() {
+    // TODO: Implement privacy page
+    console.log('🔐 Privacy page')
+    window.open('https://www.etimue.it/privacy', '_blank')
+  },
+
+  showTerms() {
+    // TODO: Implement terms page
+    console.log('📜 Terms page')
+    window.open('https://www.etimue.it/terms', '_blank')
+  },
+
+  async logout() {
+    const confirmed = confirm(languageManager.getCurrentLanguage() === 'it' ? 'Sei sicuro di voler uscire?' : 'Are you sure you want to logout?')
+    if (confirmed) {
+      await simpleAuth.signOut()
+      console.log('🚪 User logged out')
+      window.location.reload()
+    }
+  },
+
+  // Fullscreen for mobile
+  async requestFullscreen() {
+    try {
+      const elem = document.documentElement
+
+      if (elem.requestFullscreen) {
+        await elem.requestFullscreen()
+      } else if ((elem as any).webkitRequestFullscreen) {
+        await (elem as any).webkitRequestFullscreen()
+      } else if ((elem as any).mozRequestFullScreen) {
+        await (elem as any).mozRequestFullScreen()
+      } else if ((elem as any).msRequestFullscreen) {
+        await (elem as any).msRequestFullscreen()
+      }
+
+      console.log('📱 Fullscreen mode activated')
+    } catch (error) {
+      console.warn('⚠️ Fullscreen request failed:', error)
+    }
+  },
+
+  exitFullscreen() {
+    try {
+      if (document.exitFullscreen) {
+        document.exitFullscreen()
+      } else if ((document as any).webkitExitFullscreen) {
+        (document as any).webkitExitFullscreen()
+      } else if ((document as any).mozCancelFullScreen) {
+        (document as any).mozCancelFullScreen()
+      } else if ((document as any).msExitFullscreen) {
+        (document as any).msExitFullscreen()
+      }
+
+      console.log('📱 Fullscreen mode exited')
+    } catch (error) {
+      console.warn('⚠️ Exit fullscreen failed:', error)
+    }
   }
 }
 
@@ -448,6 +564,16 @@ declare global {
     hideGameStartOverlay: () => void
     subscribeToNewsletter: () => Promise<void>
     verifyNewsletterSubscription: () => Promise<void>
+    openHamburgerMenu: () => void
+    closeHamburgerMenu: () => void
+    toggleHamburgerMenu: () => void
+    toggleAudio: () => void
+    showPrizes: () => void
+    showPrivacy: () => void
+    showTerms: () => void
+    logout: () => Promise<void>
+    requestFullscreen: () => Promise<void>
+    exitFullscreen: () => void
   }
 }
 
@@ -476,18 +602,19 @@ function updateTranslations() {
     }
   })
 
-  // Update language button
-  const languageBtn = document.getElementById('language-btn')
-  if (languageBtn) {
+  // Update language button in hamburger menu
+  const hamburgerLangText = document.getElementById('hamburger-lang-text')
+  if (hamburgerLangText) {
     const currentLang = languageManager.getCurrentLanguage()
-    languageBtn.textContent = `🌍 ${currentLang.toUpperCase()}`
+    hamburgerLangText.textContent = currentLang.toUpperCase()
   }
 
   // Update character button
   const characterBtn = document.getElementById('character-btn')
-  if (characterBtn) {
+  const characterName = document.getElementById('character-name')
+  if (characterBtn && characterName) {
     const currentCharacter = characterManager.getCurrentCharacterName()
-    characterBtn.textContent = `🐱 ${currentCharacter}`
+    characterName.textContent = currentCharacter
   }
 
   document.documentElement.lang = languageManager.getCurrentLanguage()
@@ -502,18 +629,42 @@ function updateCharacterDependentTranslations() {
       element.textContent = languageManager.translateWithCharacter(key as any)
     }
   })
+
+  // Update character button
+  const characterName = document.getElementById('character-name')
+  if (characterName) {
+    const currentCharacter = characterManager.getCurrentCharacterName()
+    characterName.textContent = currentCharacter
+  }
 }
 
 // Initialize UI management
 function initializeUI() {
+  // Hamburger menu event listeners
+  const hamburgerBtn = document.getElementById('hamburger-btn')
+  const hamburgerClose = document.getElementById('hamburger-close')
+  const hamburgerMenu = document.getElementById('hamburger-menu')
+
+  if (hamburgerBtn) {
+    hamburgerBtn.addEventListener('click', globalFunctions.toggleHamburgerMenu)
+  }
+
+  if (hamburgerClose) {
+    hamburgerClose.addEventListener('click', globalFunctions.closeHamburgerMenu)
+  }
+
+  // Close menu when clicking on backdrop
+  if (hamburgerMenu) {
+    hamburgerMenu.addEventListener('click', (e) => {
+      if (e.target === hamburgerMenu) {
+        globalFunctions.closeHamburgerMenu()
+      }
+    })
+  }
+
   languageManager.onLanguageChange(updateTranslations)
   characterManager.onCharacterChange(() => {
     updateCharacterDependentTranslations()
-    const characterBtn = document.getElementById('character-btn')
-    if (characterBtn) {
-      const currentCharacter = characterManager.getCurrentCharacterName()
-      characterBtn.textContent = `🐱 ${currentCharacter}`
-    }
   })
 
   // Initialize newsletter functionality
@@ -605,6 +756,16 @@ window.showGameStartOverlay = globalFunctions.showGameStartOverlay
 window.hideGameStartOverlay = globalFunctions.hideGameStartOverlay
 window.subscribeToNewsletter = globalFunctions.subscribeToNewsletter
 window.verifyNewsletterSubscription = globalFunctions.verifyNewsletterSubscription
+window.openHamburgerMenu = globalFunctions.openHamburgerMenu
+window.closeHamburgerMenu = globalFunctions.closeHamburgerMenu
+window.toggleHamburgerMenu = globalFunctions.toggleHamburgerMenu
+window.toggleAudio = globalFunctions.toggleAudio
+window.showPrizes = globalFunctions.showPrizes
+window.showPrivacy = globalFunctions.showPrivacy
+window.showTerms = globalFunctions.showTerms
+window.logout = globalFunctions.logout
+window.requestFullscreen = globalFunctions.requestFullscreen
+window.exitFullscreen = globalFunctions.exitFullscreen
 
 // 🔧 DEBUG FUNCTIONS - Development only
 if (import.meta.env.MODE === 'development' || window.location.hostname === 'localhost') {
