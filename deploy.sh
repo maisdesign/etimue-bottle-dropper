@@ -22,7 +22,7 @@ cp -r dist/* ../bottledropper2/
 echo "📝 Adding deployment commit..."
 cd ../bottledropper2
 git add .
-git commit -m "✅ BUILD UPDATED: CRITICAL FIX - Remove obsolete service worker files causing 404 errors"
+git commit -m "✨ DEPLOY: Hamburger menu + mobile fullscreen (v2.3.1)"
 
 echo "🚀 Pushing to Netlify..."
 git push origin main
