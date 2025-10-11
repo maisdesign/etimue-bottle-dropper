@@ -22,7 +22,7 @@ cp -r dist/* ../bottledropper2/
 echo "📝 Adding deployment commit..."
 cd ../bottledropper2
 git add .
-git commit -m "✨ DEPLOY: Hamburger menu + mobile fullscreen (v2.3.1)"
+git commit -m "🐛 DEPLOY: Hamburger menu UX fixes (positioning + auto-pause)"
 
 echo "🚀 Pushing to Netlify..."
 git push origin main
