@@ -1986,3 +1986,22 @@ body {
         text-align: center;
       }
     }
+
+    .btn-fullscreen {
+      background: linear-gradient(45deg, #4CAF50, #45a049);
+      border-color: #4CAF50;
+      min-width: 180px;
+    }
+
+    .btn-fullscreen:hover {
+      background: linear-gradient(45deg, #45a049, #3d8b40);
+    }
+
+    .btn-fullscreen.fullscreen-active {
+      background: linear-gradient(45deg, #ff9800, #f57c00);
+      border-color: #ff9800;
+    }
+
+    .btn-fullscreen.fullscreen-active:hover {
+      background: linear-gradient(45deg, #f57c00, #ef6c00);
+    }

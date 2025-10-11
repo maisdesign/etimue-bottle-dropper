@@ -148,6 +148,10 @@ export interface Translation {
   terms: string
   logout: string
   prizesButton: string
+
+  // Fullscreen
+  enterFullscreen: string
+  exitFullscreen: string
 }
 
 export const translations = {
@@ -300,7 +304,11 @@ export const translations = {
     privacy: 'Privacy',
     terms: 'Terms',
     logout: 'Logout',
-    prizesButton: 'What You Win'
+    prizesButton: 'What You Win',
+
+    // Fullscreen
+    enterFullscreen: 'Fullscreen',
+    exitFullscreen: 'Exit Fullscreen'
   } as Translation,
 
   it: {
@@ -452,7 +460,11 @@ export const translations = {
     privacy: 'Privacy',
     terms: 'Termini',
     logout: 'Logout',
-    prizesButton: 'Cosa si vince'
+    prizesButton: 'Cosa si vince',
+
+    // Fullscreen
+    enterFullscreen: 'Schermo Intero',
+    exitFullscreen: 'Esci da Schermo Intero'
   } as Translation
 }
 

@@ -125,12 +125,6 @@ export const globalFunctions = {
       console.log('🎮 Game start overlay hidden')
     }
 
-    // Request fullscreen on mobile devices
-    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
-    if (isMobile) {
-      globalFunctions.requestFullscreen()
-    }
-
     // Show mobile touch controls when game starts
     const mobileControls = document.querySelector('.mobile-controls') as HTMLElement
     if (mobileControls) {
@@ -551,6 +545,7 @@ export const globalFunctions = {
       }
 
       console.log('📱 Fullscreen mode activated')
+      globalFunctions.updateFullscreenButton()
     } catch (error) {
       console.warn('⚠️ Fullscreen request failed:', error)
     }
@@ -569,8 +564,52 @@ export const globalFunctions = {
       }
 
       console.log('📱 Fullscreen mode exited')
+      globalFunctions.updateFullscreenButton()
     } catch (error) {
       console.warn('⚠️ Exit fullscreen failed:', error)
+    }
+  },
+
+  toggleFullscreen() {
+    const isFullscreen = document.fullscreenElement ||
+                        (document as any).webkitFullscreenElement ||
+                        (document as any).mozFullScreenElement ||
+                        (document as any).msFullscreenElement
+
+    if (isFullscreen) {
+      globalFunctions.exitFullscreen()
+    } else {
+      globalFunctions.requestFullscreen()
+    }
+  },
+
+  updateFullscreenButton() {
+    const btn = document.getElementById('fullscreen-btn')
+    const text = document.getElementById('fullscreen-text')
+    if (!btn || !text) return
+
+    const isFullscreen = document.fullscreenElement ||
+                        (document as any).webkitFullscreenElement ||
+                        (document as any).mozFullScreenElement ||
+                        (document as any).msFullscreenElement
+
+    const t = languageManager.getTranslation()
+    if (isFullscreen) {
+      text.textContent = t.exitFullscreen || 'Exit Fullscreen'
+      btn.classList.add('fullscreen-active')
+    } else {
+      text.textContent = t.enterFullscreen || 'Fullscreen'
+      btn.classList.remove('fullscreen-active')
+    }
+  },
+
+  checkMobileAndShowFullscreenButton() {
+    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
+    const fullscreenBtn = document.getElementById('fullscreen-btn')
+
+    if (fullscreenBtn && isMobile) {
+      fullscreenBtn.style.display = 'inline-flex'
+      console.log('📱 Fullscreen button shown for mobile device')
     }
   }
 }
@@ -599,6 +638,7 @@ declare global {
     logout: () => Promise<void>
     requestFullscreen: () => Promise<void>
     exitFullscreen: () => void
+    toggleFullscreen: () => void
   }
 }
 
@@ -686,6 +726,15 @@ function initializeUI() {
       }
     })
   }
+
+  // Check if mobile and show fullscreen button
+  globalFunctions.checkMobileAndShowFullscreenButton()
+
+  // Listen for fullscreen changes
+  document.addEventListener('fullscreenchange', () => globalFunctions.updateFullscreenButton())
+  document.addEventListener('webkitfullscreenchange', () => globalFunctions.updateFullscreenButton())
+  document.addEventListener('mozfullscreenchange', () => globalFunctions.updateFullscreenButton())
+  document.addEventListener('MSFullscreenChange', () => globalFunctions.updateFullscreenButton())
 
   languageManager.onLanguageChange(updateTranslations)
   characterManager.onCharacterChange(() => {
@@ -791,6 +840,7 @@ window.showTerms = globalFunctions.showTerms
 window.logout = globalFunctions.logout
 window.requestFullscreen = globalFunctions.requestFullscreen
 window.exitFullscreen = globalFunctions.exitFullscreen
+window.toggleFullscreen = globalFunctions.toggleFullscreen
 
 // 🔧 DEBUG FUNCTIONS - Development only
 if (import.meta.env.MODE === 'development' || window.location.hostname === 'localhost') {
