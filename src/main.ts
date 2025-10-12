@@ -18,7 +18,7 @@ const config: Types.Core.GameConfig = {
   width: isMobilePortrait ? 600 : 800,
   height: isMobilePortrait ? 1000 : 600,
   parent: 'game-container',
-  backgroundColor: '#87CEEB',
+  backgroundColor: '#2E4B16', // Dark green to match gradient edges
   scale: {
     mode: Phaser.Scale.FIT,
     autoCenter: Phaser.Scale.CENTER_BOTH,

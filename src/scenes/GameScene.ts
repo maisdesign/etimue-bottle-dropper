@@ -40,25 +40,32 @@ export class GameScene extends Scene {
 
     // Create graphics object for radial gradient background
     const graphics = this.add.graphics()
+
+    // First: Fill entire screen with dark green base (#2E4B16)
+    graphics.fillStyle(0x2E4B16, 1.0)
+    graphics.fillRect(0, 0, width, height)
+
+    // Second: Create radial gradient overlay from center
     const centerX = width / 2
     const centerY = height / 2
-    const maxRadius = Math.max(width, height) * 0.7
+    // Calculate diagonal distance to ensure we cover corners
+    const maxRadius = Math.sqrt(width * width + height * height)
 
-    // Irish pub green gradient: #64A834 (center) to #2E4B16 (edges)
-    // Draw multiple circles with decreasing alpha to create smooth gradient
-    const steps = 60
-    for (let i = steps; i >= 0; i--) {
+    // Irish pub green gradient: #64A834 (bright center) fading to edges
+    const steps = 100
+    for (let i = 0; i <= steps; i++) {
       const ratio = i / steps
-      const currentRadius = maxRadius * ratio
+      const currentRadius = (maxRadius * ratio) * 0.7
 
-      // Interpolate colors from edge (#2E4B16) to center (#64A834)
-      const r = Math.floor(46 + (100 - 46) * ratio)
-      const g = Math.floor(75 + (168 - 75) * ratio)
-      const b = Math.floor(22 + (52 - 22) * ratio)
+      // Interpolate from bright center (#64A834) to transparent (reveals dark base)
+      const r = Math.floor(100 - (100 - 46) * ratio)
+      const g = Math.floor(168 - (168 - 75) * ratio)
+      const b = Math.floor(52 - (52 - 22) * ratio)
 
       const color = (r << 16) | (g << 8) | b
+      const alpha = 1.0 - (ratio * 0.6) // Fade out towards edges
 
-      graphics.fillStyle(color, 1.0)
+      graphics.fillStyle(color, alpha)
       graphics.fillCircle(centerX, centerY, currentRadius)
     }
 

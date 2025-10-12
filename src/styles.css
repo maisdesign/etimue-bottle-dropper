@@ -239,7 +239,7 @@ body {
     /* Hamburger Menu Styles - RIGHT SIDE */
     .hamburger-btn {
       position: fixed;
-      top: 50%;
+      top: 65%;
       right: 1.5rem;
       transform: translateY(-50%);
       z-index: 10000;
