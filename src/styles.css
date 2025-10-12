@@ -236,11 +236,11 @@ body {
       display: none !important;
     }
 
-    /* Hamburger Menu Styles */
+    /* Hamburger Menu Styles - RIGHT SIDE */
     .hamburger-btn {
       position: fixed;
       top: 50%;
-      left: 1.5rem;
+      right: 1.5rem;
       transform: translateY(-50%);
       z-index: 10000;
       width: 50px;
@@ -259,11 +259,11 @@ body {
       padding: 0;
     }
 
-    /* Mobile positioning for hamburger button */
+    /* Mobile positioning for hamburger button - RIGHT SIDE */
     @media (max-width: 768px) {
       .hamburger-btn {
         top: 1rem;
-        left: 1rem;
+        right: 1rem;
         transform: none;
         width: 45px;
         height: 45px;
@@ -278,7 +278,7 @@ body {
     @media (max-width: 480px) {
       .hamburger-btn {
         top: 0.75rem;
-        left: 0.75rem;
+        right: 0.75rem;
         width: 42px;
         height: 42px;
       }
@@ -356,10 +356,11 @@ body {
       width: 280px;
       height: 100%;
       background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      box-shadow: 4px 0 20px rgba(0, 0, 0, 0.5);
-      transform: translateX(-100%);
+      box-shadow: -4px 0 20px rgba(0, 0, 0, 0.5);
+      transform: translateX(100%);
       transition: transform 0.3s ease;
       overflow-y: auto;
+      margin-left: auto;
     }
 
     .hamburger-menu.active .hamburger-menu-content {
@@ -432,6 +433,63 @@ body {
 
     .hamburger-logout:hover {
       background: rgba(255, 59, 48, 0.3);
+    }
+
+    /* Pause Button - Positioned BELOW hamburger on right side */
+    .pause-btn {
+      position: fixed;
+      top: calc(50% + 60px);
+      right: 1.5rem;
+      transform: translateY(-50%);
+      z-index: 10000;
+      width: 50px;
+      height: 50px;
+      background: rgba(255, 165, 0, 0.8);
+      border: 2px solid rgba(255, 255, 255, 0.8);
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      backdrop-filter: blur(10px);
+      transition: all 0.3s ease;
+      padding: 0;
+      font-size: 24px;
+    }
+
+    .pause-btn:hover {
+      background: rgba(255, 140, 0, 0.9);
+      transform: translateY(-50%) scale(1.1);
+    }
+
+    .pause-btn.paused {
+      background: rgba(76, 175, 80, 0.8);
+    }
+
+    .pause-btn.paused:hover {
+      background: rgba(56, 142, 60, 0.9);
+    }
+
+    /* Mobile positioning for pause button */
+    @media (max-width: 768px) {
+      .pause-btn {
+        top: 4.5rem;
+        right: 1rem;
+        transform: none;
+        width: 45px;
+        height: 45px;
+        font-size: 22px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .pause-btn {
+        top: 4rem;
+        right: 0.75rem;
+        width: 42px;
+        height: 42px;
+        font-size: 20px;
+      }
     }
 
     /* Large Button Styles */

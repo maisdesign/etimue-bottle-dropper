@@ -35,9 +35,15 @@ export class GameScene extends Scene {
   create(): void {
     console.log('🎮 GameScene: Initializing game...')
 
-    // Set background
+    // Set background - scale to fill entire screen
     const { width, height } = this.cameras.main
-    this.add.image(width / 2, height / 2, 'background')
+    const bg = this.add.image(width / 2, height / 2, 'background')
+
+    // Calculate scale to cover entire screen
+    const scaleX = width / bg.width
+    const scaleY = height / bg.height
+    const scale = Math.max(scaleX, scaleY)
+    bg.setScale(scale)
 
     this.setupUI()
     this.setupGameObjects()
