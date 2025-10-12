@@ -2,14 +2,16 @@
 
 ## ✅ COMPLETATO OGGI (12 Ottobre 2025)
 
-### 🔧 Fix Fullscreen Mobile - Canvas Phaser Resize
+### 🔧 Fix Fullscreen Mobile - Soluzione CSS-Based
 - ✅ **PROBLEMA RISOLTO**: Fullscreen non copriva tutto lo schermo
-- ✅ Canvas Phaser ora si ridimensiona dinamicamente al fullscreen
-- ✅ `game.scale.setGameSize()` automatico su fullscreen enter/exit
-- ✅ Resize automatico da 800x600 a `window.innerWidth x innerHeight`
-- ✅ Event listeners fullscreenchange aggiornati con auto-resize
-- ✅ Restore automatico a dimensioni originali quando si esce
+- ✅ **APPROCCIO CORRETTO**: Soluzione CSS invece di resize canvas Phaser
+- ✅ CSS `body.fullscreen-active` con !important per override completo
+- ✅ Game container ridimensionato a 100vw/100vh (e 100dvw/100dvh)
+- ✅ Nascosti header, controls, footer, newsletter in fullscreen
+- ✅ Rimossi padding, margin, border, border-radius in fullscreen
+- ✅ Event listeners fullscreenchange gestiscono toggle CSS class
 - ✅ Deploy completato su Netlify
+- ⚠️ **NOTA**: Primo tentativo fallito con game.scale.setGameSize() - peggiorava il problema
 
 ### 🎯 OAuth Verificato Funzionante
 - ✅ Verificato screenshot console.txt - OAuth Google funziona
@@ -185,6 +187,6 @@ npm run preview      # Preview build locale
 ---
 
 **Ultimo aggiornamento**: 12 Ottobre 2025
-**Versione corrente**: v2.3.2 - Fullscreen Fix
+**Versione corrente**: v2.3.3 - Fullscreen CSS Fix
 **Stato**: ✅ Tutto funzionante e deployato
-**Commit**: b372a69d (dev) + 93739f1 (prod)
+**Commit**: ac70eb97 (dev) + 2269a6d (prod)
