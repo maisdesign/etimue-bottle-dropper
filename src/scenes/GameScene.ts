@@ -281,7 +281,9 @@ export class GameScene extends Scene {
       }
 
       // 🎮 PROGRESSIVE DIFFICULTY: Speed increases every 10 seconds
-      const baseSpeed = 200
+      // Adjust base speed based on screen height (taller screens need faster falling)
+      const { height } = this.cameras.main
+      const baseSpeed = height > 700 ? 330 : 200 // 65% faster for tall mobile screens
       const bottleSpeed = this.calculateBottleSpeed(baseSpeed)
       bottle.body.velocity.y = bottleSpeed
       bottle.body.velocity.x = Phaser.Math.Between(-50, 50)
@@ -353,7 +355,10 @@ export class GameScene extends Scene {
       powerup.setVisible(true)
 
       // Random velocity for more dynamic movement + progressive difficulty
-      const baseVelocityY = Phaser.Math.Between(120, 180)
+      // Adjust speed based on screen height (taller screens need faster falling)
+      const { height } = this.cameras.main
+      const speedMultiplier = height > 700 ? 1.65 : 1.0
+      const baseVelocityY = Phaser.Math.Between(Math.floor(120 * speedMultiplier), Math.floor(180 * speedMultiplier))
       const velocityY = this.calculateBottleSpeed(baseVelocityY)
       const velocityX = Phaser.Math.Between(-30, 30)
 
@@ -523,26 +528,70 @@ export class GameScene extends Scene {
     const { width, height } = this.cameras.main
     const t = languageManager.getTranslation()
 
-    const gameOverText = this.add.text(width / 2, height / 2, t.gameOver, {
+    const gameOverText = this.add.text(width / 2, height / 2 - 50, t.gameOver, {
       fontSize: Math.min(48, width * 0.06) + 'px',
       color: '#ff0000',
       fontFamily: 'Arial'
     }).setOrigin(0.5)
 
-    const finalScoreText = this.add.text(width / 2, height / 2 + 50, `${t.finalScore}: ${this.score}`, {
+    const finalScoreText = this.add.text(width / 2, height / 2, `${t.finalScore}: ${this.score}`, {
       fontSize: Math.min(24, width * 0.03) + 'px',
       color: '#000000',
       fontFamily: 'Arial'
     }).setOrigin(0.5)
 
-    const restartText = this.add.text(width / 2, height / 2 + 100, t.restartMessage, {
+    const restartText = this.add.text(width / 2, height / 2 + 50, t.restartMessage, {
       fontSize: Math.min(18, width * 0.025) + 'px',
       color: '#666666',
       fontFamily: 'Arial'
     }).setOrigin(0.5)
 
-    // Store game over texts for cleanup
-    this.gameOverTexts.push(gameOverText, finalScoreText, restartText)
+    // Add clickable "NUOVA PARTITA" button
+    const buttonWidth = Math.min(250, width * 0.4)
+    const buttonHeight = 50
+    const buttonY = height / 2 + 120
+
+    // Button background
+    const buttonBg = this.add.rectangle(width / 2, buttonY, buttonWidth, buttonHeight, 0x4CAF50, 1)
+    buttonBg.setInteractive({ useHandCursor: true })
+    buttonBg.setStrokeStyle(3, 0x2E7D32)
+
+    // Button text
+    const buttonText = this.add.text(width / 2, buttonY, t.newGame || '🎮 NUOVA PARTITA', {
+      fontSize: Math.min(20, width * 0.028) + 'px',
+      color: '#ffffff',
+      fontFamily: 'Arial',
+      fontStyle: 'bold'
+    }).setOrigin(0.5)
+
+    // Button hover effect
+    buttonBg.on('pointerover', () => {
+      buttonBg.setFillStyle(0x66BB6A, 1)
+    })
+
+    buttonBg.on('pointerout', () => {
+      buttonBg.setFillStyle(0x4CAF50, 1)
+    })
+
+    // Button click handler
+    buttonBg.on('pointerdown', () => {
+      console.log('🔄 NUOVA PARTITA clicked from GameOver screen')
+      // Clear all game over elements
+      this.gameOverTexts.forEach(text => text.destroy())
+      this.gameOverTexts = []
+      buttonBg.destroy()
+      buttonText.destroy()
+
+      // Clear all remaining bottles and powerups
+      this.bottles.clear(true, true)
+      this.powerups.clear(true, true)
+
+      // Restart the game
+      this.startGame()
+    })
+
+    // Store game over elements for cleanup
+    this.gameOverTexts.push(gameOverText, finalScoreText, restartText, buttonBg as any, buttonText)
 
     console.log(`🎮 Game Over! Final Score: ${this.score}`)
 

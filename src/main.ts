@@ -9,10 +9,14 @@ import { disableConsoleLogs } from '@/utils/logger'
 disableConsoleLogs()
 
 // Game configuration
+// Detect if device is mobile in portrait mode for optimal game dimensions
+const isMobilePortrait = window.innerWidth < 768 && window.innerHeight > window.innerWidth
+
 const config: Types.Core.GameConfig = {
   type: Phaser.AUTO,
-  width: 800,
-  height: 600,
+  // Use taller canvas for mobile portrait, wider for desktop/landscape
+  width: isMobilePortrait ? 600 : 800,
+  height: isMobilePortrait ? 1000 : 600,
   parent: 'game-container',
   backgroundColor: '#87CEEB',
   scale: {
@@ -24,7 +28,7 @@ const config: Types.Core.GameConfig = {
     },
     max: {
       width: 1200,
-      height: 900
+      height: 1400
     }
   },
   physics: {
