@@ -56,6 +56,7 @@
 - [ ] Testare funzionalità fullscreen su vari browser mobile
 - [ ] Verificare touch controls durante fullscreen
 - [ ] Testare pause/resume gioco con hamburger menu
+- [ ] Valutare se implementare auto full screen su mobile
 
 ### 🎵 Audio System (Placeholder Attivo)
 - [ ] Implementare sistema audio del gioco

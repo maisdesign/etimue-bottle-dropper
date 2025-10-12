@@ -35,15 +35,35 @@ export class GameScene extends Scene {
   create(): void {
     console.log('🎮 GameScene: Initializing game...')
 
-    // Set background - scale to fill entire screen
+    // Set background - Create radial gradient directly with Phaser Graphics
     const { width, height } = this.cameras.main
-    const bg = this.add.image(width / 2, height / 2, 'background')
 
-    // Calculate scale to cover entire screen
-    const scaleX = width / bg.width
-    const scaleY = height / bg.height
-    const scale = Math.max(scaleX, scaleY)
-    bg.setScale(scale)
+    // Create graphics object for radial gradient background
+    const graphics = this.add.graphics()
+    const centerX = width / 2
+    const centerY = height / 2
+    const maxRadius = Math.max(width, height) * 0.7
+
+    // Irish pub green gradient: #64A834 (center) to #2E4B16 (edges)
+    // Draw multiple circles with decreasing alpha to create smooth gradient
+    const steps = 60
+    for (let i = steps; i >= 0; i--) {
+      const ratio = i / steps
+      const currentRadius = maxRadius * ratio
+
+      // Interpolate colors from edge (#2E4B16) to center (#64A834)
+      const r = Math.floor(46 + (100 - 46) * ratio)
+      const g = Math.floor(75 + (168 - 75) * ratio)
+      const b = Math.floor(22 + (52 - 22) * ratio)
+
+      const color = (r << 16) | (g << 8) | b
+
+      graphics.fillStyle(color, 1.0)
+      graphics.fillCircle(centerX, centerY, currentRadius)
+    }
+
+    // Set graphics to very bottom layer
+    graphics.setDepth(-1000)
 
     this.setupUI()
     this.setupGameObjects()
