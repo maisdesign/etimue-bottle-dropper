@@ -129,7 +129,7 @@ export class GameScene extends Scene {
 
     // Instructions - White text with dark shadow for readability
     this.instructionsText = this.add.text(width / 2, height * 0.12, languageManager.translateWithCharacter('gameInstructions'), {
-      fontSize: Math.min(18, width * 0.025) + 'px',
+      fontSize: Math.min(24, width * 0.035) + 'px',
       color: '#FFFFFF',
       fontFamily: 'Arial',
       fontStyle: 'bold',
@@ -139,7 +139,7 @@ export class GameScene extends Scene {
 
     // Rules - Light yellow with dark shadow
     this.rulesText = this.add.text(width / 2, height * 0.16, t.gameRules, {
-      fontSize: Math.min(14, width * 0.018) + 'px',
+      fontSize: Math.min(18, width * 0.025) + 'px',
       color: '#FFEB3B',
       fontFamily: 'Arial',
       stroke: '#000000',
