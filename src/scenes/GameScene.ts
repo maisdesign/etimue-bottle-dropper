@@ -89,7 +89,7 @@ export class GameScene extends Scene {
 
     // Score display - White text with dark shadow for visibility
     this.scoreText = this.add.text(16, 16, `${t.score}: 0`, {
-      fontSize: '24px',
+      fontSize: '26px',
       color: '#FFFFFF',
       fontFamily: 'Arial',
       fontStyle: 'bold',
@@ -98,8 +98,8 @@ export class GameScene extends Scene {
     })
 
     // Lives display - White text with dark shadow
-    this.livesText = this.add.text(16, 50, `${t.lives}: ❤️❤️❤️`, {
-      fontSize: '20px',
+    this.livesText = this.add.text(16, 52, `${t.lives}: ❤️❤️❤️`, {
+      fontSize: '22px',
       color: '#FFFFFF',
       fontFamily: 'Arial',
       fontStyle: 'bold',
@@ -109,7 +109,7 @@ export class GameScene extends Scene {
 
     // Timer display - White text with dark shadow
     this.timerText = this.add.text(width / 2, 16, `${t.time}: 60s`, {
-      fontSize: '24px',
+      fontSize: '26px',
       color: '#FFFFFF',
       fontFamily: 'Arial',
       fontStyle: 'bold',
@@ -117,15 +117,15 @@ export class GameScene extends Scene {
       strokeThickness: 4
     }).setOrigin(0.5)
 
-    // Power-up indicator - Yellow with dark stroke for maximum visibility
-    this.powerupText = this.add.text(width - 16, 16, '', {
-      fontSize: '18px',
+    // Power-up indicator (All Good) - MOVED BELOW OTHER TEXT to avoid hamburger overlap
+    this.powerupText = this.add.text(width / 2, 52, '', {
+      fontSize: '20px',
       color: '#FFD700',
       fontFamily: 'Arial',
       fontStyle: 'bold',
       stroke: '#000000',
       strokeThickness: 4
-    }).setOrigin(1, 0) // Right-aligned
+    }).setOrigin(0.5) // Center-aligned
 
     // Instructions - White text with dark shadow for readability
     this.instructionsText = this.add.text(width / 2, height * 0.12, languageManager.translateWithCharacter('gameInstructions'), {
@@ -663,7 +663,7 @@ export class GameScene extends Scene {
 
     const { width, height } = this.cameras.main
     const margin = Math.max(40, width * 0.05) // 5% margin or minimum 40px
-    const speed = Math.max(5, width * 0.006) // Responsive speed based on screen width
+    const speed = Math.max(6, width * 0.008) // FASTER: Increased from 0.006 to 0.008
 
     // Keyboard controls
     const cursors = this.input.keyboard?.createCursorKeys()
