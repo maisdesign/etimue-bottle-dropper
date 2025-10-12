@@ -59,39 +59,26 @@ export class BootScene extends Scene {
     this.load.image('background', 'data:image/svg+xml;base64,' + btoa(`
       <svg width="1200" height="1400" xmlns="http://www.w3.org/2000/svg">
         <defs>
-          <!-- Gradiente atmosfera pub irlandese: legno scuro e toni caldi -->
-          <linearGradient id="irishPubGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-            <stop offset="0%" style="stop-color:#2D5016;stop-opacity:1" />
-            <stop offset="50%" style="stop-color:#3E6B1F;stop-opacity:1" />
-            <stop offset="100%" style="stop-color:#1F3810;stop-opacity:1" />
-          </linearGradient>
-
-          <!-- Pattern texture legno -->
-          <pattern id="woodTexture" x="0" y="0" width="100" height="100" patternUnits="userSpaceOnUse">
-            <rect width="100" height="100" fill="#3A2F1B"/>
-            <line x1="0" y1="20" x2="100" y2="20" stroke="#4A3F2B" stroke-width="0.5" opacity="0.3"/>
-            <line x1="0" y1="40" x2="100" y2="40" stroke="#2A1F0B" stroke-width="0.5" opacity="0.3"/>
-            <line x1="0" y1="60" x2="100" y2="60" stroke="#4A3F2B" stroke-width="0.5" opacity="0.3"/>
-            <line x1="0" y1="80" x2="100" y2="80" stroke="#2A1F0B" stroke-width="0.5" opacity="0.3"/>
-          </pattern>
+          <!-- Gradiente radiale verde irlandese: chiaro al centro, scuro ai bordi -->
+          <radialGradient id="irishRadialGradient" cx="50%" cy="50%">
+            <stop offset="0%" style="stop-color:#64A834;stop-opacity:1" />
+            <stop offset="100%" style="stop-color:#2E4B16;stop-opacity:1" />
+          </radialGradient>
 
           <!-- Trifoglio irlandese per pattern decorativo -->
           <g id="clover">
-            <circle cx="5" cy="0" r="3" fill="#228B22" opacity="0.15"/>
-            <circle cx="0" cy="5" r="3" fill="#228B22" opacity="0.15"/>
-            <circle cx="10" cy="5" r="3" fill="#228B22" opacity="0.15"/>
-            <circle cx="5" cy="8" r="3" fill="#228B22" opacity="0.15"/>
-            <line x1="5" y1="8" x2="5" y2="14" stroke="#228B22" stroke-width="1" opacity="0.15"/>
+            <circle cx="5" cy="0" r="3" fill="#1F3810" opacity="0.1"/>
+            <circle cx="0" cy="5" r="3" fill="#1F3810" opacity="0.1"/>
+            <circle cx="10" cy="5" r="3" fill="#1F3810" opacity="0.1"/>
+            <circle cx="5" cy="8" r="3" fill="#1F3810" opacity="0.1"/>
+            <line x1="5" y1="8" x2="5" y2="14" stroke="#1F3810" stroke-width="1" opacity="0.1"/>
           </g>
         </defs>
 
-        <!-- Base: gradiente verde irlandese -->
-        <rect width="1200" height="1400" fill="url(#irishPubGradient)"/>
+        <!-- Base: gradiente radiale verde irlandese -->
+        <rect width="1200" height="1400" fill="url(#irishRadialGradient)"/>
 
-        <!-- Overlay texture legno subtle -->
-        <rect width="1200" height="1400" fill="url(#woodTexture)" opacity="0.1"/>
-
-        <!-- Trifogli decorativi sparsi -->
+        <!-- Trifogli decorativi sparsi (più sottili per non disturbare) -->
         <use href="#clover" x="100" y="150" transform="scale(1.5)"/>
         <use href="#clover" x="900" y="250" transform="scale(1.2)"/>
         <use href="#clover" x="200" y="500" transform="scale(1.8)"/>
@@ -100,12 +87,6 @@ export class BootScene extends Scene {
         <use href="#clover" x="1000" y="1100" transform="scale(1.4)"/>
         <use href="#clover" x="150" y="1250" transform="scale(1.7)"/>
         <use href="#clover" x="700" y="400" transform="scale(1.1)"/>
-
-        <!-- Accenti dorati subtle per atmosfera pub -->
-        <circle cx="50" cy="100" r="2" fill="#FFD700" opacity="0.2"/>
-        <circle cx="1100" cy="300" r="2" fill="#FFD700" opacity="0.2"/>
-        <circle cx="300" cy="800" r="2" fill="#FFD700" opacity="0.2"/>
-        <circle cx="950" cy="1200" r="2" fill="#FFD700" opacity="0.2"/>
       </svg>
     `))
   }

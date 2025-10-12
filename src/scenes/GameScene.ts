@@ -54,45 +54,63 @@ export class GameScene extends Scene {
     const { width, height } = this.cameras.main
     const t = languageManager.getTranslation()
 
-    // Score display
+    // Score display - White text with dark shadow for visibility
     this.scoreText = this.add.text(16, 16, `${t.score}: 0`, {
       fontSize: '24px',
-      color: '#000000',
-      fontFamily: 'Arial'
+      color: '#FFFFFF',
+      fontFamily: 'Arial',
+      fontStyle: 'bold',
+      stroke: '#000000',
+      strokeThickness: 4
     })
 
-    // Lives display
+    // Lives display - White text with dark shadow
     this.livesText = this.add.text(16, 50, `${t.lives}: ❤️❤️❤️`, {
       fontSize: '20px',
-      color: '#000000',
-      fontFamily: 'Arial'
+      color: '#FFFFFF',
+      fontFamily: 'Arial',
+      fontStyle: 'bold',
+      stroke: '#000000',
+      strokeThickness: 4
     })
 
-    // Timer display
+    // Timer display - White text with dark shadow
     this.timerText = this.add.text(width / 2, 16, `${t.time}: 60s`, {
       fontSize: '24px',
-      color: '#000000',
-      fontFamily: 'Arial'
+      color: '#FFFFFF',
+      fontFamily: 'Arial',
+      fontStyle: 'bold',
+      stroke: '#000000',
+      strokeThickness: 4
     }).setOrigin(0.5)
 
-    // Power-up indicator - positioned from right edge with right alignment
+    // Power-up indicator - Yellow with dark stroke for maximum visibility
     this.powerupText = this.add.text(width - 16, 16, '', {
       fontSize: '18px',
       color: '#FFD700',
-      fontFamily: 'Arial'
+      fontFamily: 'Arial',
+      fontStyle: 'bold',
+      stroke: '#000000',
+      strokeThickness: 4
     }).setOrigin(1, 0) // Right-aligned
 
-    // Instructions
+    // Instructions - White text with dark shadow for readability
     this.instructionsText = this.add.text(width / 2, height * 0.12, languageManager.translateWithCharacter('gameInstructions'), {
       fontSize: Math.min(18, width * 0.025) + 'px',
-      color: '#000000',
-      fontFamily: 'Arial'
+      color: '#FFFFFF',
+      fontFamily: 'Arial',
+      fontStyle: 'bold',
+      stroke: '#000000',
+      strokeThickness: 3
     }).setOrigin(0.5)
 
+    // Rules - Light yellow with dark shadow
     this.rulesText = this.add.text(width / 2, height * 0.16, t.gameRules, {
       fontSize: Math.min(14, width * 0.018) + 'px',
-      color: '#333333',
-      fontFamily: 'Arial'
+      color: '#FFEB3B',
+      fontFamily: 'Arial',
+      stroke: '#000000',
+      strokeThickness: 3
     }).setOrigin(0.5)
 
     // Listen for language changes and update UI texts
@@ -530,20 +548,28 @@ export class GameScene extends Scene {
 
     const gameOverText = this.add.text(width / 2, height / 2 - 50, t.gameOver, {
       fontSize: Math.min(48, width * 0.06) + 'px',
-      color: '#ff0000',
-      fontFamily: 'Arial'
+      color: '#FF1744',
+      fontFamily: 'Arial',
+      fontStyle: 'bold',
+      stroke: '#000000',
+      strokeThickness: 6
     }).setOrigin(0.5)
 
     const finalScoreText = this.add.text(width / 2, height / 2, `${t.finalScore}: ${this.score}`, {
       fontSize: Math.min(24, width * 0.03) + 'px',
-      color: '#000000',
-      fontFamily: 'Arial'
+      color: '#FFFFFF',
+      fontFamily: 'Arial',
+      fontStyle: 'bold',
+      stroke: '#000000',
+      strokeThickness: 4
     }).setOrigin(0.5)
 
     const restartText = this.add.text(width / 2, height / 2 + 50, t.restartMessage, {
       fontSize: Math.min(18, width * 0.025) + 'px',
-      color: '#666666',
-      fontFamily: 'Arial'
+      color: '#FFEB3B',
+      fontFamily: 'Arial',
+      stroke: '#000000',
+      strokeThickness: 3
     }).setOrigin(0.5)
 
     // Add clickable "NUOVA PARTITA" button
@@ -679,8 +705,11 @@ export class GameScene extends Scene {
 
         const casualText = this.add.text(width / 2, height / 2 + 150, t.casualModeScoreBlocked || 'Casual Mode: Score not saved', {
           fontSize: Math.min(16, width * 0.022) + 'px',
-          color: '#FFA500',
-          fontFamily: 'Arial'
+          color: '#FFA726',
+          fontFamily: 'Arial',
+          fontStyle: 'bold',
+          stroke: '#000000',
+          strokeThickness: 3
         }).setOrigin(0.5)
 
         this.gameOverTexts.push(casualText)
@@ -704,8 +733,11 @@ export class GameScene extends Scene {
 
         const consentText = this.add.text(width / 2, height / 2 + 150, t.newsletterRequiredForScore || 'Newsletter subscription required for competition', {
           fontSize: Math.min(16, width * 0.022) + 'px',
-          color: '#FFA500',
-          fontFamily: 'Arial'
+          color: '#FFA726',
+          fontFamily: 'Arial',
+          fontStyle: 'bold',
+          stroke: '#000000',
+          strokeThickness: 3
         }).setOrigin(0.5)
 
         this.gameOverTexts.push(consentText)
