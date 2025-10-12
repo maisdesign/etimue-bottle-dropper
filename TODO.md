@@ -2,6 +2,16 @@
 
 ## ✅ COMPLETATO OGGI (12 Ottobre 2025)
 
+### 🎮 Ottimizzazione Mobile Portrait + UX Improvements
+- ✅ **Area di gioco estesa**: 600x1000px per mobile portrait (era 800x600)
+- ✅ **Velocità aumentata**: Bottiglie +65% su schermi alti (330px/s vs 200px/s)
+- ✅ **Pulsante NUOVA PARTITA**: Aggiunto in hamburger menu (in cima)
+- ✅ **Pulsante NUOVA PARTITA**: Aggiunto in GameOver screen (verde, cliccabile, hover effect)
+- ✅ **Sfondo Pub Irlandese**: Gradiente verde scuro + texture legno + trifogli decorativi + accenti oro
+- ✅ **Detection mobile**: Automatic portrait mode detection (window.innerWidth < 768)
+- ✅ **Speed adjustment**: Dynamic based on screen height
+- ✅ Deploy completato su Netlify
+
 ### 🔧 Fix Fullscreen Mobile - Soluzione CSS-Based
 - ✅ **PROBLEMA RISOLTO**: Fullscreen non copriva tutto lo schermo
 - ✅ **APPROCCIO CORRETTO**: Soluzione CSS invece di resize canvas Phaser
@@ -187,6 +197,6 @@ npm run preview      # Preview build locale
 ---
 
 **Ultimo aggiornamento**: 12 Ottobre 2025
-**Versione corrente**: v2.3.3 - Fullscreen CSS Fix
+**Versione corrente**: v2.4.0 - Mobile Portrait + Irish Pub Background
 **Stato**: ✅ Tutto funzionante e deployato
-**Commit**: ac70eb97 (dev) + 2269a6d (prod)
+**Commit**: 83f56506 (dev) + b8511e9 (prod)
