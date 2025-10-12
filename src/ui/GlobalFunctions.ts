@@ -546,13 +546,9 @@ export const globalFunctions = {
 
       console.log('📱 Fullscreen mode activated')
 
-      // Change Phaser scale mode to cover entire screen
-      const game = getGame()
-      if (game) {
-        game.scale.setGameSize(window.innerWidth, window.innerHeight)
-        game.scale.refresh()
-        console.log('🎮 Phaser canvas resized to:', window.innerWidth, 'x', window.innerHeight)
-      }
+      // Add CSS class to body for fullscreen styling
+      document.body.classList.add('fullscreen-active')
+      console.log('🎨 Fullscreen CSS applied')
 
       globalFunctions.updateFullscreenButton()
     } catch (error) {
@@ -574,13 +570,9 @@ export const globalFunctions = {
 
       console.log('📱 Fullscreen mode exited')
 
-      // Restore original Phaser scale settings
-      const game = getGame()
-      if (game) {
-        game.scale.setGameSize(800, 600)
-        game.scale.refresh()
-        console.log('🎮 Phaser canvas restored to: 800 x 600')
-      }
+      // Remove CSS class from body
+      document.body.classList.remove('fullscreen-active')
+      console.log('🎨 Fullscreen CSS removed')
 
       globalFunctions.updateFullscreenButton()
     } catch (error) {
@@ -752,25 +744,18 @@ function initializeUI() {
   const handleFullscreenChange = () => {
     globalFunctions.updateFullscreenButton()
 
-    // Automatically resize game when fullscreen state changes
-    const game = getGame()
-    if (game) {
-      const isFullscreen = document.fullscreenElement ||
-                          (document as any).webkitFullscreenElement ||
-                          (document as any).mozFullScreenElement ||
-                          (document as any).msFullscreenElement
+    // Toggle CSS class based on fullscreen state
+    const isFullscreen = document.fullscreenElement ||
+                        (document as any).webkitFullscreenElement ||
+                        (document as any).mozFullScreenElement ||
+                        (document as any).msFullscreenElement
 
-      if (isFullscreen) {
-        // Fullscreen: resize to full window
-        game.scale.setGameSize(window.innerWidth, window.innerHeight)
-        game.scale.refresh()
-        console.log('🎮 Phaser auto-resized to fullscreen:', window.innerWidth, 'x', window.innerHeight)
-      } else {
-        // Exited fullscreen: restore original size
-        game.scale.setGameSize(800, 600)
-        game.scale.refresh()
-        console.log('🎮 Phaser auto-restored to: 800 x 600')
-      }
+    if (isFullscreen) {
+      document.body.classList.add('fullscreen-active')
+      console.log('🎨 Fullscreen CSS applied (event)')
+    } else {
+      document.body.classList.remove('fullscreen-active')
+      console.log('🎨 Fullscreen CSS removed (event)')
     }
   }
 
