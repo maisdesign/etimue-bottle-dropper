@@ -1,43 +1,38 @@
 # TODO - Etimuè Bottle Dropper
 
-## ✅ COMPLETATO OGGI (11 Ottobre 2025)
+## ✅ COMPLETATO OGGI (12 Ottobre 2025)
+
+### 🔧 Fix Fullscreen Mobile - Canvas Phaser Resize
+- ✅ **PROBLEMA RISOLTO**: Fullscreen non copriva tutto lo schermo
+- ✅ Canvas Phaser ora si ridimensiona dinamicamente al fullscreen
+- ✅ `game.scale.setGameSize()` automatico su fullscreen enter/exit
+- ✅ Resize automatico da 800x600 a `window.innerWidth x innerHeight`
+- ✅ Event listeners fullscreenchange aggiornati con auto-resize
+- ✅ Restore automatico a dimensioni originali quando si esce
+- ✅ Deploy completato su Netlify
+
+### 🎯 OAuth Verificato Funzionante
+- ✅ Verificato screenshot console.txt - OAuth Google funziona
+- ✅ Login/logout funzionanti
+- ✅ Score submission OK (6 punti salvati dopo 49s)
+- ✅ Leaderboard caricata correttamente (14 entries)
+
+---
+
+## ✅ COMPLETATO PRECEDENTEMENTE (11 Ottobre 2025)
 
 ### 🍔 Hamburger Menu Implementation
 - ✅ Creato menu hamburger slide-in da sinistra
-- ✅ Spostati tutti i controlli secondari nel menu:
-  - ❓ Istruzioni
-  - 🏆 Premi (Cosa si vince)
-  - 🏅 Classifica
-  - 🔊 Audio toggle (placeholder)
-  - 🌍 Cambio lingua (IT/EN)
-  - 🔐 Privacy
-  - 📜 Termini
-  - 🚪 Logout (solo per utenti autenticati)
-- ✅ Homepage semplificata: solo 2 pulsanti principali (GIOCA + Selezione Personaggio)
-- ✅ Animazioni CSS fluide e transizioni
-- ✅ Click fuori dal menu per chiuderlo
+- ✅ Spostati tutti i controlli secondari nel menu
+- ✅ Homepage semplificata: solo 2 pulsanti principali
+- ✅ Pause/resume automatico gioco con menu
 - ✅ Milestone creata: `v2.2.0-pre-hamburger`
 
-### 🐛 Fix UX Hamburger Menu
-- ✅ Fix posizione desktop: centrato verticalmente invece che in alto a sinistra
-- ✅ Fix posizione mobile: non copre più il titolo, dimensioni ridotte
-- ✅ Pause automatica del gioco quando si apre il menu
-- ✅ Resume automatico quando si chiude il menu
-- ✅ Responsive sizing (45px tablet, 42px phone)
-
-### 📱 Fullscreen per Mobile
+### 📱 Fullscreen Button per Mobile
 - ✅ Creato pulsante fullscreen manuale
-- ✅ Visibile solo su dispositivi mobili (user agent detection)
-- ✅ Toggle fullscreen on/off con click
-- ✅ Cambio colore: verde (inattivo) → arancione (attivo)
+- ✅ Visibile solo su dispositivi mobili
+- ✅ Toggle fullscreen on/off con cambio colore
 - ✅ Supporto cross-browser (webkit/moz/ms/standard)
-- ✅ Traduzioni IT/EN complete
-- ✅ Event listeners per fullscreenchange
-
-### 🚀 Deployment
-- ✅ Tutti i fix deployati su Netlify
-- ✅ Live su: https://etimuebottledropper.netlify.app/
-- ✅ Versione: v2.3.1 - Hamburger Menu
 
 ---
 
@@ -85,7 +80,7 @@
 - [ ] Aggiungere loading states più chiari
 
 ### 🔐 Sistema Autenticazione
-- [ ] Verificare funzionamento OAuth Google in produzione
+- [x] ~~Verificare funzionamento OAuth Google in produzione~~ ✅ VERIFICATO - Funziona
 - [ ] Testare flow di login/logout completo
 - [ ] Verificare persistenza sessione
 - [ ] Testare cambio nickname
@@ -138,9 +133,9 @@
 ## 🚨 ISSUE NOTI
 
 ### ⚠️ Da Verificare
-1. **OAuth Domain**: Verificare se Google Cloud Console ha ancora il vecchio dominio
+1. ~~**OAuth Domain**~~: ✅ FUNZIONANTE - Verificato da console.txt
 2. **Service Worker**: PWA disabilitato per debug - valutare se riabilitare
-3. **Bundle Size**: Warning Vite per chunk > 500kb
+3. **Bundle Size**: Warning Vite per chunk > 500kb (1.68MB attualmente)
 
 ### 📝 Note Tecniche
 - Repository development: `etimue-bottle-dropper`
@@ -189,6 +184,7 @@ npm run preview      # Preview build locale
 
 ---
 
-**Ultimo aggiornamento**: 11 Ottobre 2025
-**Versione corrente**: v2.3.1 - Hamburger Menu
+**Ultimo aggiornamento**: 12 Ottobre 2025
+**Versione corrente**: v2.3.2 - Fullscreen Fix
 **Stato**: ✅ Tutto funzionante e deployato
+**Commit**: b372a69d (dev) + 93739f1 (prod)
