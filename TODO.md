@@ -274,7 +274,101 @@ npm run preview      # Preview build locale
 ---
 
 **Ultimo aggiornamento**: 14 Ottobre 2025
-**Versione corrente**: v2.4.1 - Instructions Spacing Fix
+**Versione corrente**: v2.5.0 - Arcade Controls
 **Stato**: ✅ Tutto funzionante e deployato
-**Commit**: ffec5a73 (dev) + 66aff60 (prod)
-**Prossimo obiettivo**: 🎮 Implementazione nuovi controlli (analogico + pulsanti ETMU + salto + bottiglie laterali)
+**Commit**: 1dbe9ece (dev) + 9911a38 (prod)
+**Prossimo obiettivo**: 🎯 Testing su dispositivi mobili e bilanciamento gameplay
+
+---
+
+## ✅ COMPLETATO OGGI (14 Ottobre 2025 - Sera)
+
+### 🎮 ARCADE CONTROLS - Implementazione Completa
+**OBIETTIVO RAGGIUNTO**: Sistema controlli arcade completamente funzionante!
+
+#### ✅ Joystick Virtuale Stile Xbox (Sinistra)
+- ✅ **Joystick circolare** con base trasparente + stick verde
+- ✅ **Touch e drag** per movimento fluido
+- ✅ **Dead zone 20%** per prevenire micro-movimenti
+- ✅ **Visual feedback** con transform CSS
+- ✅ **Cross-browser** con fallback mouse per testing desktop
+- ✅ **Posizione**: 30px dal basso-sinistra, 120px diametro
+
+#### ✅ Pulsanti ETMU 2x2 (Destra)
+- ✅ **Layout 2x2** con E in alto-destra (salto attivo)
+- ✅ **Design arcade**: circolari 60px, verde per attivi (#64A834)
+- ✅ **T/M/U placeholder**: semi-trasparenti, non cliccabili
+- ✅ **Touch feedback**: scale 0.9 al press
+- ✅ **Posizione**: 30px dal basso-destra, gap 15px
+
+#### ✅ Sistema Salto con Fisica
+- ✅ **Gravità Phaser**: 800px/s² verso il basso
+- ✅ **Jump velocity**: -400px/s (verso l'alto)
+- ✅ **Altezza salto**: ~150px (perfetto per bottiglie laterali)
+- ✅ **Ground detection**: tolleranza 5px per floating point
+- ✅ **Reset automatico**: isJumping flag quando atterra
+- ✅ **Type safety**: Cast Body per evitare errori TypeScript
+
+#### ✅ Bottiglie Laterali
+- ✅ **Spawn split**: 70% dall'alto, 30% da lati (15% dx, 15% sx)
+- ✅ **Traiettoria orizzontale**: solo velocityX, no velocityY
+- ✅ **Velocità ridotta**: 60% della velocità verticale
+- ✅ **Altezza spawn**: tra 30% e 70% dello schermo
+- ✅ **Exit detection**: cleanup quando escono dallo schermo (-100px/+100px)
+- ✅ **Progressive difficulty**: stesso sistema delle verticali
+
+#### ✅ Cleanup UI Vecchi Controlli
+- ✅ **HTML**: Rimosso `.mobile-controls` da index.html
+- ✅ **CSS**: Rimossi 3 blocchi CSS per touch-btn (linee 509-772)
+- ✅ **JavaScript**: Rimossi event listeners da GlobalFunctions.ts
+- ✅ **Commenti**: Aggiunti commenti esplicativi per documentazione
+
+#### ✅ Traduzioni Aggiornate
+- ✅ **Inglese**: "On mobile: Joystick (left) + E button (right) to jump"
+- ✅ **Italiano**: "Su mobile: Joystick (sinistra) + pulsante E (destra) per saltare"
+- ✅ **Instructions modal**: Aggiornato per riflettere nuovi controlli
+
+#### ✅ Architettura e Integrazione
+- ✅ **VirtualControls.ts**: Nuovo componente modulare e riusabile
+- ✅ **GameScene integration**: Setup in create(), show in startGame(), hide in endGame()
+- ✅ **Cleanup automatico**: destroy() su shutdown
+- ✅ **Callbacks**: onJoystickMove, onButtonPress, onButtonRelease
+- ✅ **State management**: getJoystickState(), getButtonState()
+
+#### ✅ Build e Deploy
+- ✅ **Build production**: ✓ Compilato senza errori (1.69MB)
+- ✅ **TypeScript fixes**: Cast Body per metodi Phaser
+- ✅ **Testing locale**: Preview server su localhost:4173
+- ✅ **Git commit**: Messaggio dettagliato con emoji
+- ✅ **Deploy Netlify**: Completato su bottledropper2 (commit 9911a38)
+- ✅ **Live site**: https://etimuebottledropper.netlify.app/ aggiornato
+
+### 📊 Statistiche Implementazione
+- **Files creati**: 1 (VirtualControls.ts)
+- **Files modificati**: 8 (GameScene.ts, GlobalFunctions.ts, index.html, styles.css, translations.ts, ecc.)
+- **Linee aggiunte**: ~778
+- **Linee rimosse**: ~310
+- **Tempo implementazione**: ~3 ore
+- **Bugs trovati durante build**: 5 (tutti fixati)
+
+### 🎯 Features Pronte per Testing
+- [x] Joystick funziona su mobile/desktop
+- [x] Pulsante E salto funziona
+- [x] Bottiglie spawn da 3 direzioni (alto, dx, sx)
+- [x] Fisica salto realistico
+- [x] Traduzioni complete IT/EN
+- [x] Cleanup completo vecchi controlli
+- [x] Build production OK
+- [x] Deploy Netlify OK
+
+### ⚠️ Da Testare su Dispositivi Reali
+- [ ] **Touch responsiveness** joystick su Android
+- [ ] **Touch responsiveness** joystick su iOS
+- [ ] **Pulsante E salto** su Android
+- [ ] **Pulsante E salto** su iOS
+- [ ] **Bilanciamento bottiglie laterali** (troppo facili/difficili?)
+- [ ] **Altezza salto** adeguata per evitare bottiglie
+- [ ] **Performance** con controlli virtuali attivi
+- [ ] **Layout responsive** su schermi piccoli (<375px)
+
+---
