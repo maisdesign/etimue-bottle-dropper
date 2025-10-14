@@ -91,10 +91,12 @@
 - [x] ~~Spawn da sinistra verso destra~~ ✅ IMPLEMENTATO (GameScene.ts:383-391)
 - [x] ~~Spawn da destra verso sinistra~~ ✅ IMPLEMENTATO (GameScene.ts:383-391)
 - [x] ~~Random 50/50 direzione laterale~~ ✅ IMPLEMENTATO
+- [ ] 🐛 **BUG**: Le bottiglie laterali non si vedono attualmente (spawn fuori schermo?)
+- [ ] **DEBUG**: Verificare posizione spawn e velocità rendering
 - [ ] **Verificare bilanciamento difficoltà** spawn laterali su mobile reale
 - [ ] **Testare velocità bottiglie laterali** (ora 60% delle verticali)
 - [ ] Considerare visual warning prima dello spawn laterale
-- 📝 **NOTA**: Spawn bidirezionale già funzionante, solo testing necessario
+- 📝 **NOTA**: Codice spawn implementato ma visibilità da fixare domani
 
 #### 🕹️ ALTERNATIVA CONTROLLI - SWIPE vs JOYSTICK
 - [ ] **VALUTARE SISTEMA SWIPE** al posto del joystick
@@ -263,7 +265,7 @@ npm run preview      # Preview build locale
 **Commit**: 67a4e9ac (dev) + 9911a38 (prod)
 **Prossimi obiettivi**:
 1. 🦘 Aumentare altezza salto (troppo basso)
-2. 🍾 Bottiglie laterali già implementate (verificare spawn bidirezionale)
+2. 🐛 Fixare visibilità bottiglie laterali (codice implementato ma non si vedono)
 3. 🕹️ Valutare sistema swipe come alternativa al joystick
 
 ---
