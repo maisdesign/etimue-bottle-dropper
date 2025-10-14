@@ -506,53 +506,7 @@ body {
       min-width: 180px;
     }
 
-    /* Mobile Touch Controls */
-    .mobile-controls {
-      display: none;
-      position: absolute;
-      bottom: 10px;
-      left: 50%;
-      transform: translateX(-50%);
-      gap: 180px;
-      z-index: 1000;
-      /* Ensure controls are always visible and within viewport */
-      width: auto;
-      height: auto;
-    }
-
-    .touch-btn {
-      width: 70px;
-      height: 70px;
-      border-radius: 50%;
-      border: 3px solid rgba(255,255,255,0.9);
-      background: rgba(0,0,0,0.5);
-      color: white;
-      font-size: 28px;
-      font-weight: bold;
-      cursor: pointer;
-      user-select: none;
-      -webkit-user-select: none;
-      touch-action: manipulation;
-      backdrop-filter: blur(10px);
-      transition: all 0.1s ease;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.4);
-    }
-
-    .touch-btn:active {
-      background: rgba(255,255,255,0.3);
-      transform: scale(0.95);
-    }
-
-    .touch-left {
-      float: left;
-    }
-
-    .touch-right {
-      float: right;
-    }
+    /* Mobile Touch Controls - REMOVED: Now using VirtualControls (joystick + ETMU buttons) */
 
     .footer {
       margin-top: 2rem;
@@ -616,10 +570,6 @@ body {
         padding: 0.8rem;
         margin: 1rem 0;
       }
-
-      .mobile-controls {
-        display: none;
-      }
     }
 
     @media (max-width: 480px) {
@@ -676,18 +626,6 @@ body {
         justify-content: center;
         position: relative;
         max-height: 60vh;
-      }
-
-      .mobile-controls {
-        display: none; /* Hidden by default - shown when game starts */
-        bottom: 15px;
-        gap: 220px;
-      }
-
-      .touch-btn {
-        width: 65px;
-        height: 65px;
-        font-size: 26px;
       }
 
       .header {
@@ -756,17 +694,6 @@ body {
           font-size: 0.65rem;
           margin-top: 0.3rem;
           padding-bottom: 0.5rem;
-        }
-
-        .mobile-controls {
-          bottom: 8px;
-          gap: 160px;
-        }
-
-        .touch-btn {
-          width: 55px;
-          height: 55px;
-          font-size: 22px;
         }
       }
     }

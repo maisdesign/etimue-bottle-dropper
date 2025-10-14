@@ -2,6 +2,7 @@ import { Scene } from 'phaser'
 import { languageManager } from '../i18n/LanguageManager'
 import { characterManager } from '../systems/CharacterManager'
 import { simpleAuth } from '../systems/SimpleAuth'
+import { VirtualControls } from '../ui/VirtualControls'
 
 export class GameScene extends Scene {
   private character!: Phaser.Physics.Arcade.Image
@@ -27,6 +28,9 @@ export class GameScene extends Scene {
   private allGoodTimeLeft: number = 0
   private gameOverTexts: Phaser.GameObjects.Text[] = []
   public moveDirection: number = 0 // -1 left, 0 stop, 1 right - controlled by HTML buttons
+  private virtualControls?: VirtualControls
+  private isJumping: boolean = false
+  private jumpVelocity: number = -400 // Velocità iniziale salto (negativa = verso l'alto)
 
   constructor() {
     super({ key: 'GameScene' })
@@ -76,6 +80,7 @@ export class GameScene extends Scene {
     this.setupGameObjects()
     this.setupInput()
     this.setupCollisions()
+    this.setupVirtualControls()
 
     // Fade in
     this.cameras.main.fadeIn(300, 0, 0, 0)
@@ -188,7 +193,11 @@ export class GameScene extends Scene {
     const currentCharacter = characterManager.getCurrentCharacter()
     this.character = this.physics.add.image(width / 2, height - 80, currentCharacter)
     this.character.setCollideWorldBounds(true)
-    this.character.setImmovable(true)
+
+    // 🆕 SALTO: Abilita gravità sul personaggio per fisica del salto
+    const body = this.character.body as Phaser.Physics.Arcade.Body
+    body.setGravityY(800) // Gravità verso il basso
+    body.setBounce(0) // No rimbalzo quando atterra
 
     // Scale character appropriately for gameplay
     this.character.setScale(0.6) // Reduce size to 60%
@@ -238,6 +247,51 @@ export class GameScene extends Scene {
     })
   }
 
+  private setupVirtualControls(): void {
+    // Crea i controlli virtuali arcade-style
+    this.virtualControls = new VirtualControls()
+
+    // Joystick - Movimento orizzontale
+    this.virtualControls.setJoystickCallback((state) => {
+      if (!state.active) {
+        this.moveDirection = 0
+        return
+      }
+
+      // Usa solo la componente X del joystick per movimento orizzontale
+      // Soglia minima per evitare micro-movimenti
+      const deadzone = 0.2
+      if (Math.abs(state.direction.x) > deadzone) {
+        this.moveDirection = state.direction.x > 0 ? 1 : -1
+      } else {
+        this.moveDirection = 0
+      }
+    })
+
+    // Pulsante E - Salto
+    this.virtualControls.setButtonPressCallback((button) => {
+      if (button === 'E' && !this.gameOver) {
+        this.jump()
+      }
+    })
+
+    console.log('🎮 Virtual controls setup complete')
+  }
+
+  private jump(): void {
+    // Controlla se il personaggio è a terra (tolleranza di 5px per floating point errors)
+    const { height } = this.cameras.main
+    const groundLevel = height - 80
+    const isOnGround = Math.abs(this.character.y - groundLevel) < 5
+
+    if (isOnGround && !this.isJumping) {
+      this.isJumping = true
+      const body = this.character.body as Phaser.Physics.Arcade.Body
+      body.setVelocityY(this.jumpVelocity)
+      console.log('🦘 Jump! Velocity:', this.jumpVelocity)
+    }
+  }
+
   private setupCollisions(): void {
     this.physics.add.overlap(
       this.character,
@@ -270,6 +324,7 @@ export class GameScene extends Scene {
     this.gameOver = false
     this.allGoodMode = false
     this.allGoodTimeLeft = 0
+    this.isJumping = false // Reset salto
 
     // Update UI
     this.updateLivesDisplay()
@@ -277,6 +332,11 @@ export class GameScene extends Scene {
     this.scoreText.setText(`${t.score}: ${this.score}`)
     this.timerText.setText(`${t.time}: ${this.timeLeft}s`)
     this.powerupText.setText('')
+
+    // 🆕 Mostra controlli virtuali
+    if (this.virtualControls) {
+      this.virtualControls.show()
+    }
 
     this.gameStarted = true
     console.log('🚀 GAME START DEBUG (RESET):')
@@ -308,16 +368,50 @@ export class GameScene extends Scene {
   private spawnBottle(): void {
     if (this.gameOver) return
 
-    const { width } = this.cameras.main
-    // Ensure bottles spawn well within screen bounds
-    const minX = 60
-    const maxX = width - 60
-    const x = Phaser.Math.Between(minX, maxX)
+    const { width, height } = this.cameras.main
+
+    // 🆕 30% probabilità di spawn laterale, 70% dall'alto
+    const spawnFromSide = Math.random() < 0.3
+
+    let x: number
+    let y: number
+    let velocityX: number
+    let velocityY: number
+
+    if (spawnFromSide) {
+      // Spawn laterale (sinistra o destra)
+      const fromLeft = Math.random() < 0.5
+      x = fromLeft ? -50 : width + 50
+      y = Phaser.Math.Between(height * 0.3, height * 0.7) // Spawn a metà schermo circa
+
+      // Velocità orizzontale verso il centro
+      const { height: screenHeight } = this.cameras.main
+      const baseSpeed = screenHeight > 700 ? 330 : 200
+      const horizontalSpeed = this.calculateBottleSpeed(baseSpeed) * 0.6 // Più lente delle verticali
+      velocityX = fromLeft ? horizontalSpeed : -horizontalSpeed
+      velocityY = 0 // Solo movimento orizzontale
+
+      console.log(`🔄 Side bottle spawned from ${fromLeft ? 'LEFT' : 'RIGHT'} at y:${Math.floor(y)}`)
+    } else {
+      // Spawn dall'alto (classico)
+      const minX = 60
+      const maxX = width - 60
+      x = Phaser.Math.Between(minX, maxX)
+      y = -50
+
+      // Velocità verticale con variazione orizzontale
+      const { height: screenHeight } = this.cameras.main
+      const baseSpeed = screenHeight > 700 ? 330 : 200
+      velocityX = Phaser.Math.Between(-50, 50)
+      velocityY = this.calculateBottleSpeed(baseSpeed)
+
+      console.log(`⬇️ Top bottle spawned at x:${Math.floor(x)}`)
+    }
 
     // 20% chance for green bottle (poison)
     const isGreen = Math.random() < 0.2
 
-    const bottle = this.bottles.get(x, -50, 'bottle')
+    const bottle = this.bottles.get(x, y, 'bottle')
     if (bottle) {
       bottle.setActive(true)
       bottle.setVisible(true)
@@ -325,27 +419,22 @@ export class GameScene extends Scene {
       // Change texture based on bottle type
       if (isGreen) {
         bottle.setTexture('bottle_green')
-        console.log(`🟢 GREEN bottle spawned at x:${x}`)
       } else {
         bottle.setTexture('bottle')
-        console.log(`🍶 BROWN bottle spawned at x:${x}`)
       }
 
-      // 🎮 PROGRESSIVE DIFFICULTY: Speed increases every 10 seconds
-      // Adjust base speed based on screen height (taller screens need faster falling)
-      const { height } = this.cameras.main
-      const baseSpeed = height > 700 ? 330 : 200 // 65% faster for tall mobile screens
-      const bottleSpeed = this.calculateBottleSpeed(baseSpeed)
-      bottle.body.velocity.y = bottleSpeed
-      bottle.body.velocity.x = Phaser.Math.Between(-50, 50)
+      // Applica velocità
+      bottle.body.velocity.x = velocityX
+      bottle.body.velocity.y = velocityY
 
-      // Set collision bounds to detect when bottle hits ground
+      // Set collision bounds
       bottle.body.setCollideWorldBounds(true)
       bottle.body.setBounce(0)
 
-      // Check for ground collision in update loop
+      // Check for ground/wall collision in update loop
       bottle.setData('checkGround', true)
       bottle.setData('isGreen', isGreen)
+      bottle.setData('fromSide', spawnFromSide)
     }
   }
 
@@ -575,6 +664,11 @@ export class GameScene extends Scene {
     // Deactivate any active powerups
     this.deactivateAllGoodMode()
 
+    // 🆕 Nascondi controlli virtuali
+    if (this.virtualControls) {
+      this.virtualControls.hide()
+    }
+
     // Show game over message
     const { width, height } = this.cameras.main
     const t = languageManager.getTranslation()
@@ -665,6 +759,17 @@ export class GameScene extends Scene {
     const margin = Math.max(40, width * 0.05) // 5% margin or minimum 40px
     const speed = Math.max(6, width * 0.008) // FASTER: Increased from 0.006 to 0.008
 
+    // 🆕 SALTO: Reset isJumping flag quando il personaggio è a terra
+    const groundLevel = height - 80
+    const isOnGround = Math.abs(this.character.y - groundLevel) < 5
+    if (isOnGround && this.isJumping) {
+      this.isJumping = false
+      // Forza y esatta per evitare drift
+      this.character.y = groundLevel
+      const body = this.character.body as Phaser.Physics.Arcade.Body
+      body.setVelocityY(0)
+    }
+
     // Keyboard controls
     const cursors = this.input.keyboard?.createCursorKeys()
     if (cursors) {
@@ -675,7 +780,7 @@ export class GameScene extends Scene {
       }
     }
 
-    // Touch button controls
+    // Touch button controls (joystick virtuale o frecce HTML)
     if (this.moveDirection !== 0) {
       if (this.moveDirection === -1) {
         this.character.x = Math.max(margin, this.character.x - speed)
@@ -684,18 +789,28 @@ export class GameScene extends Scene {
       }
     }
 
-    // Check bottles that hit the ground
+    // Check bottles that hit the ground or exit screen bounds
     this.bottles.children.entries.forEach((bottle: any) => {
       if (bottle.active && bottle.getData('checkGround')) {
+        const fromSide = bottle.getData('fromSide')
+
         // Check if bottle hit the bottom (ground)
-        if (bottle.y >= height - 20) { // Near bottom of screen
+        if (bottle.y >= height - 20) {
           const isGreen = bottle.getData('isGreen')
           console.log(`🌍 GROUND HIT: ${isGreen ? 'GREEN' : 'BROWN'} bottle hit ground - NO LIFE LOSS`)
 
           this.bottles.killAndHide(bottle)
           bottle.setActive(false)
           bottle.setVisible(false)
-          // No life loss for bottles hitting ground - only when catching green bottles
+        }
+
+        // 🆕 Check if side bottle exited screen horizontally
+        if (fromSide && (bottle.x < -100 || bottle.x > width + 100)) {
+          console.log(`🚪 Side bottle exited screen at x:${Math.floor(bottle.x)}`)
+
+          this.bottles.killAndHide(bottle)
+          bottle.setActive(false)
+          bottle.setVisible(false)
         }
       }
     })
@@ -812,6 +927,11 @@ export class GameScene extends Scene {
     }
     if (this.allGoodTimer) {
       this.allGoodTimer.destroy()
+    }
+
+    // 🆕 Cleanup controlli virtuali
+    if (this.virtualControls) {
+      this.virtualControls.destroy()
     }
 
     // Cleanup language listener

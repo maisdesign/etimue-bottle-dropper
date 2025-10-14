@@ -125,12 +125,7 @@ export const globalFunctions = {
       console.log('🎮 Game start overlay hidden')
     }
 
-    // Show mobile touch controls when game starts
-    const mobileControls = document.querySelector('.mobile-controls') as HTMLElement
-    if (mobileControls) {
-      mobileControls.style.display = 'flex'
-      console.log('📱 Mobile controls shown')
-    }
+    // Mobile controls now managed by VirtualControls inside GameScene
 
     if (getGame()) {
       console.log('🔄 Destroying existing game instance')
@@ -225,12 +220,7 @@ export const globalFunctions = {
       console.log('🎮 Game start overlay shown')
     }
 
-    // Hide mobile controls when returning to overlay
-    const mobileControls = document.querySelector('.mobile-controls') as HTMLElement
-    if (mobileControls) {
-      mobileControls.style.display = 'none'
-      console.log('📱 Mobile controls hidden')
-    }
+    // Mobile controls now managed by VirtualControls inside GameScene
   },
 
   hideGameStartOverlay() {
@@ -787,47 +777,8 @@ function initializeUI() {
     globalFunctions.toggleNewsletterSection()
   })
 
-  // Set up HTML touch button controls
-  const touchLeftBtn = document.getElementById('touch-left')
-  const touchRightBtn = document.getElementById('touch-right')
-
-  if (touchLeftBtn && touchRightBtn) {
-    // Left button events
-    touchLeftBtn.addEventListener('touchstart', (e) => {
-      e.preventDefault()
-      const game = getGame()
-      const gameScene = game?.scene.getScene('GameScene') as any
-      if (gameScene) {
-        gameScene.moveDirection = -1
-        if (!gameScene.gameStarted) gameScene.startGame()
-      }
-    })
-
-    touchLeftBtn.addEventListener('touchend', (e) => {
-      e.preventDefault()
-      const game = getGame()
-      const gameScene = game?.scene.getScene('GameScene') as any
-      if (gameScene) gameScene.moveDirection = 0
-    })
-
-    // Right button events
-    touchRightBtn.addEventListener('touchstart', (e) => {
-      e.preventDefault()
-      const game = getGame()
-      const gameScene = game?.scene.getScene('GameScene') as any
-      if (gameScene) {
-        gameScene.moveDirection = 1
-        if (!gameScene.gameStarted) gameScene.startGame()
-      }
-    })
-
-    touchRightBtn.addEventListener('touchend', (e) => {
-      e.preventDefault()
-      const game = getGame()
-      const gameScene = game?.scene.getScene('GameScene') as any
-      if (gameScene) gameScene.moveDirection = 0
-    })
-  }
+  // Touch controls now managed by VirtualControls inside GameScene
+  // Old HTML touch buttons removed from index.html
 
   updateTranslations()
 }
