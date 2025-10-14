@@ -77,50 +77,32 @@
 
 ## 🚀 TODO - PRIORITÀ MASSIMA (Prossima Sessione)
 
-### 🎮 NUOVI CONTROLLI DI GIOCO
-**OBIETTIVO**: Trasformare controlli touch in sistema più intuitivo tipo arcade
+### 🎮 MIGLIORAMENTI CONTROLLI ARCADE (v2.5.0)
+**STATO**: Implementato ma necessita ottimizzazioni basate su feedback utente
 
-#### 🕹️ Analogico Virtuale (Sinistra)
-- [ ] **Implementare joystick virtuale** a sinistra dello schermo
-- [ ] Design circolare con stick centrale trascinabile
-- [ ] Movimento personaggio basato su direzione stick (sinistra/destra)
-- [ ] Visual feedback per touch (evidenziare quando attivo)
-- [ ] Dead zone centrale per prevenire input accidentali
-- [ ] Smooth movement interpolation
+#### 🦘 Sistema Salto - MIGLIORAMENTI RICHIESTI
+- [ ] **INCREMENTARE ALTEZZA SALTO** - Attualmente salta troppo poco
+  - Aumentare `jumpVelocity` (ora -400, provare -600 o -800)
+  - Oppure ridurre `gravity` (ora 800, provare 600)
+  - Testare su dispositivi mobili reali
+  - Verificare che salti sopra bottiglie laterali facilmente
 
-#### 🎯 Pulsanti ETMU (Destra)
-- [ ] **Sostituire controlli touch attuali** con 4 pulsanti fissi
-- [ ] **Layout pulsanti**: Disposizione verticale a destra
-  - **E** (in alto) - SALTO
-  - **T** (centro-alto)
-  - **M** (centro-basso)
-  - **U** (in basso)
-- [ ] Design pulsanti stile arcade (circolari, colorati)
-- [ ] Feedback visivo al tocco (press animation)
-- [ ] Posizionamento ergonomico per pollice destro
+#### 🍾 Bottiglie Laterali - SPAWN BIDIREZIONALE
+- [x] ~~Spawn da sinistra verso destra~~ ✅ IMPLEMENTATO
+- [x] ~~Spawn da destra verso sinistra~~ ✅ IMPLEMENTATO
+- [ ] **Verificare bilanciamento difficoltà** spawn laterali
+- [ ] **Testare velocità bottiglie laterali** (ora 60% delle verticali)
+- [ ] Considerare visual warning prima dello spawn laterale
 
-#### 🦘 Sistema Salto
-- [ ] **Implementare meccanica salto** collegata a pulsante E
-- [ ] Fisica salto realistica (gravity, jump force)
-- [ ] Animazione salto personaggio
-- [ ] Cooldown salto (prevenire spam infinito)
-- [ ] Salto utile per evitare bottiglie pericolose
-- [ ] Integrazione con sistema vite/scoring
-
-#### 🍾 Bottiglie Laterali
-- [ ] **Spawn bottiglie da lati destro/sinistro**
-- [ ] Traiettoria orizzontale → verso centro schermo
-- [ ] Mix spawn: dall'alto + dai lati (varietà gameplay)
-- [ ] Velocità laterale proporzionale a difficoltà
-- [ ] Visual warning quando bottiglia sta per apparire dal lato
-- [ ] Bilanciamento spawn rate (non troppo caotico)
-
-#### 🎨 UI/UX Nuovi Controlli
-- [ ] Rimuovere frecce sinistra/destra attuali
-- [ ] Tutorial overlay per spiegare nuovi controlli
-- [ ] Traduzioni IT/EN per istruzioni nuovi controlli
-- [ ] Testing touch responsiveness su vari dispositivi
-- [ ] Ottimizzazione layout per schermi piccoli/grandi
+#### 🕹️ ALTERNATIVA CONTROLLI - SWIPE vs JOYSTICK
+- [ ] **VALUTARE SISTEMA SWIPE** al posto del joystick
+  - Zona touch in basso schermo per swipe dx/sx
+  - Più intuitivo su mobile?
+  - Testare entrambi e confrontare UX
+  - Possibile switch nelle impostazioni?
+- [ ] Implementare versione swipe come alternativa
+- [ ] A/B testing con utenti reali
+- [ ] Decidere quale sistema mantenere (o entrambi con toggle)
 
 ---
 
@@ -273,11 +255,14 @@ npm run preview      # Preview build locale
 
 ---
 
-**Ultimo aggiornamento**: 14 Ottobre 2025
+**Ultimo aggiornamento**: 15 Ottobre 2025
 **Versione corrente**: v2.5.0 - Arcade Controls
-**Stato**: ✅ Tutto funzionante e deployato
-**Commit**: 1dbe9ece (dev) + 9911a38 (prod)
-**Prossimo obiettivo**: 🎯 Testing su dispositivi mobili e bilanciamento gameplay
+**Stato**: ✅ Deployato - In attesa feedback utente per ottimizzazioni
+**Commit**: 67a4e9ac (dev) + 9911a38 (prod)
+**Prossimi obiettivi**:
+1. 🦘 Aumentare altezza salto (troppo basso)
+2. 🍾 Bottiglie laterali già implementate (verificare spawn bidirezionale)
+3. 🕹️ Valutare sistema swipe come alternativa al joystick
 
 ---
 
