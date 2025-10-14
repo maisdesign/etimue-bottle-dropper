@@ -128,7 +128,7 @@ export class GameScene extends Scene {
     }).setOrigin(0.5) // Center-aligned
 
     // Instructions - White text with dark shadow for readability
-    this.instructionsText = this.add.text(width / 2, height * 0.12, languageManager.translateWithCharacter('gameInstructions'), {
+    this.instructionsText = this.add.text(width / 2, height * 0.095, languageManager.translateWithCharacter('gameInstructions'), {
       fontSize: Math.min(24, width * 0.035) + 'px',
       color: '#FFFFFF',
       fontFamily: 'Arial',
