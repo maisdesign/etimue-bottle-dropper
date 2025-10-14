@@ -88,11 +88,13 @@
   - Verificare che salti sopra bottiglie laterali facilmente
 
 #### 🍾 Bottiglie Laterali - SPAWN BIDIREZIONALE
-- [x] ~~Spawn da sinistra verso destra~~ ✅ IMPLEMENTATO
-- [x] ~~Spawn da destra verso sinistra~~ ✅ IMPLEMENTATO
-- [ ] **Verificare bilanciamento difficoltà** spawn laterali
+- [x] ~~Spawn da sinistra verso destra~~ ✅ IMPLEMENTATO (GameScene.ts:383-391)
+- [x] ~~Spawn da destra verso sinistra~~ ✅ IMPLEMENTATO (GameScene.ts:383-391)
+- [x] ~~Random 50/50 direzione laterale~~ ✅ IMPLEMENTATO
+- [ ] **Verificare bilanciamento difficoltà** spawn laterali su mobile reale
 - [ ] **Testare velocità bottiglie laterali** (ora 60% delle verticali)
 - [ ] Considerare visual warning prima dello spawn laterale
+- 📝 **NOTA**: Spawn bidirezionale già funzionante, solo testing necessario
 
 #### 🕹️ ALTERNATIVA CONTROLLI - SWIPE vs JOYSTICK
 - [ ] **VALUTARE SISTEMA SWIPE** al posto del joystick
