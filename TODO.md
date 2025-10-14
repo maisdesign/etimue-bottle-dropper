@@ -1,6 +1,16 @@
 # TODO - Etimuè Bottle Dropper
 
-## ✅ COMPLETATO OGGI (12 Ottobre 2025)
+## ✅ COMPLETATO OGGI (14 Ottobre 2025)
+
+### 🎨 UX Fix - Instructions Text Spacing
+- ✅ **Posizione testo istruzioni**: Spostato da 12% a 9.5% altezza schermo
+- ✅ **Motivo**: Migliore spacing, prevenzione overlap con altri elementi UI
+- ✅ **Commit**: ffec5a73 (dev) + 66aff60 (prod)
+- ✅ Deploy completato su Netlify
+
+---
+
+## ✅ COMPLETATO PRECEDENTEMENTE (12 Ottobre 2025)
 
 ### 🎮 Ottimizzazione Mobile Portrait + UX Improvements
 - ✅ **Area di gioco estesa**: 600x1000px per mobile portrait (era 800x600)
@@ -29,9 +39,26 @@
 - ✅ Score submission OK (6 punti salvati dopo 49s)
 - ✅ Leaderboard caricata correttamente (14 entries)
 
+### 🔧 Fix Fullscreen Mobile - Soluzione CSS-Based
+- ✅ **PROBLEMA RISOLTO**: Fullscreen non copriva tutto lo schermo
+- ✅ **APPROCCIO CORRETTO**: Soluzione CSS invece di resize canvas Phaser
+- ✅ CSS `body.fullscreen-active` con !important per override completo
+- ✅ Game container ridimensionato a 100vw/100vh (e 100dvw/100dvh)
+- ✅ Nascosti header, controls, footer, newsletter in fullscreen
+- ✅ Rimossi padding, margin, border, border-radius in fullscreen
+- ✅ Event listeners fullscreenchange gestiscono toggle CSS class
+- ✅ Deploy completato su Netlify
+- ⚠️ **NOTA**: Primo tentativo fallito con game.scale.setGameSize() - peggiorava il problema
+
+### 🎯 OAuth Verificato Funzionante
+- ✅ Verificato screenshot console.txt - OAuth Google funziona
+- ✅ Login/logout funzionanti
+- ✅ Score submission OK (6 punti salvati dopo 49s)
+- ✅ Leaderboard caricata correttamente (14 entries)
+
 ---
 
-## ✅ COMPLETATO PRECEDENTEMENTE (11 Ottobre 2025)
+## ✅ COMPLETATO (11 Ottobre 2025)
 
 ### 🍔 Hamburger Menu Implementation
 - ✅ Creato menu hamburger slide-in da sinistra
@@ -45,6 +72,55 @@
 - ✅ Visibile solo su dispositivi mobili
 - ✅ Toggle fullscreen on/off con cambio colore
 - ✅ Supporto cross-browser (webkit/moz/ms/standard)
+
+---
+
+## 🚀 TODO - PRIORITÀ MASSIMA (Prossima Sessione)
+
+### 🎮 NUOVI CONTROLLI DI GIOCO
+**OBIETTIVO**: Trasformare controlli touch in sistema più intuitivo tipo arcade
+
+#### 🕹️ Analogico Virtuale (Sinistra)
+- [ ] **Implementare joystick virtuale** a sinistra dello schermo
+- [ ] Design circolare con stick centrale trascinabile
+- [ ] Movimento personaggio basato su direzione stick (sinistra/destra)
+- [ ] Visual feedback per touch (evidenziare quando attivo)
+- [ ] Dead zone centrale per prevenire input accidentali
+- [ ] Smooth movement interpolation
+
+#### 🎯 Pulsanti ETMU (Destra)
+- [ ] **Sostituire controlli touch attuali** con 4 pulsanti fissi
+- [ ] **Layout pulsanti**: Disposizione verticale a destra
+  - **E** (in alto) - SALTO
+  - **T** (centro-alto)
+  - **M** (centro-basso)
+  - **U** (in basso)
+- [ ] Design pulsanti stile arcade (circolari, colorati)
+- [ ] Feedback visivo al tocco (press animation)
+- [ ] Posizionamento ergonomico per pollice destro
+
+#### 🦘 Sistema Salto
+- [ ] **Implementare meccanica salto** collegata a pulsante E
+- [ ] Fisica salto realistica (gravity, jump force)
+- [ ] Animazione salto personaggio
+- [ ] Cooldown salto (prevenire spam infinito)
+- [ ] Salto utile per evitare bottiglie pericolose
+- [ ] Integrazione con sistema vite/scoring
+
+#### 🍾 Bottiglie Laterali
+- [ ] **Spawn bottiglie da lati destro/sinistro**
+- [ ] Traiettoria orizzontale → verso centro schermo
+- [ ] Mix spawn: dall'alto + dai lati (varietà gameplay)
+- [ ] Velocità laterale proporzionale a difficoltà
+- [ ] Visual warning quando bottiglia sta per apparire dal lato
+- [ ] Bilanciamento spawn rate (non troppo caotico)
+
+#### 🎨 UI/UX Nuovi Controlli
+- [ ] Rimuovere frecce sinistra/destra attuali
+- [ ] Tutorial overlay per spiegare nuovi controlli
+- [ ] Traduzioni IT/EN per istruzioni nuovi controlli
+- [ ] Testing touch responsiveness su vari dispositivi
+- [ ] Ottimizzazione layout per schermi piccoli/grandi
 
 ---
 
@@ -197,7 +273,8 @@ npm run preview      # Preview build locale
 
 ---
 
-**Ultimo aggiornamento**: 12 Ottobre 2025
-**Versione corrente**: v2.4.0 - Mobile Portrait + Irish Pub Background
+**Ultimo aggiornamento**: 14 Ottobre 2025
+**Versione corrente**: v2.4.1 - Instructions Spacing Fix
 **Stato**: ✅ Tutto funzionante e deployato
-**Commit**: 83f56506 (dev) + b8511e9 (prod)
+**Commit**: ffec5a73 (dev) + 66aff60 (prod)
+**Prossimo obiettivo**: 🎮 Implementazione nuovi controlli (analogico + pulsanti ETMU + salto + bottiglie laterali)
