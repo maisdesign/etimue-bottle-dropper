@@ -32,8 +32,6 @@ export class VirtualControls {
   private buttonState: ButtonState
 
   private joystickTouchId: number | null = null
-  private joystickBaseRadius: number = 60
-  private joystickStickRadius: number = 25
 
   // Callbacks
   private onJoystickMove?: (state: JoystickState) => void
@@ -102,13 +100,15 @@ export class VirtualControls {
 
   private createJoystickContainer(): HTMLDivElement {
     const container = document.createElement('div')
-    container.id = 'joystick-container'
+    container.id = 'swipe-zone-container'
     container.style.cssText = `
       position: absolute;
-      bottom: 30px;
-      left: 30px;
-      width: ${this.joystickBaseRadius * 2}px;
-      height: ${this.joystickBaseRadius * 2}px;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 70%;
+      max-width: 400px;
+      height: 120px;
       pointer-events: auto;
     `
     return container
@@ -116,36 +116,33 @@ export class VirtualControls {
 
   private createJoystickBase(): HTMLDivElement {
     const base = document.createElement('div')
-    base.id = 'joystick-base'
+    base.id = 'swipe-zone'
     base.style.cssText = `
       position: relative;
       width: 100%;
       height: 100%;
-      background: rgba(255, 255, 255, 0.15);
-      border: 3px solid rgba(255, 255, 255, 0.4);
-      border-radius: 50%;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+      background: rgba(255, 255, 255, 0.08);
+      border-top: 2px solid rgba(255, 255, 255, 0.25);
+      border-radius: 15px 15px 0 0;
+      box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.3);
       backdrop-filter: blur(5px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: Arial, sans-serif;
+      font-size: 14px;
+      color: rgba(255, 255, 255, 0.6);
+      user-select: none;
+      -webkit-user-select: none;
     `
+    base.innerHTML = '← Swipe per muoverti →'
     return base
   }
 
   private createJoystickStick(): HTMLDivElement {
+    // Non serve più lo stick visuale per swipe
     const stick = document.createElement('div')
-    stick.id = 'joystick-stick'
-    const centerOffset = this.joystickBaseRadius - this.joystickStickRadius
-    stick.style.cssText = `
-      position: absolute;
-      width: ${this.joystickStickRadius * 2}px;
-      height: ${this.joystickStickRadius * 2}px;
-      background: rgba(100, 168, 52, 0.9);
-      border: 3px solid rgba(255, 255, 255, 0.8);
-      border-radius: 50%;
-      top: ${centerOffset}px;
-      left: ${centerOffset}px;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
-      transition: transform 0.05s ease-out;
-    `
+    stick.style.display = 'none'
     return stick
   }
 
@@ -211,17 +208,20 @@ export class VirtualControls {
   }
 
   private setupJoystickEvents(): void {
-    const handleStart = (x: number, y: number, touchId: number) => {
+    let startX: number | null = null
+
+    const handleStart = (x: number, _y: number, touchId: number) => {
       if (this.joystickTouchId !== null) return // Già in uso
 
       this.joystickTouchId = touchId
       this.joystickState.active = true
-      this.updateJoystickPosition(x, y)
+      startX = x // Memorizza posizione iniziale
+      this.updateSwipePosition(x)
     }
 
-    const handleMove = (x: number, y: number, touchId: number) => {
-      if (this.joystickTouchId !== touchId) return
-      this.updateJoystickPosition(x, y)
+    const handleMove = (x: number, touchId: number) => {
+      if (this.joystickTouchId !== touchId || startX === null) return
+      this.updateSwipePosition(x)
     }
 
     const handleEnd = (touchId: number) => {
@@ -229,6 +229,7 @@ export class VirtualControls {
 
       this.joystickTouchId = null
       this.joystickState.active = false
+      startX = null
       this.resetJoystick()
     }
 
@@ -243,7 +244,7 @@ export class VirtualControls {
       e.preventDefault()
       const touch = Array.from(e.changedTouches).find(t => t.identifier === this.joystickTouchId)
       if (touch) {
-        handleMove(touch.clientX, touch.clientY, touch.identifier)
+        handleMove(touch.clientX, touch.identifier)
       }
     })
 
@@ -263,7 +264,7 @@ export class VirtualControls {
 
     document.addEventListener('mousemove', (e) => {
       if (this.joystickTouchId === -1) {
-        handleMove(e.clientX, e.clientY, -1)
+        handleMove(e.clientX, -1)
       }
     })
 
@@ -274,38 +275,22 @@ export class VirtualControls {
     })
   }
 
-  private updateJoystickPosition(clientX: number, clientY: number): void {
+  private updateSwipePosition(clientX: number): void {
     const baseRect = this.joystickBase.getBoundingClientRect()
     const centerX = baseRect.left + baseRect.width / 2
-    const centerY = baseRect.top + baseRect.height / 2
+    const zoneWidth = baseRect.width
 
-    let deltaX = clientX - centerX
-    let deltaY = clientY - centerY
+    // Calcola posizione relativa al centro (-1 a sinistra, +1 a destra)
+    const deltaX = clientX - centerX
+    const normalizedX = Math.max(-1, Math.min(1, deltaX / (zoneWidth / 2)))
 
-    const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY)
-    const maxDistance = this.joystickBaseRadius - this.joystickStickRadius
-
-    // Limita il movimento al raggio del joystick
-    if (distance > maxDistance) {
-      const ratio = maxDistance / distance
-      deltaX *= ratio
-      deltaY *= ratio
-    }
-
-    // Calcola angolo e distanza normalizzata
-    const angle = Math.atan2(deltaY, deltaX)
-    const normalizedDistance = Math.min(distance / maxDistance, 1)
-
-    // Aggiorna stato
-    this.joystickState.angle = angle
-    this.joystickState.distance = normalizedDistance
+    // Aggiorna stato (solo direzione X)
+    this.joystickState.angle = normalizedX > 0 ? 0 : Math.PI
+    this.joystickState.distance = Math.abs(normalizedX)
     this.joystickState.direction = {
-      x: normalizedDistance * Math.cos(angle),
-      y: normalizedDistance * Math.sin(angle)
+      x: normalizedX,
+      y: 0
     }
-
-    // Aggiorna posizione visuale
-    this.joystickStick.style.transform = `translate(${deltaX}px, ${deltaY}px)`
 
     // Callback
     if (this.onJoystickMove) {

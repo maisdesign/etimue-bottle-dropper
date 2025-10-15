@@ -30,7 +30,10 @@ export class GameScene extends Scene {
   public moveDirection: number = 0 // -1 left, 0 stop, 1 right - controlled by HTML buttons
   private virtualControls?: VirtualControls
   private isJumping: boolean = false
-  private jumpVelocity: number = -400 // Velocità iniziale salto (negativa = verso l'alto)
+  private jumpVelocity: number = -650 // Velocità iniziale salto (negativa = verso l'alto) - AUMENTATO per evitare bottiglie laterali
+  private isPaused: boolean = false
+  private pauseButton?: Phaser.GameObjects.Text
+  private pauseOverlay?: Phaser.GameObjects.Rectangle
 
   constructor() {
     super({ key: 'GameScene' })
@@ -150,6 +153,18 @@ export class GameScene extends Scene {
       stroke: '#000000',
       strokeThickness: 3
     }).setOrigin(0.5)
+
+    // 🆕 PULSANTE PAUSA - In alto a destra
+    this.pauseButton = this.add.text(width - 20, 20, '⏸️', {
+      fontSize: '32px',
+      color: '#FFFFFF',
+      stroke: '#000000',
+      strokeThickness: 3
+    }).setOrigin(1, 0).setInteractive({ useHandCursor: true }).setVisible(false)
+
+    this.pauseButton.on('pointerdown', () => {
+      this.togglePause()
+    })
 
     // Listen for language changes and update UI texts
     this.languageChangeCallback = () => {
@@ -338,6 +353,11 @@ export class GameScene extends Scene {
       this.virtualControls.show()
     }
 
+    // 🆕 Mostra pulsante pausa
+    if (this.pauseButton) {
+      this.pauseButton.setVisible(true)
+    }
+
     this.gameStarted = true
     console.log('🚀 GAME START DEBUG (RESET):')
     console.log(`💗 Starting Lives: ${this.lives}`)
@@ -427,8 +447,14 @@ export class GameScene extends Scene {
       bottle.body.velocity.x = velocityX
       bottle.body.velocity.y = velocityY
 
+      // 🔧 GRAVITÀ: Disabilita gravità per bottiglie laterali (movimento orizzontale puro)
+      if (spawnFromSide) {
+        bottle.body.setAllowGravity(false) // NO gravità = linea retta orizzontale
+      } else {
+        bottle.body.setAllowGravity(true) // SÌ gravità = caduta naturale dall'alto
+      }
+
       // 🔧 NO setCollideWorldBounds - le bottiglie devono poter entrare/uscire dallo schermo
-      // Collision bounds disabilitati per permettere spawn laterale da fuori schermo
       bottle.body.setCollideWorldBounds(false)
       bottle.body.setBounce(0)
 
@@ -670,6 +696,11 @@ export class GameScene extends Scene {
       this.virtualControls.hide()
     }
 
+    // 🆕 Nascondi pulsante pausa
+    if (this.pauseButton) {
+      this.pauseButton.setVisible(false)
+    }
+
     // Show game over message
     const { width, height } = this.cameras.main
     const t = languageManager.getTranslation()
@@ -753,8 +784,54 @@ export class GameScene extends Scene {
     this.submitScoreToDatabase()
   }
 
+  private togglePause(): void {
+    this.isPaused = !this.isPaused
+
+    if (this.isPaused) {
+      // PAUSA: Ferma il gioco
+      this.physics.pause()
+      if (this.pauseButton) this.pauseButton.setText('▶️')
+
+      // Mostra overlay semi-trasparente
+      const { width, height } = this.cameras.main
+      this.pauseOverlay = this.add.rectangle(width / 2, height / 2, width, height, 0x000000, 0.5)
+      const t = languageManager.getTranslation()
+      const pauseText = this.add.text(width / 2, height / 2, t.paused || 'PAUSA', {
+        fontSize: '48px',
+        color: '#FFFFFF',
+        fontFamily: 'Arial',
+        fontStyle: 'bold',
+        stroke: '#000000',
+        strokeThickness: 6
+      }).setOrigin(0.5)
+
+      // Store pause elements
+      this.gameOverTexts.push(pauseText as any)
+
+      console.log('⏸️ Game paused')
+    } else {
+      // RIPRENDI: Riavvia il gioco
+      this.physics.resume()
+      if (this.pauseButton) this.pauseButton.setText('⏸️')
+
+      // Rimuovi overlay
+      if (this.pauseOverlay) {
+        this.pauseOverlay.destroy()
+        this.pauseOverlay = undefined
+      }
+
+      // Rimuovi testo pausa
+      if (this.gameOverTexts.length > 0) {
+        this.gameOverTexts[this.gameOverTexts.length - 1]?.destroy()
+        this.gameOverTexts.pop()
+      }
+
+      console.log('▶️ Game resumed')
+    }
+  }
+
   update(): void {
-    if (this.gameOver) return
+    if (this.gameOver || this.isPaused) return
 
     const { width, height } = this.cameras.main
     const margin = Math.max(40, width * 0.05) // 5% margin or minimum 40px

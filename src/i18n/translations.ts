@@ -5,6 +5,7 @@ export interface Translation {
   version: string
   newGame: string
   pause: string
+  paused: string
   resume: string
   instructions: string
   footerMadeBy: string
@@ -162,6 +163,7 @@ export const translations = {
     version: 'v2.0.0 - Clean Architecture',
     newGame: 'New Game',
     pause: 'Pause',
+    paused: 'PAUSED',
     resume: 'Resume',
     instructions: 'Instructions',
     footerMadeBy: 'Made with ❤️ by Etimuè',
@@ -318,6 +320,7 @@ export const translations = {
     version: 'v2.0.0 - Architettura Pulita',
     newGame: 'Nuova Partita',
     pause: 'Pausa',
+    paused: 'PAUSA',
     resume: 'Riprendi',
     instructions: 'Istruzioni',
     footerMadeBy: 'Fatto con ❤️ da Etimuè',
