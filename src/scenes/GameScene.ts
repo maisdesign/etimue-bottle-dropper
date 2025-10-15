@@ -837,14 +837,16 @@ export class GameScene extends Scene {
     const margin = Math.max(40, width * 0.05) // 5% margin or minimum 40px
     const speed = Math.max(6, width * 0.008) // FASTER: Increased from 0.006 to 0.008
 
-    // 🆕 SALTO: Reset isJumping flag quando il personaggio è a terra
+    // 🆕 SALTO: Reset isJumping flag quando il personaggio è a terra E sta scendendo
     const groundLevel = height - 80
+    const body = this.character.body as Phaser.Physics.Arcade.Body
     const isOnGround = Math.abs(this.character.y - groundLevel) < 5
-    if (isOnGround && this.isJumping) {
+    const isFalling = body.velocity.y >= 0 // Velocità positiva = caduta verso il basso
+
+    if (isOnGround && isFalling && this.isJumping) {
       this.isJumping = false
       // Forza y esatta per evitare drift
       this.character.y = groundLevel
-      const body = this.character.body as Phaser.Physics.Arcade.Body
       body.setVelocityY(0)
     }
 
