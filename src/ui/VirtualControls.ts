@@ -206,19 +206,16 @@ export class VirtualControls {
   }
 
   private setupJoystickEvents(): void {
-    let startX: number | null = null
-
     const handleStart = (x: number, _y: number, touchId: number) => {
       if (this.joystickTouchId !== null) return // Già in uso
 
       this.joystickTouchId = touchId
       this.joystickState.active = true
-      startX = x // Memorizza posizione iniziale
       this.updateSwipePosition(x)
     }
 
     const handleMove = (x: number, touchId: number) => {
-      if (this.joystickTouchId !== touchId || startX === null) return
+      if (this.joystickTouchId !== touchId) return
       this.updateSwipePosition(x)
     }
 
@@ -227,7 +224,6 @@ export class VirtualControls {
 
       this.joystickTouchId = null
       this.joystickState.active = false
-      startX = null
       this.resetJoystick()
     }
 
