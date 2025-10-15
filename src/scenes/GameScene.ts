@@ -30,7 +30,7 @@ export class GameScene extends Scene {
   public moveDirection: number = 0 // -1 left, 0 stop, 1 right - controlled by HTML buttons
   private virtualControls?: VirtualControls
   private isJumping: boolean = false
-  private jumpVelocity: number = -650 // Velocità iniziale salto (negativa = verso l'alto) - AUMENTATO per evitare bottiglie laterali
+  private jumpVelocity: number = -900 // Velocità iniziale salto (negativa = verso l'alto) - MOLTO AUMENTATO per bottiglie a livello player
   private isPaused: boolean = false
   private pauseButton?: Phaser.GameObjects.Text
   private pauseOverlay?: Phaser.GameObjects.Rectangle
@@ -402,7 +402,7 @@ export class GameScene extends Scene {
       // Spawn laterale (sinistra o destra)
       const fromLeft = Math.random() < 0.5
       x = fromLeft ? -50 : width + 50
-      y = Phaser.Math.Between(height * 0.3, height * 0.7) // Spawn a metà schermo circa
+      y = height - 80 // Spawn allo STESSO LIVELLO del player (obbliga a saltare!)
 
       // Velocità orizzontale verso il centro
       const { height: screenHeight } = this.cameras.main

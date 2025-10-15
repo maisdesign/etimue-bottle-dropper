@@ -104,11 +104,9 @@ export class VirtualControls {
     container.style.cssText = `
       position: absolute;
       bottom: 0;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 70%;
-      max-width: 400px;
-      height: 120px;
+      left: 0;
+      width: 100%;
+      height: 140px;
       pointer-events: auto;
     `
     return container
