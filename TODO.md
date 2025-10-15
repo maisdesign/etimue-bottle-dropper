@@ -1,6 +1,82 @@
 # TODO - Etimuè Bottle Dropper
 
+## 🚀 TODO - PROSSIMA SESSIONE (Priorità Alta)
+
+### 🦘 Salto - Ottimizzazione Velocità
+- [ ] **Velocizzare il salto** - Attualmente la parabola è troppo lenta
+  - Valutare aumento gravità (da 800 a 1000-1200?)
+  - Oppure ridurre ulteriormente jumpVelocity mantenendo stessa altezza
+  - Obiettivo: salto più rapido e reattivo, meno "fluttuante"
+
+### 📦 Hitbox Personaggio - Verifica Dimensioni
+- [ ] **Controllare dimensione hitbox** - Sospetta troppo larga
+  - Altezza dovrebbe andare bene
+  - **Larghezza potrebbe essere eccessiva** - controllare collisioni
+  - Testare con bottiglie che passano vicino al personaggio
+  - File da verificare: `GameScene.ts` (setSize o setBodySize)
+  - Considerare hitbox più piccola del sprite visuale per gameplay più fair
+
+### 🕹️ UX Controlli - Salto nella Swipe Bar
+- [ ] **VALUTARE: Eliminare pulsanti + salto nella swipe bar**
+  - **PRO eliminazione pulsanti:**
+    - Interfaccia più pulita
+    - Meno ingombro visivo
+    - Una sola area di controllo = più intuitivo
+    - Più spazio schermo per gameplay
+  - **CONTRO eliminazione pulsanti:**
+    - Perdita pulsanti T/M/U (placeholder per future feature?)
+    - Meno separazione tra azioni (movimento vs salto)
+  - **IMPLEMENTAZIONE PROPOSTA:**
+    - Swipe laterale = movimento proporzionale (come ora)
+    - **Tap veloce** sulla swipe bar = salto
+    - Oppure **swipe verso l'alto** = salto
+    - Oppure **doppio tap** = salto
+  - **DA DECIDERE:** Quale gesture per il salto?
+    - Tap: più semplice ma rischio salti accidentali
+    - Swipe up: più intenzionale ma meno rapido
+    - Doppio tap: medio ma potrebbe essere lento in emergenza
+
+---
+
 ## ✅ COMPLETATO OGGI (15 Ottobre 2025)
+
+### 🎮 MOVIMENTO INCREMENTALE PROPORZIONALE - Implementato!
+- ✅ **Sistema swipe completamente ridisegnato** con velocità proporzionale
+- ✅ **Centro swipe zone = FERMO** (velocità 0%)
+- ✅ **Bordi swipe zone = VELOCE** (100% velocità)
+- ✅ Formula: `velocità = distanza_dal_centro × velocità_base`
+- ✅ Deadzone ridotta a 15% per massima precisione
+- ✅ `moveDirection` ora valore continuo da -1.0 a +1.0
+- ✅ Rimossa variabile `startX` inutilizzata (pulizia codice)
+- ✅ **Commit**: fc8109e6 (dev) + 8e1075c (prod)
+
+### 🦘 Salto - Fisica Corretta + Bilanciamento
+- ✅ **Fix fisica salto**: Aggiunto controllo direzione velocità (isFalling)
+- ✅ **Reset isJumping** solo quando player è a terra E sta cadendo
+- ✅ **Parabola fluida**: Sale → Picco → Cade → Atterra
+- ✅ **Altezza bilanciata**: -600 (era -900, troppo alto)
+- ✅ **Commit**: dd155ab0 + f4773a8f (dev)
+
+### 🍾 Bottiglie Laterali - Movimento Orizzontale Puro
+- ✅ **Gravità disabilitata** per bottiglie laterali (`setAllowGravity(false)`)
+- ✅ **Linea retta perfettamente orizzontale** da sx/dx
+- ✅ **Spawn a livello player** (height - 80) per obbligare a saltare
+- ✅ **Commit**: a2b372a7 + 5f4350f9 (dev)
+
+### 🕹️ Swipe Zone - 100% Larghezza
+- ✅ **Espansa da 70% a 100%** larghezza schermo
+- ✅ **Più responsiva** su tutti i device
+- ✅ **Altezza aumentata** a 140px per migliore usabilità
+- ✅ **Commit**: 5f4350f9 (dev)
+
+### ⏸️ Pulsante PAUSA - Implementato
+- ✅ **Pulsante in alto a destra** durante il gioco
+- ✅ **Toggle ⏸️ ↔️ ▶️** con overlay semi-trasparente
+- ✅ **Physics.pause()/resume()** funzionale
+- ✅ **Traduzioni IT/EN** complete
+- ✅ **Commit**: a2b372a7 (dev)
+
+---
 
 ### 🐛 BUG FIX - Bottiglie Laterali Invisibili RISOLTO
 - ✅ **PROBLEMA**: Le bottiglie laterali non erano visibili (spawn da dx/sx non funzionava)
