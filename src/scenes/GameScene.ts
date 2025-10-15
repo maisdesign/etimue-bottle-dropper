@@ -427,8 +427,9 @@ export class GameScene extends Scene {
       bottle.body.velocity.x = velocityX
       bottle.body.velocity.y = velocityY
 
-      // Set collision bounds
-      bottle.body.setCollideWorldBounds(true)
+      // 🔧 NO setCollideWorldBounds - le bottiglie devono poter entrare/uscire dallo schermo
+      // Collision bounds disabilitati per permettere spawn laterale da fuori schermo
+      bottle.body.setCollideWorldBounds(false)
       bottle.body.setBounce(0)
 
       // Check for ground/wall collision in update loop

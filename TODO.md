@@ -1,6 +1,18 @@
 # TODO - Etimuè Bottle Dropper
 
-## ✅ COMPLETATO OGGI (14 Ottobre 2025)
+## ✅ COMPLETATO OGGI (15 Ottobre 2025)
+
+### 🐛 BUG FIX - Bottiglie Laterali Invisibili RISOLTO
+- ✅ **PROBLEMA**: Le bottiglie laterali non erano visibili (spawn da dx/sx non funzionava)
+- ✅ **ROOT CAUSE**: `setCollideWorldBounds(true)` impediva alle bottiglie spawned a x=-50 o x=width+50 di entrare nello schermo
+- ✅ **SOLUZIONE**: Cambiato `setCollideWorldBounds(false)` per permettere bottiglie di entrare/uscire liberamente dallo schermo
+- ✅ **FILE MODIFICATO**: [GameScene.ts:432](src/scenes/GameScene.ts#L432)
+- ✅ **TESTING**: Build OK, preview server attivo su localhost:4173
+- 📝 **DA TESTARE**: Verificare visivamente su dispositivi reali dopo deploy
+
+---
+
+## ✅ COMPLETATO (14 Ottobre 2025)
 
 ### 🎨 UX Fix - Instructions Text Spacing
 - ✅ **Posizione testo istruzioni**: Spostato da 12% a 9.5% altezza schermo
@@ -91,12 +103,12 @@
 - [x] ~~Spawn da sinistra verso destra~~ ✅ IMPLEMENTATO (GameScene.ts:383-391)
 - [x] ~~Spawn da destra verso sinistra~~ ✅ IMPLEMENTATO (GameScene.ts:383-391)
 - [x] ~~Random 50/50 direzione laterale~~ ✅ IMPLEMENTATO
-- [ ] 🐛 **BUG**: Le bottiglie laterali non si vedono attualmente (spawn fuori schermo?)
-- [ ] **DEBUG**: Verificare posizione spawn e velocità rendering
+- [x] ~~🐛 **BUG RISOLTO**: Le bottiglie laterali non si vedono~~ ✅ FIXATO (15 Ott 2025)
+- [x] ~~**DEBUG**: Verificare posizione spawn e velocità rendering~~ ✅ RISOLTO (setCollideWorldBounds issue)
 - [ ] **Verificare bilanciamento difficoltà** spawn laterali su mobile reale
 - [ ] **Testare velocità bottiglie laterali** (ora 60% delle verticali)
 - [ ] Considerare visual warning prima dello spawn laterale
-- 📝 **NOTA**: Codice spawn implementato ma visibilità da fixare domani
+- 📝 **NOTA**: Sistema completamente funzionante, da testare su dispositivi reali
 
 #### 🕹️ ALTERNATIVA CONTROLLI - SWIPE vs JOYSTICK
 - [ ] **VALUTARE SISTEMA SWIPE** al posto del joystick
