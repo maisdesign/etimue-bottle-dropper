@@ -27,10 +27,10 @@ export class GameScene extends Scene {
   private allGoodMode: boolean = false
   private allGoodTimeLeft: number = 0
   private gameOverTexts: Phaser.GameObjects.Text[] = []
-  public moveDirection: number = 0 // -1 left, 0 stop, 1 right - controlled by HTML buttons
+  public moveDirection: number = 0 // -1.0 to +1.0 continuo - movimento proporzionale alla posizione swipe
   private virtualControls?: VirtualControls
   private isJumping: boolean = false
-  private jumpVelocity: number = -900 // Velocità iniziale salto (negativa = verso l'alto) - MOLTO AUMENTATO per bottiglie a livello player
+  private jumpVelocity: number = -600 // Velocità iniziale salto (negativa = verso l'alto) - Bilanciato per bottiglie a livello player
   private isPaused: boolean = false
   private pauseButton?: Phaser.GameObjects.Text
   private pauseOverlay?: Phaser.GameObjects.Rectangle
@@ -266,18 +266,29 @@ export class GameScene extends Scene {
     // Crea i controlli virtuali arcade-style
     this.virtualControls = new VirtualControls()
 
-    // Joystick - Movimento orizzontale
+    // Swipe Zone - Movimento proporzionale incrementale
     this.virtualControls.setJoystickCallback((state) => {
       if (!state.active) {
         this.moveDirection = 0
         return
       }
 
-      // Usa solo la componente X del joystick per movimento orizzontale
-      // Soglia minima per evitare micro-movimenti
-      const deadzone = 0.2
+      // 🆕 MOVIMENTO INCREMENTALE: più lontano dal centro = più veloce
+      // state.direction.x è già normalizzato da -1.0 (sinistra) a +1.0 (destra)
+      // Centro = 0 (fermo), bordi = ±1.0 (velocità massima)
+
+      const deadzone = 0.15 // Zona morta centrale ridotta
       if (Math.abs(state.direction.x) > deadzone) {
-        this.moveDirection = state.direction.x > 0 ? 1 : -1
+        // Applica deadzone e normalizza il range rimanente
+        const sign = state.direction.x > 0 ? 1 : -1
+        const magnitude = Math.abs(state.direction.x)
+        const adjustedMagnitude = (magnitude - deadzone) / (1 - deadzone)
+        this.moveDirection = sign * adjustedMagnitude
+
+        // Debug: mostra velocità solo quando cambia significativamente
+        if (Math.random() < 0.02) { // Log solo 2% delle volte per non intasare console
+          console.log(`🏃 Speed: ${(this.moveDirection * 100).toFixed(0)}%`)
+        }
       } else {
         this.moveDirection = 0
       }
@@ -860,13 +871,13 @@ export class GameScene extends Scene {
       }
     }
 
-    // Touch button controls (joystick virtuale o frecce HTML)
+    // 🆕 SWIPE CONTROLS con movimento proporzionale incrementale
+    // moveDirection ora è un valore continuo da -1.0 a +1.0
+    // Velocità proporzionale alla distanza dal centro della swipe zone
     if (this.moveDirection !== 0) {
-      if (this.moveDirection === -1) {
-        this.character.x = Math.max(margin, this.character.x - speed)
-      } else if (this.moveDirection === 1) {
-        this.character.x = Math.min(width - margin, this.character.x + speed)
-      }
+      // Moltiplica velocità base per la direzione/intensità
+      const proportionalSpeed = speed * this.moveDirection
+      this.character.x = Math.max(margin, Math.min(width - margin, this.character.x + proportionalSpeed))
     }
 
     // Check bottles that hit the ground or exit screen bounds
