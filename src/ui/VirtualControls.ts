@@ -133,7 +133,7 @@ export class VirtualControls {
       user-select: none;
       -webkit-user-select: none;
     `
-    base.innerHTML = '← Swipe per muoverti →'
+    base.innerHTML = '← Swipe laterale = Movimento | ↑ Swipe su = Salto →'
     return base
   }
 
@@ -161,42 +161,32 @@ export class VirtualControls {
   }
 
   private createButtons(): void {
-    const buttonLabels: Array<keyof ButtonState> = ['E', 'T', 'M', 'U']
-    const buttonPositions = [
-      { row: 1, col: 2 }, // E - top right (salto)
-      { row: 1, col: 1 }, // T - top left
-      { row: 2, col: 1 }, // M - bottom left
-      { row: 2, col: 2 }  // U - bottom right
-    ]
+    // 🆕 SOLO PULSANTE E - T/M/U nascosti per UI pulita
+    const buttonLabels: Array<keyof ButtonState> = ['E'] // Solo pulsante salto
 
-    buttonLabels.forEach((label, index) => {
+    buttonLabels.forEach((label) => {
       const button = document.createElement('button')
       button.id = `btn-${label}`
       button.textContent = label
       button.dataset.button = label
 
-      const pos = buttonPositions[index]
-      const isActiveButton = label === 'E' // Solo E è attivo per ora
-
       button.style.cssText = `
-        grid-row: ${pos.row};
-        grid-column: ${pos.col};
         width: 60px;
         height: 60px;
         border-radius: 50%;
-        border: 3px solid rgba(255, 255, 255, ${isActiveButton ? '0.8' : '0.3'});
-        background: ${isActiveButton ? 'rgba(100, 168, 52, 0.9)' : 'rgba(150, 150, 150, 0.3)'};
+        border: 3px solid rgba(255, 255, 255, 0.8);
+        background: rgba(100, 168, 52, 0.9);
         color: white;
         font-size: 24px;
         font-weight: bold;
         font-family: Arial, sans-serif;
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
         backdrop-filter: blur(5px);
-        cursor: ${isActiveButton ? 'pointer' : 'default'};
+        cursor: pointer;
         user-select: none;
         -webkit-user-select: none;
         touch-action: none;
-        opacity: ${isActiveButton ? '1' : '0.5'};
+        opacity: 1;
         transition: transform 0.1s ease, background 0.1s ease;
       `
 
@@ -205,17 +195,33 @@ export class VirtualControls {
     })
   }
 
+  private swipeStartY: number = 0 // Per rilevare swipe verticale
+
   private setupJoystickEvents(): void {
-    const handleStart = (x: number, _y: number, touchId: number) => {
+    const handleStart = (x: number, y: number, touchId: number) => {
       if (this.joystickTouchId !== null) return // Già in uso
 
       this.joystickTouchId = touchId
       this.joystickState.active = true
+      this.swipeStartY = y // Memorizza Y iniziale per swipe up
       this.updateSwipePosition(x)
     }
 
-    const handleMove = (x: number, touchId: number) => {
+    const handleMove = (x: number, y: number, touchId: number) => {
       if (this.joystickTouchId !== touchId) return
+
+      // 🆕 SWIPE UP per saltare
+      const deltaY = this.swipeStartY - y
+      if (deltaY > 50 && this.swipeStartY > 0) {
+        // Swipe verso l'alto di almeno 50px = SALTO
+        console.log('🦘 Swipe UP detected! Triggering jump...')
+        if (this.onButtonPress) {
+          this.onButtonPress('E') // Simula pressione pulsante E (salto)
+        }
+        this.swipeStartY = -9999 // Reset per evitare salti ripetuti
+        return
+      }
+
       this.updateSwipePosition(x)
     }
 
@@ -224,6 +230,7 @@ export class VirtualControls {
 
       this.joystickTouchId = null
       this.joystickState.active = false
+      this.swipeStartY = 0 // Reset Y
       this.resetJoystick()
     }
 
@@ -238,7 +245,7 @@ export class VirtualControls {
       e.preventDefault()
       const touch = Array.from(e.changedTouches).find(t => t.identifier === this.joystickTouchId)
       if (touch) {
-        handleMove(touch.clientX, touch.identifier)
+        handleMove(touch.clientX, touch.clientY, touch.identifier)
       }
     })
 
@@ -258,7 +265,7 @@ export class VirtualControls {
 
     document.addEventListener('mousemove', (e) => {
       if (this.joystickTouchId === -1) {
-        handleMove(e.clientX, -1)
+        handleMove(e.clientX, e.clientY, -1)
       }
     })
 

@@ -211,11 +211,17 @@ export class GameScene extends Scene {
 
     // 🆕 SALTO: Abilita gravità sul personaggio per fisica del salto
     const body = this.character.body as Phaser.Physics.Arcade.Body
-    body.setGravityY(800) // Gravità verso il basso
+    body.setGravityY(1000) // Gravità verso il basso (aumentata per salto più rapido)
     body.setBounce(0) // No rimbalzo quando atterra
 
     // Scale character appropriately for gameplay
     this.character.setScale(0.6) // Reduce size to 60%
+
+    // 📦 HITBOX: Riduce la hitbox per gameplay più fair
+    // La hitbox ora è il 70% della larghezza visuale
+    // Questo previene collisioni "unfair" ai bordi del personaggio
+    body.setSize(body.width * 0.7, body.height, true) // width 70%, height 100%
+    body.setOffset(body.width * 0.15, 0) // Centra la hitbox ridotta
 
     // Listen for character changes
     characterManager.onCharacterChange((newCharacter) => {
