@@ -106,7 +106,7 @@ export class VirtualControls {
       bottom: 0;
       left: 0;
       width: 100%;
-      height: 140px;
+      height: 80px;
       pointer-events: auto;
     `
     return container
@@ -161,38 +161,8 @@ export class VirtualControls {
   }
 
   private createButtons(): void {
-    // 🆕 SOLO PULSANTE E - T/M/U nascosti per UI pulita
-    const buttonLabels: Array<keyof ButtonState> = ['E'] // Solo pulsante salto
-
-    buttonLabels.forEach((label) => {
-      const button = document.createElement('button')
-      button.id = `btn-${label}`
-      button.textContent = label
-      button.dataset.button = label
-
-      button.style.cssText = `
-        width: 60px;
-        height: 60px;
-        border-radius: 50%;
-        border: 3px solid rgba(255, 255, 255, 0.8);
-        background: rgba(100, 168, 52, 0.9);
-        color: white;
-        font-size: 24px;
-        font-weight: bold;
-        font-family: Arial, sans-serif;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-        backdrop-filter: blur(5px);
-        cursor: pointer;
-        user-select: none;
-        -webkit-user-select: none;
-        touch-action: none;
-        opacity: 1;
-        transition: transform 0.1s ease, background 0.1s ease;
-      `
-
-      this.buttons.set(label, button)
-      this.buttonsContainer.appendChild(button)
-    })
+    // 🚫 PULSANTI COMPLETAMENTE RIMOSSI - Solo swipe per controlli
+    // Nessun pulsante creato per massima pulizia UI
   }
 
   private swipeStartY: number = 0 // Per rilevare swipe verticale
@@ -210,15 +180,15 @@ export class VirtualControls {
     const handleMove = (x: number, y: number, touchId: number) => {
       if (this.joystickTouchId !== touchId) return
 
-      // 🆕 SWIPE UP per saltare
+      // 🆕 SWIPE UP per saltare - OTTIMIZZATO per responsività
       const deltaY = this.swipeStartY - y
-      if (deltaY > 50 && this.swipeStartY > 0) {
-        // Swipe verso l'alto di almeno 50px = SALTO
+      if (deltaY > 30 && this.swipeStartY > 0) {
+        // Swipe verso l'alto di almeno 30px = SALTO (ridotto da 50px per meno latenza)
         console.log('🦘 Swipe UP detected! Triggering jump...')
         if (this.onButtonPress) {
           this.onButtonPress('E') // Simula pressione pulsante E (salto)
         }
-        this.swipeStartY = y // 🔧 FIX: Reset a posizione attuale (permette salti consecutivi)
+        this.swipeStartY = y // Reset a posizione attuale (permette salti consecutivi)
         return
       }
 

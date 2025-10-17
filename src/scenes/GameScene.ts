@@ -30,7 +30,7 @@ export class GameScene extends Scene {
   public moveDirection: number = 0 // -1.0 to +1.0 continuo - movimento proporzionale alla posizione swipe
   private virtualControls?: VirtualControls
   private isJumping: boolean = false
-  private jumpVelocity: number = -600 // Velocità iniziale salto (negativa = verso l'alto) - Bilanciato per bottiglie a livello player
+  private jumpVelocity: number = -800 // Velocità iniziale salto (aumentata per compensare lag mobile)
   private isPaused: boolean = false
   private pauseButton?: Phaser.GameObjects.Text
   private pauseOverlay?: Phaser.GameObjects.Rectangle
