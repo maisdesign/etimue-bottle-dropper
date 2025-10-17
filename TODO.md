@@ -2,11 +2,17 @@
 
 ## 🚀 TODO - PROSSIMA SESSIONE (Priorità Alta)
 
+### 📦 Hitbox Personaggio - ULTERIORE RIDUZIONE NECESSARIA
+- [ ] **Ridurre ancora la hitbox** - Attualmente 70% ma ancora troppo larga
+  - Provare 50-60% della larghezza
+  - Testare collisioni con bottiglie che passano molto vicino
+  - Obiettivo: gameplay ancora più fair e preciso
+  - File: `GameScene.ts:223` (body.setSize)
+
 ### 📱 Testing su Dispositivi Reali
-- [ ] **Testare salto velocizzato** su mobile reale
-- [ ] **Testare hitbox ridotta** - verificare collisioni più fair
-- [ ] **Testare swipe up per salto** - valutare intuitività
-- [ ] **Testare pulsante E** - alternativa per chi preferisce tap
+- [ ] **Testare controlli diretti sul personaggio** - drag + swipe up
+- [ ] **Testare pulsante Classifica in Game Over**
+- [ ] **Verificare altezza salto** con nuova velocità -800
 - [ ] **Feedback utenti** su nuovi controlli
 
 ---
