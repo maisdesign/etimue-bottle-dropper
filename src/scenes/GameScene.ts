@@ -773,6 +773,8 @@ export class GameScene extends Scene {
       this.gameOverTexts = []
       buttonBg.destroy()
       buttonText.destroy()
+      leaderboardBg.destroy()
+      leaderboardText.destroy()
 
       // Clear all remaining bottles and powerups
       this.bottles.clear(true, true)
@@ -782,8 +784,39 @@ export class GameScene extends Scene {
       this.startGame()
     })
 
+    // 🆕 Add clickable "CLASSIFICA" button (under NUOVA PARTITA)
+    const leaderboardButtonY = buttonY + 70
+    const leaderboardBg = this.add.rectangle(width / 2, leaderboardButtonY, buttonWidth, buttonHeight, 0xFFA726, 1)
+    leaderboardBg.setInteractive({ useHandCursor: true })
+    leaderboardBg.setStrokeStyle(3, 0xF57C00)
+
+    const leaderboardText = this.add.text(width / 2, leaderboardButtonY, t.leaderboard || '🏆 CLASSIFICA', {
+      fontSize: Math.min(20, width * 0.028) + 'px',
+      color: '#ffffff',
+      fontFamily: 'Arial',
+      fontStyle: 'bold'
+    }).setOrigin(0.5)
+
+    // Leaderboard button hover effect
+    leaderboardBg.on('pointerover', () => {
+      leaderboardBg.setFillStyle(0xFFB74D, 1)
+    })
+
+    leaderboardBg.on('pointerout', () => {
+      leaderboardBg.setFillStyle(0xFFA726, 1)
+    })
+
+    // Leaderboard button click handler
+    leaderboardBg.on('pointerdown', () => {
+      console.log('🏆 CLASSIFICA clicked from GameOver screen')
+      // Call global function to show leaderboard
+      if ((window as any).showLeaderboard) {
+        (window as any).showLeaderboard()
+      }
+    })
+
     // Store game over elements for cleanup
-    this.gameOverTexts.push(gameOverText, finalScoreText, restartText, buttonBg as any, buttonText)
+    this.gameOverTexts.push(gameOverText, finalScoreText, restartText, buttonBg as any, buttonText, leaderboardBg as any, leaderboardText)
 
     console.log(`🎮 Game Over! Final Score: ${this.score}`)
 
