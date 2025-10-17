@@ -2,7 +2,6 @@ import { Scene } from 'phaser'
 import { languageManager } from '../i18n/LanguageManager'
 import { characterManager } from '../systems/CharacterManager'
 import { simpleAuth } from '../systems/SimpleAuth'
-import { VirtualControls } from '../ui/VirtualControls'
 
 export class GameScene extends Scene {
   private character!: Phaser.Physics.Arcade.Image
@@ -27,8 +26,6 @@ export class GameScene extends Scene {
   private allGoodMode: boolean = false
   private allGoodTimeLeft: number = 0
   private gameOverTexts: Phaser.GameObjects.Text[] = []
-  public moveDirection: number = 0 // -1.0 to +1.0 continuo - movimento proporzionale alla posizione swipe
-  private virtualControls?: VirtualControls
   private isJumping: boolean = false
   private jumpVelocity: number = -800 // Velocità iniziale salto (aumentata per compensare lag mobile)
   private isPaused: boolean = false
@@ -250,6 +247,9 @@ export class GameScene extends Scene {
     })
   }
 
+  private touchStartY: number = 0 // Per rilevare swipe UP sul personaggio
+  private isDraggingCharacter: boolean = false
+
   private setupInput(): void {
     // Keyboard controls
     const cursors = this.input.keyboard?.createCursorKeys()
@@ -257,63 +257,53 @@ export class GameScene extends Scene {
       // Handle keyboard input in update loop
     }
 
-    // Mouse/Touch controls (drag mode for desktop)
-    this.input.on('pointermove', (pointer: Phaser.Input.Pointer) => {
-      if (pointer.isDown) {
-        const { width } = this.cameras.main
-        const margin = Math.max(40, width * 0.05) // 5% margin or minimum 40px
-        this.character.x = Phaser.Math.Clamp(pointer.x, margin, width - margin)
+    // 🆕 CONTROLLI DIRETTI SUL PERSONAGGIO
+    // Drag per muoversi + Swipe UP per saltare
+    this.input.on('pointerdown', (pointer: Phaser.Input.Pointer) => {
+      // Verifica se il touch è vicino al personaggio (80px di tolleranza)
+      const distance = Phaser.Math.Distance.Between(pointer.x, pointer.y, this.character.x, this.character.y)
+      if (distance < 100 && this.gameStarted && !this.gameOver) {
+        this.isDraggingCharacter = true
+        this.touchStartY = pointer.y
+        console.log('👆 Touch on character - drag enabled')
+      } else if (!this.gameStarted && !this.gameOver) {
+        // Avvia gioco se non ancora partito
+        this.startGame()
       }
     })
 
-    this.input.on('pointerdown', () => {
-      // Only allow game start if not in game over state
-      if (!this.gameOver) {
-        this.startGame()
+    this.input.on('pointermove', (pointer: Phaser.Input.Pointer) => {
+      if (!this.gameStarted || this.gameOver) return
+
+      if (pointer.isDown && this.isDraggingCharacter) {
+        // 🎮 DRAG: Muovi il personaggio
+        const { width } = this.cameras.main
+        const margin = Math.max(40, width * 0.05)
+        this.character.x = Phaser.Math.Clamp(pointer.x, margin, width - margin)
+
+        // 🦘 SWIPE UP: Rileva swipe verso l'alto per saltare
+        const deltaY = this.touchStartY - pointer.y
+        if (deltaY > 40 && this.touchStartY > 0) {
+          console.log('🦘 Swipe UP on character! Delta:', Math.floor(deltaY))
+          this.jump()
+          this.touchStartY = pointer.y // Reset per permettere salti consecutivi
+        }
       }
+    })
+
+    this.input.on('pointerup', () => {
+      this.isDraggingCharacter = false
+      this.touchStartY = 0
+      console.log('👋 Touch released')
     })
   }
 
   private setupVirtualControls(): void {
-    // Crea i controlli virtuali arcade-style
-    this.virtualControls = new VirtualControls()
-
-    // Swipe Zone - Movimento proporzionale incrementale
-    this.virtualControls.setJoystickCallback((state) => {
-      if (!state.active) {
-        this.moveDirection = 0
-        return
-      }
-
-      // 🆕 MOVIMENTO INCREMENTALE: più lontano dal centro = più veloce
-      // state.direction.x è già normalizzato da -1.0 (sinistra) a +1.0 (destra)
-      // Centro = 0 (fermo), bordi = ±1.0 (velocità massima)
-
-      const deadzone = 0.15 // Zona morta centrale ridotta
-      if (Math.abs(state.direction.x) > deadzone) {
-        // Applica deadzone e normalizza il range rimanente
-        const sign = state.direction.x > 0 ? 1 : -1
-        const magnitude = Math.abs(state.direction.x)
-        const adjustedMagnitude = (magnitude - deadzone) / (1 - deadzone)
-        this.moveDirection = sign * adjustedMagnitude
-
-        // Debug: mostra velocità solo quando cambia significativamente
-        if (Math.random() < 0.02) { // Log solo 2% delle volte per non intasare console
-          console.log(`🏃 Speed: ${(this.moveDirection * 100).toFixed(0)}%`)
-        }
-      } else {
-        this.moveDirection = 0
-      }
-    })
-
-    // Pulsante E - Salto
-    this.virtualControls.setButtonPressCallback((button) => {
-      if (button === 'E' && !this.gameOver) {
-        this.jump()
-      }
-    })
-
-    console.log('🎮 Virtual controls setup complete')
+    // 🚫 VIRTUAL CONTROLS DISABILITATI
+    // Ora il controllo è completamente diretto sul personaggio:
+    // - Drag per muoversi
+    // - Swipe UP per saltare
+    console.log('🎮 Direct character control enabled (no virtual controls)')
   }
 
   private jump(): void {
@@ -371,10 +361,7 @@ export class GameScene extends Scene {
     this.timerText.setText(`${t.time}: ${this.timeLeft}s`)
     this.powerupText.setText('')
 
-    // 🆕 Mostra controlli virtuali
-    if (this.virtualControls) {
-      this.virtualControls.show()
-    }
+    // Controlli virtuali disabilitati (ora controllo diretto sul personaggio)
 
     // 🆕 Mostra pulsante pausa
     if (this.pauseButton) {
@@ -714,10 +701,7 @@ export class GameScene extends Scene {
     // Deactivate any active powerups
     this.deactivateAllGoodMode()
 
-    // 🆕 Nascondi controlli virtuali
-    if (this.virtualControls) {
-      this.virtualControls.hide()
-    }
+    // Controlli virtuali disabilitati
 
     // 🆕 Nascondi pulsante pausa
     if (this.pauseButton) {
@@ -883,14 +867,7 @@ export class GameScene extends Scene {
       }
     }
 
-    // 🆕 SWIPE CONTROLS con movimento proporzionale incrementale
-    // moveDirection ora è un valore continuo da -1.0 a +1.0
-    // Velocità proporzionale alla distanza dal centro della swipe zone
-    if (this.moveDirection !== 0) {
-      // Moltiplica velocità base per la direzione/intensità
-      const proportionalSpeed = speed * this.moveDirection
-      this.character.x = Math.max(margin, Math.min(width - margin, this.character.x + proportionalSpeed))
-    }
+    // Movimento swipe disabilitato (ora drag diretto sul personaggio)
 
     // Check bottles that hit the ground or exit screen bounds
     this.bottles.children.entries.forEach((bottle: any) => {
@@ -1032,10 +1009,7 @@ export class GameScene extends Scene {
       this.allGoodTimer.destroy()
     }
 
-    // 🆕 Cleanup controlli virtuali
-    if (this.virtualControls) {
-      this.virtualControls.destroy()
-    }
+    // Controlli virtuali disabilitati (nessun cleanup necessario)
 
     // Cleanup language listener
     if (this.languageChangeCallback) {
