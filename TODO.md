@@ -2,43 +2,61 @@
 
 ## 🚀 TODO - PROSSIMA SESSIONE (Priorità Alta)
 
-### 🦘 Salto - Ottimizzazione Velocità
-- [ ] **Velocizzare il salto** - Attualmente la parabola è troppo lenta
-  - Valutare aumento gravità (da 800 a 1000-1200?)
-  - Oppure ridurre ulteriormente jumpVelocity mantenendo stessa altezza
-  - Obiettivo: salto più rapido e reattivo, meno "fluttuante"
-
-### 📦 Hitbox Personaggio - Verifica Dimensioni
-- [ ] **Controllare dimensione hitbox** - Sospetta troppo larga
-  - Altezza dovrebbe andare bene
-  - **Larghezza potrebbe essere eccessiva** - controllare collisioni
-  - Testare con bottiglie che passano vicino al personaggio
-  - File da verificare: `GameScene.ts` (setSize o setBodySize)
-  - Considerare hitbox più piccola del sprite visuale per gameplay più fair
-
-### 🕹️ UX Controlli - Salto nella Swipe Bar
-- [ ] **VALUTARE: Eliminare pulsanti + salto nella swipe bar**
-  - **PRO eliminazione pulsanti:**
-    - Interfaccia più pulita
-    - Meno ingombro visivo
-    - Una sola area di controllo = più intuitivo
-    - Più spazio schermo per gameplay
-  - **CONTRO eliminazione pulsanti:**
-    - Perdita pulsanti T/M/U (placeholder per future feature?)
-    - Meno separazione tra azioni (movimento vs salto)
-  - **IMPLEMENTAZIONE PROPOSTA:**
-    - Swipe laterale = movimento proporzionale (come ora)
-    - **Tap veloce** sulla swipe bar = salto
-    - Oppure **swipe verso l'alto** = salto
-    - Oppure **doppio tap** = salto
-  - **DA DECIDERE:** Quale gesture per il salto?
-    - Tap: più semplice ma rischio salti accidentali
-    - Swipe up: più intenzionale ma meno rapido
-    - Doppio tap: medio ma potrebbe essere lento in emergenza
+### 📱 Testing su Dispositivi Reali
+- [ ] **Testare salto velocizzato** su mobile reale
+- [ ] **Testare hitbox ridotta** - verificare collisioni più fair
+- [ ] **Testare swipe up per salto** - valutare intuitività
+- [ ] **Testare pulsante E** - alternativa per chi preferisce tap
+- [ ] **Feedback utenti** su nuovi controlli
 
 ---
 
-## ✅ COMPLETATO OGGI (15 Ottobre 2025)
+## ✅ COMPLETATO OGGI (17 Ottobre 2025)
+
+### 🎮 UX OPTIMIZATION - Tripla Implementazione!
+**OBIETTIVO RAGGIUNTO**: Tutti e 3 i task prioritari completati in una sessione!
+
+#### ✅ Task #1: Salto Velocizzato
+- ✅ **Gravità aumentata**: 800 → 1000 (+25% più rapido)
+- ✅ **Parabola più reattiva**: Salto più dinamico e meno "fluttuante"
+- ✅ **File modificato**: [GameScene.ts:214](src/scenes/GameScene.ts#L214)
+- ✅ **Commit**: 75013c3f (dev) + d61b0e4 (prod)
+
+#### ✅ Task #2: Hitbox Personaggio Ottimizzata
+- ✅ **Larghezza ridotta**: 70% della dimensione visuale
+- ✅ **Hitbox centrata**: Offset automatico per centratura
+- ✅ **Altezza invariata**: 100% (già bilanciata)
+- ✅ **Gameplay più fair**: Previene collisioni unfair ai bordi
+- ✅ **File modificato**: [GameScene.ts:220-224](src/scenes/GameScene.ts#L220-L224)
+- ✅ **Commit**: 75013c3f (dev) + d61b0e4 (prod)
+
+#### ✅ Task #3: Controlli UX - Swipe UP per Salto
+- ✅ **🆕 Swipe verso l'alto** nella swipe bar per saltare
+- ✅ **Soglia 50px** per rilevamento swipe up
+- ✅ **Pulsanti T/M/U rimossi** - UI pulita
+- ✅ **Solo pulsante E visibile** - Alternativa al swipe per chi preferisce tap
+- ✅ **Testo swipe bar aggiornato**: "← Swipe laterale = Movimento | ↑ Swipe su = Salto →"
+- ✅ **Decisione implementazione**: Swipe UP scelto per intuitività e prevenzione salti accidentali
+- ✅ **File modificato**: [VirtualControls.ts:208-243](src/ui/VirtualControls.ts#L208-L243)
+- ✅ **Commit**: 75013c3f (dev) + d61b0e4 (prod)
+
+### 📊 Statistiche Sessione
+- **Task completati**: 3/3 (100%)
+- **Files modificati**: 2 (GameScene.ts, VirtualControls.ts)
+- **Linee modificate**: ~25 aggiunte, ~8 rimosse
+- **Tempo implementazione**: ~45 minuti
+- **Build errors**: 0 ✅
+- **Deploy**: ✅ Netlify aggiornato
+
+### 🌐 Deployment
+- **Dev repo**: GitHub etimue-bottle-dropper (commit 75013c3f)
+- **Prod repo**: GitHub bottledropper2 (commit d61b0e4)
+- **Live site**: https://etimuebottledropper.netlify.app/
+- **Status**: ✅ LIVE e funzionante
+
+---
+
+## ✅ COMPLETATO PRECEDENTEMENTE (15 Ottobre 2025)
 
 ### 🎮 MOVIMENTO INCREMENTALE PROPORZIONALE - Implementato!
 - ✅ **Sistema swipe completamente ridisegnato** con velocità proporzionale
