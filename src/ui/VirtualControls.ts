@@ -218,7 +218,7 @@ export class VirtualControls {
         if (this.onButtonPress) {
           this.onButtonPress('E') // Simula pressione pulsante E (salto)
         }
-        this.swipeStartY = -9999 // Reset per evitare salti ripetuti
+        this.swipeStartY = y // 🔧 FIX: Reset a posizione attuale (permette salti consecutivi)
         return
       }
 

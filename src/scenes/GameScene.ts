@@ -227,7 +227,13 @@ export class GameScene extends Scene {
     characterManager.onCharacterChange((newCharacter) => {
       if (this.character) {
         this.character.setTexture(newCharacter)
-        console.log(`🐱 Character sprite updated to: ${newCharacter}`)
+
+        // 🔧 FIX: Ricalcola hitbox per nuovo personaggio (dimensioni sprite potrebbero differire)
+        const body = this.character.body as Phaser.Physics.Arcade.Body
+        body.setSize(body.width * 0.7, body.height, true) // width 70%, height 100%
+        body.setOffset(body.width * 0.15, 0) // Centra la hitbox ridotta
+
+        console.log(`🐱 Character sprite + hitbox updated to: ${newCharacter}`)
       }
     })
 
